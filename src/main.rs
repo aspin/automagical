@@ -1,41 +1,47 @@
+mod pong;
+mod systems;
+
 use amethyst::{
     core::transform::TransformBundle,
+    input::{InputBundle, StringBindings},
     prelude::*,
     renderer::{
         plugins::{RenderFlat2D, RenderToWindow},
-        types::DefaultBackend,
         RenderingBundle,
+        types::DefaultBackend,
     },
     utils::application_root_dir,
 };
 
-struct MyState;
-
-impl SimpleState for MyState {
-    fn on_start(&mut self, _data: StateData<'_, GameData<'_, '_>>) {}
-}
+use crate::pong::MagicalPong;
 
 fn main() -> amethyst::Result<()> {
     amethyst::start_logger(Default::default());
 
     let app_root = application_root_dir()?;
-
-    let assets_dir = app_root.join("assets");
-    let config_dir = app_root.join("config");
-    let display_config_path = config_dir.join("display.ron");
+    let display_config_path = app_root.join("config").join("display.ron");
+    let binding_path = app_root.join("config").join("bindings.ron");
 
     let game_data = GameDataBuilder::default()
         .with_bundle(
             RenderingBundle::<DefaultBackend>::new()
                 .with_plugin(
                     RenderToWindow::from_config_path(display_config_path)?
-                        .with_clear([0.34, 0.36, 0.52, 1.0]),
+                        .with_clear([0.0, 0.0, 0.0, 1.0])
                 )
-                .with_plugin(RenderFlat2D::default()),
+                .with_plugin(RenderFlat2D::default())
         )?
-        .with_bundle(TransformBundle::new())?;
+        .with_bundle(TransformBundle::new())?
+        .with_bundle(
+            InputBundle::<StringBindings>::new()
+                .with_bindings_from_file(binding_path)?
+        )?
+        .with(systems::PaddleSystem, "paddle_system", &["input_system"])
+        .with(systems::MoveBallsSystem, "balls_system", &[])
+        .with(systems::BounceSystem, "bounce_system", &["paddle_system", "balls_system"]);
 
-    let mut game = Application::new(assets_dir, MyState, game_data)?;
+    let assets_dir = app_root.join("assets");
+    let mut game = Application::new(assets_dir, MagicalPong, game_data)?;
     game.run();
 
     Ok(())
