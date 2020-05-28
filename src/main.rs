@@ -7,8 +7,8 @@ use amethyst::{
     prelude::*,
     renderer::{
         plugins::{RenderFlat2D, RenderToWindow},
-        RenderingBundle,
         types::DefaultBackend,
+        RenderingBundle,
     },
     utils::application_root_dir,
 };
@@ -27,21 +27,27 @@ fn main() -> amethyst::Result<()> {
             RenderingBundle::<DefaultBackend>::new()
                 .with_plugin(
                     RenderToWindow::from_config_path(display_config_path)?
-                        .with_clear([0.0, 0.0, 0.0, 1.0])
+                        .with_clear([0.0, 0.0, 0.0, 1.0]),
                 )
-                .with_plugin(RenderFlat2D::default())
+                .with_plugin(RenderFlat2D::default()),
         )?
         .with_bundle(TransformBundle::new())?
-        .with_bundle(
-            InputBundle::<StringBindings>::new()
-                .with_bindings_from_file(binding_path)?
-        )?
+        .with_bundle(InputBundle::<StringBindings>::new().with_bindings_from_file(binding_path)?)?
         .with(systems::PaddleSystem, "paddle_system", &["input_system"])
         .with(systems::MoveBallsSystem, "balls_system", &[])
-        .with(systems::BounceSystem, "bounce_system", &["paddle_system", "balls_system"]);
+        .with(
+            systems::BounceSystem,
+            "bounce_system",
+            &["paddle_system", "balls_system"],
+        )
+        .with(
+            systems::RoundSystem,
+            "round_system",
+            &["bounce_system"]
+        );
 
     let assets_dir = app_root.join("assets");
-    let mut game = Application::new(assets_dir, MagicalPong, game_data)?;
+    let mut game = Application::new(assets_dir, MagicalPong::default(), game_data)?;
     game.run();
 
     Ok(())

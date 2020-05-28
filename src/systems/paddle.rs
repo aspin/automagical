@@ -1,9 +1,9 @@
-use amethyst::core::{Transform, SystemDesc};
+use amethyst::core::{SystemDesc, Transform};
 use amethyst::derive::SystemDesc;
 use amethyst::ecs::{Join, Read, ReadStorage, System, SystemData, World, WriteStorage};
 use amethyst::input::{InputHandler, StringBindings};
 
-use crate::pong::{Paddle, Side, ARENA_WIDTH, ARENA_HEIGHT, PADDLE_HEIGHT};
+use crate::pong::{Paddle, Side, ARENA_HEIGHT, ARENA_WIDTH, PADDLE_HEIGHT};
 
 #[derive(SystemDesc)]
 pub struct PaddleSystem;
@@ -26,7 +26,7 @@ impl<'s> System<'s> for PaddleSystem {
                 transform.set_translation_y(
                     (paddle_y + mv_amount * 1.2)
                         .min(ARENA_HEIGHT - PADDLE_HEIGHT * 0.5)
-                        .max(PADDLE_HEIGHT * 0.5)
+                        .max(PADDLE_HEIGHT * 0.5),
                 );
             }
         }

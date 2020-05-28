@@ -1,6 +1,7 @@
 use amethyst::{
-    assets::{AssetStorage, Loader, Handle},
+    assets::{AssetStorage, Handle, Loader},
     core::transform::Transform,
+    core::timing::Time,
     ecs::prelude::{Component, DenseVecStorage},
     prelude::*,
     renderer::{Camera, ImageFormat, SpriteRender, SpriteSheet, SpriteSheetFormat, Texture},
@@ -16,9 +17,10 @@ pub const BALL_RADIUS: f32 = 4.0;
 pub const BALL_VELOCITY_X: f32 = 75.0;
 pub const BALL_VELOCITY_Y: f32 = 50.0;
 
+#[derive(PartialEq, Eq)]
 pub enum Side {
     Left,
-    Right
+    Right,
 }
 
 pub struct Paddle {
@@ -32,8 +34,33 @@ impl Paddle {
         Paddle {
             side,
             width: PADDLE_WIDTH,
-            height: PADDLE_HEIGHT
+            height: PADDLE_HEIGHT,
         }
+    }
+
+    fn half_width(&self) -> f32 {
+        return self.width / 2.0;
+    }
+
+    fn half_height(&self) -> f32 {
+        return self.height / 2.0;
+    }
+
+    pub fn ball_collides(&self, paddle_transform: &Transform, ball_transform: &Transform) -> bool {
+        let anchor_x = paddle_transform.translation().x;
+        let anchor_y = paddle_transform.translation().y;
+
+        let left_x = anchor_x - self.half_width();
+        let right_x = anchor_x + self.half_width();
+        let bottom_y = anchor_y - self.half_height();
+        let top_y = anchor_y + self.half_height();
+
+        let ball_anchor_x = ball_transform.translation().x;
+        let ball_anchor_y = ball_transform.translation().y;
+
+        let matches_y = ball_anchor_y >= bottom_y && ball_anchor_y <= top_y;
+        let matches_x = ball_anchor_x >= left_x && ball_anchor_x <= right_x;
+        return matches_y && matches_x;
     }
 }
 
@@ -42,15 +69,15 @@ impl Component for Paddle {
 }
 
 pub struct Ball {
-    radius: f32,
-    pub velocity: [f32; 2],
+    pub radius: f32,
+    pub velocity: (f32, f32),
 }
 
 impl Ball {
     fn new() -> Ball {
         Ball {
             radius: BALL_RADIUS,
-            velocity: [BALL_VELOCITY_X, BALL_VELOCITY_Y]
+            velocity: (BALL_VELOCITY_X, BALL_VELOCITY_Y),
         }
     }
 }
@@ -59,19 +86,46 @@ impl Component for Ball {
     type Storage = DenseVecStorage<Self>;
 }
 
-pub struct MagicalPong;
+#[derive(Default)]
+pub struct Score {
+    pub left: u32,
+    pub right: u32
+}
+
+impl Component for Score {
+    type Storage = DenseVecStorage<Self>;
+}
+
+#[derive(Default)]
+pub struct MagicalPong {
+    ball_spawn_timer: Option<f32>,
+    sprite_sheet_handle: Option<Handle<SpriteSheet>>,
+}
 
 impl SimpleState for MagicalPong {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         let world = data.world;
 
-        let sprite_sheet_handle = load_sprite_sheet(world);
+        self.ball_spawn_timer.replace(1.0);
 
-        world.register::<Ball>();
+        self.sprite_sheet_handle.replace(load_sprite_sheet(world));
 
         initialize_camera(world);
-        initialize_paddles(world, sprite_sheet_handle.clone());
-        initialize_ball(world, sprite_sheet_handle.clone());
+        initialize_paddles(world, self.sprite_sheet_handle.clone().unwrap());
+        initialize_score(world);
+    }
+
+    fn update(&mut self, data: &mut StateData<'_, GameData<'_, '_>>) -> SimpleTrans {
+        if let Some(mut timer) = self.ball_spawn_timer.take() {
+            timer -= data.world.fetch::<Time>().delta_seconds();
+            if timer <= 0.0 {
+                initialize_ball(data.world, self.sprite_sheet_handle.clone().unwrap());
+            } else {
+                self.ball_spawn_timer.replace(timer);
+            }
+        }
+        // initialize_ball(world, sprite_sheet_handle.clone());
+        Trans::None
     }
 }
 
@@ -79,7 +133,8 @@ fn initialize_camera(world: &mut World) {
     let mut transform = Transform::default();
     transform.set_translation_xyz(ARENA_WIDTH * 0.5, ARENA_HEIGHT * 0.5, 1.0);
 
-    world.create_entity()
+    world
+        .create_entity()
         .with(Camera::standard_2d(ARENA_WIDTH, ARENA_HEIGHT))
         .with(transform)
         .build();
@@ -92,19 +147,21 @@ fn initialize_paddles(world: &mut World, sprite_sheet_handle: Handle<SpriteSheet
     let y = ARENA_HEIGHT / 2.0;
     left_transform.set_translation_xyz(PADDLE_WIDTH * 0.5, y, 0.0);
     right_transform.set_translation_xyz(ARENA_WIDTH - PADDLE_WIDTH * 0.5, y, 0.0);
-    
+
     let sprite_render = SpriteRender {
         sprite_sheet: sprite_sheet_handle,
-        sprite_number: 0
+        sprite_number: 0,
     };
 
-    world.create_entity()
+    world
+        .create_entity()
         .with(Paddle::new(Side::Left))
         .with(left_transform)
         .with(sprite_render.clone())
         .build();
 
-    world.create_entity()
+    world
+        .create_entity()
         .with(Paddle::new(Side::Right))
         .with(right_transform)
         .with(sprite_render.clone())
@@ -117,13 +174,21 @@ fn initialize_ball(world: &mut World, sprite_sheet_handle: Handle<SpriteSheet>) 
 
     let sprite_render = SpriteRender {
         sprite_sheet: sprite_sheet_handle,
-        sprite_number: 1
+        sprite_number: 1,
     };
 
-    world.create_entity()
+    world
+        .create_entity()
         .with(Ball::new())
         .with(transform)
         .with(sprite_render.clone())
+        .build();
+}
+
+fn initialize_score(world: &mut World) {
+    world
+        .create_entity()
+        .with(Score::default())
         .build();
 }
 
@@ -135,7 +200,7 @@ fn load_sprite_sheet(world: &mut World) -> Handle<SpriteSheet> {
             "texture/pong_spritesheet.png",
             ImageFormat::default(),
             (),
-            &texture_storage
+            &texture_storage,
         )
     };
 
@@ -145,7 +210,6 @@ fn load_sprite_sheet(world: &mut World) -> Handle<SpriteSheet> {
         "texture/pong_spritesheet.ron",
         SpriteSheetFormat(texture_handle),
         (),
-        &sprite_sheet_store
+        &sprite_sheet_store,
     )
 }
-
