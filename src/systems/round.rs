@@ -39,22 +39,29 @@ impl<'s> System<'s> for RoundSystem {
 
     fn run(&mut self, (mut transforms, mut balls, mut score, time, mut ui_text, score_text): Self::SystemData) {
         for (ball, transform) in (&mut balls, &mut transforms).join() {
-            let scored = if transform.translation().x < 0.0 {
-                // score on left
-                score.right += 1;
 
-                if let Some(text) = ui_text.get_mut(score_text.p2_score) {
-                    text.text = score.right.to_string()
+            let scored = if transform.translation().x < 0.0 {
+
+                if ball.reset_time_countdown.is_none() {
+                    // score on left
+                    score.right += 1;
+
+                    if let Some(text) = ui_text.get_mut(score_text.p2_score) {
+                        text.text = score.right.to_string()
+                    }
+                    println!("Score: P1 {} P2 {}", score.left, score.right);
                 }
-                println!("Score: P1 {} P2 {}", score.left, score.right);
                 true
             } else if transform.translation().x > ARENA_WIDTH {
-                // score on right
-                score.left += 1;
-                if let Some(text) = ui_text.get_mut(score_text.p1_score) {
-                    text.text = score.left.to_string()
+                if ball.reset_time_countdown.is_none() {
+                    // score on right
+                    score.left += 1;
+
+                    if let Some(text) = ui_text.get_mut(score_text.p1_score) {
+                        text.text = score.left.to_string()
+                    }
+                    println!("Score: P1 {} P2 {}", score.left, score.right);
                 }
-                println!("Score: P1 {} P2 {}", score.left, score.right);
                 true
             } else {
                 false
