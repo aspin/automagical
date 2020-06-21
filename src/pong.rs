@@ -32,6 +32,8 @@ pub struct Paddle {
     pub side: Side,
     pub width: f32,
     pub height: f32,
+    pub min_height: f32,
+    pub max_height: f32,
 }
 
 impl Paddle {
@@ -40,6 +42,14 @@ impl Paddle {
             side,
             width: PADDLE_WIDTH,
             height: PADDLE_HEIGHT,
+            min_height: PADDLE_HEIGHT * 0.5,
+            max_height: ARENA_HEIGHT - PADDLE_HEIGHT * 0.5,
+        }
+    }
+
+    fn new_with_custom_bounds(side: Side, min_height: f32, max_height: f32) -> Paddle {
+        Paddle {
+            side, width: PADDLE_WIDTH, height: PADDLE_HEIGHT, min_height, max_height
         }
     }
 
@@ -157,10 +167,14 @@ fn initialize_camera(world: &mut World) {
 fn initialize_paddles(world: &mut World, sprite_sheet_handle: Handle<SpriteSheet>) {
     let mut left_transform = Transform::default();
     let mut right_transform = Transform::default();
+    let mut right_transform_2 = Transform::default();
 
     let y = ARENA_HEIGHT / 2.0;
     left_transform.set_translation_xyz(PADDLE_WIDTH * 0.5, y, 0.0);
     right_transform.set_translation_xyz(ARENA_WIDTH - PADDLE_WIDTH * 0.5, y, 0.0);
+    right_transform_2.set_translation_xyz(
+        ARENA_WIDTH - PADDLE_WIDTH * 0.5, y - PADDLE_HEIGHT, 0.0
+    );
 
     let sprite_render = SpriteRender {
         sprite_sheet: sprite_sheet_handle,
@@ -176,8 +190,19 @@ fn initialize_paddles(world: &mut World, sprite_sheet_handle: Handle<SpriteSheet
 
     world
         .create_entity()
-        .with(Paddle::new(Side::Right))
+        .with(Paddle::new_with_custom_bounds(
+            Side::Right, PADDLE_HEIGHT * 1.5, ARENA_HEIGHT - PADDLE_HEIGHT * 0.5
+        ))
         .with(right_transform)
+        .with(sprite_render.clone())
+        .build();
+
+    world
+        .create_entity()
+        .with(Paddle::new_with_custom_bounds(
+            Side::Right, PADDLE_HEIGHT * 0.5, ARENA_HEIGHT - PADDLE_HEIGHT * 1.5
+        ))
+        .with(right_transform_2)
         .with(sprite_render.clone())
         .build();
 }

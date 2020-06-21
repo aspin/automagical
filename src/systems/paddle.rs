@@ -25,8 +25,8 @@ impl<'s> System<'s> for PaddleSystem {
                 let paddle_y = transform.translation().y;
                 transform.set_translation_y(
                     (paddle_y + mv_amount * 1.2)
-                        .min(ARENA_HEIGHT - PADDLE_HEIGHT * 0.5)
-                        .max(PADDLE_HEIGHT * 0.5),
+                        .min(paddle.max_height)
+                        .max(paddle.min_height),
                 );
             }
         }
