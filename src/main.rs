@@ -1,4 +1,5 @@
 mod pong;
+mod colors;
 mod systems;
 
 use amethyst::{
@@ -31,7 +32,7 @@ fn main() -> amethyst::Result<()> {
                         .with_clear([0.0, 0.0, 0.0, 1.0]),
                 )
                 .with_plugin(RenderFlat2D::default())
-                .with_plugin(RenderUi::default())
+                .with_plugin(RenderUi::default()),
         )?
         .with_bundle(TransformBundle::new())?
         .with_bundle(InputBundle::<StringBindings>::new().with_bindings_from_file(binding_path)?)?
@@ -43,11 +44,7 @@ fn main() -> amethyst::Result<()> {
             "bounce_system",
             &["paddle_system", "balls_system"],
         )
-        .with(
-            systems::RoundSystem,
-            "round_system",
-            &["bounce_system"]
-        );
+        .with(systems::RoundSystem, "round_system", &["bounce_system"]);
 
     let assets_dir = app_root.join("assets");
     let mut game = Application::new(assets_dir, MagicalPong::default(), game_data)?;

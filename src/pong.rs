@@ -1,12 +1,13 @@
 use amethyst::{
     assets::{AssetStorage, Handle, Loader},
-    core::transform::Transform,
     core::timing::Time,
+    core::transform::Transform,
     ecs::prelude::{Component, DenseVecStorage, Entity},
     prelude::*,
     renderer::{Camera, ImageFormat, SpriteRender, SpriteSheet, SpriteSheetFormat, Texture},
     ui::{Anchor, TtfFormat, UiText, UiTransform},
 };
+use crate::colors::{WHITE, BLACK};
 
 pub const ARENA_HEIGHT: f32 = 100.0;
 pub const ARENA_WIDTH: f32 = 100.0;
@@ -15,9 +16,11 @@ pub const PADDLE_HEIGHT: f32 = 16.0;
 pub const PADDLE_WIDTH: f32 = 4.0;
 
 pub const BALL_RADIUS: f32 = 4.0;
-pub const BALL_VELOCITY_X: f32 = 75.0;
+pub const BALL_VELOCITY_X: f32 = 50.0;
 pub const BALL_VELOCITY_Y: f32 = 50.0;
 pub const RESPAWN_BALL_INTERVAL: f32 = 1.0;
+
+pub const SPEED_UP_TEXT_DISAPPEAR_S: f32 = 1.0;
 
 #[derive(PartialEq, Eq)]
 pub enum Side {
@@ -71,6 +74,7 @@ impl Component for Paddle {
 }
 
 pub struct Ball {
+    pub bounces: i32,
     pub radius: f32,
     pub velocity: (f32, f32),
     pub reset_time_countdown: Option<f32>,
@@ -79,6 +83,7 @@ pub struct Ball {
 impl Ball {
     fn new() -> Ball {
         Ball {
+            bounces: 0,
             radius: BALL_RADIUS,
             velocity: (BALL_VELOCITY_X, BALL_VELOCITY_Y),
             reset_time_countdown: None,
@@ -99,6 +104,11 @@ pub struct Score {
 pub struct ScoreText {
     pub p1_score: Entity,
     pub p2_score: Entity,
+}
+
+pub struct SpeedUpText {
+    pub entity: Entity,
+    pub disappear_countdown: Option<f32>,
 }
 
 #[derive(Default)]
@@ -239,6 +249,16 @@ fn initialize_scoreboard(world: &mut World) {
         200.,
         50.,
     );
+    let speed_up_transform = UiTransform::new(
+        "speedup".to_string(),
+        Anchor::Middle,
+        Anchor::Middle,
+        0.,
+        0.,
+        2.,
+        500.,
+        100.,
+    );
 
     let p1_score = world
         .create_entity()
@@ -246,7 +266,7 @@ fn initialize_scoreboard(world: &mut World) {
         .with(UiText::new(
             font.clone(),
             "0".to_string(),
-            [1., 1., 1., 1.],
+            WHITE,
             50.,
         ))
         .build();
@@ -257,10 +277,22 @@ fn initialize_scoreboard(world: &mut World) {
         .with(UiText::new(
             font.clone(),
             "0".to_string(),
-            [1., 1., 1., 1.],
+            WHITE,
             50.,
         ))
         .build();
 
-    world.insert(ScoreText { p1_score, p2_score })
+    let speed_up_text = world
+        .create_entity()
+        .with(speed_up_transform)
+        .with(UiText::new(
+            font.clone(),
+            "Speed up!".to_string(),
+            BLACK,
+            100.,
+        ))
+        .build();
+
+    world.insert(ScoreText { p1_score, p2_score });
+    world.insert(SpeedUpText { entity: speed_up_text, disappear_countdown: None });
 }
