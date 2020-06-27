@@ -1,4 +1,29 @@
-// use amethyst::core::Transform;
-// use amethyst::derive::SystemDesc;
-// use amethyst::ecs::{Join, Read, ReadStorage, System, SystemData, WriteStorage};
-// use amethyst::input::{InputHandler, StringBindings};
+use amethyst::core::Transform;
+use amethyst::derive::SystemDesc;
+use amethyst::ecs::{Join, Read, ReadStorage, System, SystemData, WriteStorage};
+use amethyst::input::{InputHandler, StringBindings};
+use crate::entities::Builder;
+
+#[derive(SystemDesc)]
+pub struct BuilderSystem;
+
+impl<'s> System<'s> for BuilderSystem {
+    type SystemData = (
+        WriteStorage<'s, Transform>,
+        ReadStorage<'s, Builder>,
+        Read<'s, InputHandler<StringBindings>>
+    );
+
+    fn run(&mut self, (mut transforms, builders, input): Self::SystemData) {
+        for (builder, transform) in (&builders, &mut transforms).join() {
+            if let Some(mv_amount) = input.axis_value("vertical") {
+                let builder_y = transform.translation().y;
+                transform.set_translation_y(builder_y + mv_amount * 1.2);
+            }
+            if let Some(mv_amount) = input.axis_value("horizontal") {
+                let builder_yx = transform.translation().x;
+                transform.set_translation_x(builder_yx + mv_amount * 1.2);
+            }
+        }
+    }
+}

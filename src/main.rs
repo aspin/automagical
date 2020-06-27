@@ -1,5 +1,5 @@
 mod entities;
-mod pong;
+mod automagical;
 mod colors;
 mod systems;
 
@@ -16,7 +16,7 @@ use amethyst::{
     utils::application_root_dir,
 };
 
-use crate::pong::Automagical;
+use crate::automagical::Automagical;
 
 fn main() -> amethyst::Result<()> {
     amethyst::start_logger(Default::default());
@@ -38,14 +38,7 @@ fn main() -> amethyst::Result<()> {
         .with_bundle(TransformBundle::new())?
         .with_bundle(InputBundle::<StringBindings>::new().with_bindings_from_file(binding_path)?)?
         .with_bundle(UiBundle::<StringBindings>::new())?
-        .with(systems::PaddleSystem, "paddle_system", &["input_system"])
-        .with(systems::MoveBallsSystem, "balls_system", &[])
-        .with(
-            systems::BounceSystem,
-            "bounce_system",
-            &["paddle_system", "balls_system"],
-        )
-        .with(systems::RoundSystem, "round_system", &["bounce_system"]);
+        .with(systems::BuilderSystem, "builder_system", &["input_system"]);
 
     let assets_dir = app_root.join("assets");
     let mut game = Application::new(assets_dir, Automagical::default(), game_data)?;
