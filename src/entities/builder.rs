@@ -1,13 +1,19 @@
-const DEFAULT_BUILDER_SPEED: f32 = 100.0;
+use amethyst::ecs::prelude::{Component, DenseVecStorage};
 
-pub struct Builder {
+const DEFAULT_BUILDER_SPEED: f32 = 1.2;
+
+pub struct CoreBuilder {
     pub speed: f32
 }
 
-impl Builder {
-    fn new() -> Builder {
-        Builder {
+impl CoreBuilder {
+    pub fn new() -> CoreBuilder {
+        CoreBuilder {
             speed: DEFAULT_BUILDER_SPEED
         }
     }
+}
+
+impl Component for CoreBuilder {
+    type Storage = DenseVecStorage<Self>;
 }

@@ -1,6 +1,5 @@
 mod entities;
 mod automagical;
-mod colors;
 mod systems;
 
 use amethyst::{

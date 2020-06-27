@@ -1,13 +1,10 @@
 use amethyst::{
     assets::{AssetStorage, Handle, Loader},
-    core::timing::Time,
     core::transform::Transform,
-    ecs::prelude::{Component, DenseVecStorage, Entity},
     prelude::*,
     renderer::{Camera, ImageFormat, SpriteRender, SpriteSheet, SpriteSheetFormat, Texture},
-    ui::{Anchor, TtfFormat, UiText, UiTransform},
 };
-use crate::colors::{WHITE, BLACK};
+use crate::entities::builder::CoreBuilder;
 
 const CAMERA_WIDTH: f32 = 100.;
 const CAMERA_HEIGHT: f32 = 100.;
@@ -50,7 +47,7 @@ fn initialize_builder(world: &mut World, sprite_sheet_handle: Handle<SpriteSheet
 
     world
         .create_entity()
-        .with(Builder::new())
+        .with(CoreBuilder::new())
         .with(transform)
         .with(sprite_render)
         .build();
