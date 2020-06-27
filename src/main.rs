@@ -1,3 +1,4 @@
+mod entities;
 mod pong;
 mod colors;
 mod systems;
@@ -15,7 +16,7 @@ use amethyst::{
     utils::application_root_dir,
 };
 
-use crate::pong::MagicalPong;
+use crate::pong::Automagical;
 
 fn main() -> amethyst::Result<()> {
     amethyst::start_logger(Default::default());
@@ -47,7 +48,7 @@ fn main() -> amethyst::Result<()> {
         .with(systems::RoundSystem, "round_system", &["bounce_system"]);
 
     let assets_dir = app_root.join("assets");
-    let mut game = Application::new(assets_dir, MagicalPong::default(), game_data)?;
+    let mut game = Application::new(assets_dir, Automagical::default(), game_data)?;
     game.run();
 
     Ok(())

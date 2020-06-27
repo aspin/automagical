@@ -122,17 +122,16 @@ pub struct SpeedUpText {
 }
 
 #[derive(Default)]
-pub struct MagicalPong {
+pub struct Automagical {
     ball_spawn_timer: Option<f32>,
     sprite_sheet_handle: Option<Handle<SpriteSheet>>,
 }
 
-impl SimpleState for MagicalPong {
+impl SimpleState for Automagical {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         let world = data.world;
 
         self.ball_spawn_timer.replace(1.0);
-
         self.sprite_sheet_handle.replace(load_sprite_sheet(world));
 
         initialize_camera(world);

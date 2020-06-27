@@ -1,10 +1,10 @@
-use amethyst::core::{SystemDesc, Transform};
+use amethyst::core::Transform;
 use amethyst::core::timing::Time;
 use amethyst::derive::SystemDesc;
 use amethyst::ecs::{Join, Read, ReadExpect, System, SystemData, Write, WriteStorage};
 use amethyst::ui::UiText;
 
-use crate::pong::{ARENA_HEIGHT, ARENA_WIDTH, Ball, BALL_RADIUS, BALL_VELOCITY_X, BALL_VELOCITY_Y, Paddle, RESPAWN_BALL_INTERVAL, Score, ScoreText, Side};
+use crate::pong::{ARENA_HEIGHT, ARENA_WIDTH, Ball, BALL_VELOCITY_X, RESPAWN_BALL_INTERVAL, Score, ScoreText};
 
 #[derive(SystemDesc)]
 pub struct RoundSystem;

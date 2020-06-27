@@ -1,5 +1,5 @@
 use amethyst::core::timing::Time;
-use amethyst::core::{SystemDesc, Transform};
+use amethyst::core::Transform;
 use amethyst::derive::SystemDesc;
 use amethyst::ecs::{Join, Read, ReadStorage, System, SystemData, WriteStorage};
 
