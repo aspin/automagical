@@ -1,4 +1,4 @@
-pub mod builder;
+pub mod core_builder;
 
-pub use self::builder::CoreBuilder;
+pub use self::core_builder::CoreBuilder;
 

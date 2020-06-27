@@ -24,6 +24,7 @@ impl<'s> System<'s> for BuilderSystem {
                 let builder_yx = transform.translation().x;
                 transform.set_translation_x(builder_yx + mv_amount * builder.speed);
             }
+            println!("coordinates: x {} y {}", transform.translation().x, transform.translation().y);
         }
     }
 }

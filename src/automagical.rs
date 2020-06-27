@@ -4,7 +4,7 @@ use amethyst::{
     prelude::*,
     renderer::{Camera, ImageFormat, SpriteRender, SpriteSheet, SpriteSheetFormat, Texture},
 };
-use crate::entities::builder::CoreBuilder;
+use crate::entities::core_builder::CoreBuilder;
 
 const CAMERA_WIDTH: f32 = 100.;
 const CAMERA_HEIGHT: f32 = 100.;
@@ -38,7 +38,7 @@ fn initialize_camera(world: &mut World) {
 
 fn initialize_builder(world: &mut World, sprite_sheet_handle: Handle<SpriteSheet>) {
     let mut transform = Transform::default();
-    transform.set_translation_xyz(CAMERA_WIDTH * 0.5, CAMERA_HEIGHT * 0.5, 1.0);
+    transform.set_translation_xyz(CAMERA_WIDTH * 0.5, CAMERA_HEIGHT * 0.5, 0.0);
 
     let sprite_render = SpriteRender {
         sprite_sheet: sprite_sheet_handle,
