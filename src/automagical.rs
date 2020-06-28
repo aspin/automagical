@@ -12,8 +12,11 @@ use crate::entities::Tile;
 const CAMERA_WIDTH: f32 = 100.;
 const CAMERA_HEIGHT: f32 = 100.;
 
-const WORLD_WIDTH: usize = 200;
-const WORLD_HEIGHT: usize = 200;
+const WORLD_WIDTH: usize = 10;
+const WORLD_HEIGHT: usize = 10;
+
+const TILE_SIDE_LENGTH: f32 = 10.;
+const TILE_OFFSET: f32 = TILE_SIDE_LENGTH / 2.;
 
 #[derive(Default)]
 pub struct Automagical {
@@ -27,7 +30,7 @@ impl SimpleState for Automagical {
         self.sprite_sheet_handle.replace(load_sprite_sheet(world));
 
         initialize_camera(world);
-        initialize_world_map(world, WORLD_WIDTH, WORLD_HEIGHT);
+        initialize_world_map(world, self.sprite_sheet_handle.clone().unwrap(), WORLD_WIDTH, WORLD_HEIGHT);
         initialize_builder(world, self.sprite_sheet_handle.clone().unwrap());
     }
 }
@@ -43,15 +46,32 @@ fn initialize_camera(world: &mut World) {
         .build();
 }
 
-fn initialize_world_map(world: &mut World, width: usize, height: usize) {
+fn initialize_world_map(
+    world: &mut World, sprite_sheet_handle: Handle<SpriteSheet>, width: usize, height: usize
+) {
+    // TODO: remove this line once a system uses it
     world.register::<Tile>();
 
     let tiles: Vec<Tile> = Tile::generate_tile_map(width, height);
     let mut entities: Vec<Entity> = Vec::with_capacity(width * height);
     for tile in tiles {
+        let mut transform = Transform::default();
+        transform.set_translation_xyz(
+            tile.x as f32 * TILE_SIDE_LENGTH + TILE_OFFSET,
+            tile.y as f32 * TILE_SIDE_LENGTH + TILE_OFFSET,
+            0.0
+        );
+
+        let sprite_render = SpriteRender {
+            sprite_sheet: sprite_sheet_handle.clone(),
+            sprite_number: 1,
+        };
+
         let entity = world
             .create_entity()
             .with(tile)
+            .with(transform)
+            .with(sprite_render)
             .build();
         entities.push(entity);
     }
