@@ -1,6 +1,8 @@
+mod resources;
 mod entities;
 mod automagical;
 mod systems;
+mod utils;
 
 use amethyst::{
     core::transform::TransformBundle,

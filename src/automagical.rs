@@ -1,13 +1,19 @@
 use amethyst::{
     assets::{AssetStorage, Handle, Loader},
     core::transform::Transform,
+    ecs::Entity,
     prelude::*,
     renderer::{Camera, ImageFormat, SpriteRender, SpriteSheet, SpriteSheetFormat, Texture},
 };
-use crate::entities::core_builder::CoreBuilder;
+use crate::entities::CoreBuilder;
+use crate::resources::WorldMap;
+use crate::entities::Tile;
 
 const CAMERA_WIDTH: f32 = 100.;
 const CAMERA_HEIGHT: f32 = 100.;
+
+const WORLD_WIDTH: usize = 200;
+const WORLD_HEIGHT: usize = 200;
 
 #[derive(Default)]
 pub struct Automagical {
@@ -21,6 +27,7 @@ impl SimpleState for Automagical {
         self.sprite_sheet_handle.replace(load_sprite_sheet(world));
 
         initialize_camera(world);
+        initialize_world_map(world, WORLD_WIDTH, WORLD_HEIGHT);
         initialize_builder(world, self.sprite_sheet_handle.clone().unwrap());
     }
 }
@@ -34,6 +41,21 @@ fn initialize_camera(world: &mut World) {
         .with(Camera::standard_2d(CAMERA_WIDTH, CAMERA_HEIGHT))
         .with(transform)
         .build();
+}
+
+fn initialize_world_map(world: &mut World, width: usize, height: usize) {
+    world.register::<Tile>();
+
+    let tiles: Vec<Tile> = Tile::generate_tile_map(width, height);
+    let mut entities: Vec<Entity> = Vec::with_capacity(width * height);
+    for tile in tiles {
+        let entity = world
+            .create_entity()
+            .with(tile)
+            .build();
+        entities.push(entity);
+    }
+    world.insert(WorldMap::new(entities, width, height));
 }
 
 fn initialize_builder(world: &mut World, sprite_sheet_handle: Handle<SpriteSheet>) {
