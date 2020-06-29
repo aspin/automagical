@@ -1,6 +1,6 @@
 use amethyst::ecs::prelude::{Component, DenseVecStorage};
 
-const DEFAULT_BUILDER_SPEED: f32 = 1.2;
+const DEFAULT_BUILDER_SPEED: f32 = 2.;
 
 #[derive(Debug)]
 pub enum Orientation {
