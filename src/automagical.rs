@@ -8,15 +8,13 @@ use amethyst::{
 use crate::entities::CoreBuilder;
 use crate::resources::WorldMap;
 use crate::entities::Tile;
+use crate::utils::constants::{TILE_SIDE_LENGTH, TILE_OFFSET};
 
 const CAMERA_WIDTH: f32 = 100.;
 const CAMERA_HEIGHT: f32 = 100.;
 
 const WORLD_WIDTH: usize = 10;
 const WORLD_HEIGHT: usize = 10;
-
-const TILE_SIDE_LENGTH: f32 = 10.;
-const TILE_OFFSET: f32 = TILE_SIDE_LENGTH / 2.;
 
 #[derive(Default)]
 pub struct Automagical {
