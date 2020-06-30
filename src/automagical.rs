@@ -105,7 +105,7 @@ fn load_map_sprite_sheet(world: &mut World) -> Handle<SpriteSheet> {
         let loader = world.read_resource::<Loader>();
         let texture_storage = world.read_resource::<AssetStorage<Texture>>();
         loader.load(
-            "texture/map_spritesheet.png",
+            "texture/debug_box.png",
             ImageFormat::default(),
             (),
             &texture_storage,
@@ -115,7 +115,7 @@ fn load_map_sprite_sheet(world: &mut World) -> Handle<SpriteSheet> {
     let loader = world.read_resource::<Loader>();
     let sprite_sheet_store = world.read_resource::<AssetStorage<SpriteSheet>>();
     loader.load(
-        "texture/map_spritesheet.ron",
+        "texture/debug_spritesheet.ron",
         SpriteSheetFormat(texture_handle),
         (),
         &sprite_sheet_store,
@@ -138,7 +138,7 @@ fn load_builder_sprite_sheet(world: &mut World) -> Handle<SpriteSheet> {
         let loader = world.read_resource::<Loader>();
         let texture_storage = world.read_resource::<AssetStorage<Texture>>();
         loader.load(
-            "texture/builder_idle_1.png",
+            "texture/builder.png",
             ImageFormat::default(),
             (),
             &texture_storage,
