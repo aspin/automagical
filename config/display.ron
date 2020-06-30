@@ -1,4 +1,4 @@
 (
   title: "Automagical",
-  dimensions: Some((500, 500)),
+  dimensions: Some((1024, 1024)),
 )

@@ -28,6 +28,7 @@ impl<'s> System<'s> for BuilderSystem {
             transform.set_translation_x(new_x);
             transform.set_translation_y(new_y);
 
+            // snap to grid after movement is completed
             if delta_x == 0. && builder_x % TILE_OFFSET != 0. {
                 transform.set_translation_x(
                     round_to_nearest(
@@ -50,12 +51,12 @@ impl<'s> System<'s> for BuilderSystem {
 
             // set orientation after all movement has been computed
             core_builder.orientation = Orientation::from_movement(delta_x, delta_y);
-            println!(
-                "orientation: {:?}, coordinates: ({}, {})",
-                core_builder.orientation,
-                transform.translation().x,
-                transform.translation().y
-            );
+            // println!(
+            //     "orientation: {:?}, coordinates: ({}, {})",
+            //     core_builder.orientation,
+            //     transform.translation().x,
+            //     transform.translation().y
+            // );
         }
     }
 }

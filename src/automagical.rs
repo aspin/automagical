@@ -10,26 +10,33 @@ use crate::resources::WorldMap;
 use crate::entities::Tile;
 use crate::utils::constants::{TILE_SIDE_LENGTH, TILE_OFFSET};
 
-const CAMERA_WIDTH: f32 = 100.;
-const CAMERA_HEIGHT: f32 = 100.;
+const CAMERA_WIDTH: f32 = 160.;
+const CAMERA_HEIGHT: f32 = 160.;
 
-const WORLD_WIDTH: usize = 10;
-const WORLD_HEIGHT: usize = 10;
+const TILE_COUNT_X: usize = 10;
+const TILE_COUNT_Y: usize = 10;
 
 #[derive(Default)]
 pub struct Automagical {
-    sprite_sheet_handle: Option<Handle<SpriteSheet>>,
+    character_sprite_handle: Option<Handle<SpriteSheet>>,
+    map_sprite_handle: Option<Handle<SpriteSheet>>,
 }
 
 impl SimpleState for Automagical {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         let world = data.world;
 
-        self.sprite_sheet_handle.replace(load_sprite_sheet(world));
+        self.map_sprite_handle.replace(load_map_sprite_sheet(world));
+        self.character_sprite_handle.replace(load_builder_sprite_sheet(world));
 
         initialize_camera(world);
-        initialize_world_map(world, self.sprite_sheet_handle.clone().unwrap(), WORLD_WIDTH, WORLD_HEIGHT);
-        initialize_builder(world, self.sprite_sheet_handle.clone().unwrap());
+        initialize_world_map(
+            world,
+            self.map_sprite_handle.clone().unwrap(),
+            TILE_COUNT_X,
+            TILE_COUNT_Y
+        );
+        initialize_builder(world, self.character_sprite_handle.clone().unwrap());
     }
 }
 
@@ -45,13 +52,13 @@ fn initialize_camera(world: &mut World) {
 }
 
 fn initialize_world_map(
-    world: &mut World, sprite_sheet_handle: Handle<SpriteSheet>, width: usize, height: usize
+    world: &mut World, sprite_sheet_handle: Handle<SpriteSheet>, tile_count_x: usize, tile_count_y: usize
 ) {
     // TODO: remove this line once a system uses it
     world.register::<Tile>();
 
-    let tiles: Vec<Tile> = Tile::generate_tile_map(width, height);
-    let mut entities: Vec<Entity> = Vec::with_capacity(width * height);
+    let tiles: Vec<Tile> = Tile::generate_tile_map(tile_count_x, tile_count_y);
+    let mut entities: Vec<Entity> = Vec::with_capacity(tile_count_x * tile_count_y);
     for tile in tiles {
         let mut transform = Transform::default();
         transform.set_translation_xyz(
@@ -62,7 +69,7 @@ fn initialize_world_map(
 
         let sprite_render = SpriteRender {
             sprite_sheet: sprite_sheet_handle.clone(),
-            sprite_number: 1,
+            sprite_number: pick_map_sprite_index(tile.x, tile.y),
         };
 
         let entity = world
@@ -73,7 +80,7 @@ fn initialize_world_map(
             .build();
         entities.push(entity);
     }
-    world.insert(WorldMap::new(entities, width, height));
+    world.insert(WorldMap::new(entities, tile_count_x, tile_count_y));
 }
 
 fn initialize_builder(world: &mut World, sprite_sheet_handle: Handle<SpriteSheet>) {
@@ -93,12 +100,12 @@ fn initialize_builder(world: &mut World, sprite_sheet_handle: Handle<SpriteSheet
         .build();
 }
 
-fn load_sprite_sheet(world: &mut World) -> Handle<SpriteSheet> {
+fn load_map_sprite_sheet(world: &mut World) -> Handle<SpriteSheet> {
     let texture_handle = {
         let loader = world.read_resource::<Loader>();
         let texture_storage = world.read_resource::<AssetStorage<Texture>>();
         loader.load(
-            "texture/pong_spritesheet.png",
+            "texture/map_spritesheet.png",
             ImageFormat::default(),
             (),
             &texture_storage,
@@ -108,7 +115,40 @@ fn load_sprite_sheet(world: &mut World) -> Handle<SpriteSheet> {
     let loader = world.read_resource::<Loader>();
     let sprite_sheet_store = world.read_resource::<AssetStorage<SpriteSheet>>();
     loader.load(
-        "texture/pong_spritesheet.ron",
+        "texture/map_spritesheet.ron",
+        SpriteSheetFormat(texture_handle),
+        (),
+        &sprite_sheet_store,
+    )
+}
+
+fn pick_map_sprite_index(x: usize, y: usize) -> usize {
+    let mut index = 0;
+    if x % 2 != 0 {
+        index += 1;
+    }
+    if y % 2 != 0 {
+        index += 2;
+    }
+    index
+}
+
+fn load_builder_sprite_sheet(world: &mut World) -> Handle<SpriteSheet> {
+    let texture_handle = {
+        let loader = world.read_resource::<Loader>();
+        let texture_storage = world.read_resource::<AssetStorage<Texture>>();
+        loader.load(
+            "texture/builder_idle_1.png",
+            ImageFormat::default(),
+            (),
+            &texture_storage,
+        )
+    };
+
+    let loader = world.read_resource::<Loader>();
+    let sprite_sheet_store = world.read_resource::<AssetStorage<SpriteSheet>>();
+    loader.load(
+        "texture/builder_spritesheet.ron",
         SpriteSheetFormat(texture_handle),
         (),
         &sprite_sheet_store,
