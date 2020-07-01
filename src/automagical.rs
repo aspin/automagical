@@ -5,7 +5,7 @@ use amethyst::{
     prelude::*,
     renderer::{Camera, ImageFormat, SpriteRender, SpriteSheet, SpriteSheetFormat, Texture},
 };
-use crate::entities::CoreBuilder;
+use crate::entities::{CoreBuilder, Conveyor};
 use crate::resources::WorldMap;
 use crate::entities::Tile;
 use crate::utils::constants::{TILE_SIDE_LENGTH, TILE_OFFSET};
@@ -54,7 +54,8 @@ impl SimpleState for Automagical {
             world,
             self.map_sprite_handle.clone().unwrap(),
             TILE_COUNT_X,
-            TILE_COUNT_Y
+            TILE_COUNT_Y,
+            self.conveyor_sprite_handle.clone().unwrap(),
         );
         initialize_builder(world, self.character_sprite_handle.clone().unwrap());
     }
@@ -72,10 +73,15 @@ fn initialize_camera(world: &mut World) {
 }
 
 fn initialize_world_map(
-    world: &mut World, sprite_sheet_handle: Handle<SpriteSheet>, tile_count_x: usize, tile_count_y: usize
+    world: &mut World,
+    tile_sprite_sheet: Handle<SpriteSheet>,
+    tile_count_x: usize,
+    tile_count_y: usize,
+    conveyor_sprite_sheet: Handle<SpriteSheet>,
 ) {
     // TODO: remove this line once a system uses it
     world.register::<Tile>();
+    world.register::<Conveyor>();
 
     let tiles: Vec<Tile> = Tile::generate_tile_map(tile_count_x, tile_count_y);
     let mut entities: Vec<Entity> = Vec::with_capacity(tile_count_x * tile_count_y);
@@ -88,9 +94,23 @@ fn initialize_world_map(
         );
 
         let sprite_render = SpriteRender {
-            sprite_sheet: sprite_sheet_handle.clone(),
+            sprite_sheet: tile_sprite_sheet.clone(),
             sprite_number: pick_map_sprite_index(tile.x, tile.y),
         };
+
+        if tile.x == 4 {
+            let conveyor_transform = transform.clone();
+            let sprite_render = SpriteRender {
+                sprite_sheet: conveyor_sprite_sheet.clone(),
+                sprite_number: 0
+            };
+            world
+                .create_entity()
+                .with(Conveyor::new())
+                .with(conveyor_transform)
+                .with(sprite_render)
+                .build();
+        }
 
         let entity = world
             .create_entity()
@@ -98,6 +118,7 @@ fn initialize_world_map(
             .with(transform)
             .with(sprite_render)
             .build();
+
         entities.push(entity);
     }
     world.insert(WorldMap::new(entities, tile_count_x, tile_count_y));
@@ -105,7 +126,7 @@ fn initialize_world_map(
 
 fn initialize_builder(world: &mut World, sprite_sheet_handle: Handle<SpriteSheet>) {
     let mut transform = Transform::default();
-    transform.set_translation_xyz(CAMERA_WIDTH * 0.5, CAMERA_HEIGHT * 0.5, 0.0);
+    transform.set_translation_xyz(CAMERA_WIDTH * 0.5, CAMERA_HEIGHT * 0.5, 0.5);
 
     let sprite_render = SpriteRender {
         sprite_sheet: sprite_sheet_handle,
