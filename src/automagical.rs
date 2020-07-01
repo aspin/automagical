@@ -20,14 +20,34 @@ const TILE_COUNT_Y: usize = 10;
 pub struct Automagical {
     character_sprite_handle: Option<Handle<SpriteSheet>>,
     map_sprite_handle: Option<Handle<SpriteSheet>>,
+    conveyor_sprite_handle: Option<Handle<SpriteSheet>>
 }
 
 impl SimpleState for Automagical {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         let world = data.world;
 
-        self.map_sprite_handle.replace(load_map_sprite_sheet(world));
-        self.character_sprite_handle.replace(load_builder_sprite_sheet(world));
+        self.map_sprite_handle.replace(
+            load_sprite_sheet(
+                world,
+                "texture/map_spritesheet.png",
+                "texture/map_spritesheet.ron"
+            )
+        );
+        self.character_sprite_handle.replace(
+            load_sprite_sheet(
+                world,
+                "texture/builder.png",
+                "texture/builder_spritesheet.ron"
+            )
+        );
+        self.conveyor_sprite_handle.replace(
+            load_sprite_sheet(
+                world,
+                "texture/conveyor.png",
+                "texture/conveyor_spritesheet.ron"
+            )
+        );
 
         initialize_camera(world);
         initialize_world_map(
@@ -100,12 +120,12 @@ fn initialize_builder(world: &mut World, sprite_sheet_handle: Handle<SpriteSheet
         .build();
 }
 
-fn load_map_sprite_sheet(world: &mut World) -> Handle<SpriteSheet> {
+fn load_sprite_sheet(world: &mut World, texture_file: &str, sprite_file: &str) -> Handle<SpriteSheet> {
     let texture_handle = {
         let loader = world.read_resource::<Loader>();
         let texture_storage = world.read_resource::<AssetStorage<Texture>>();
         loader.load(
-            "texture/debug_box.png",
+            texture_file,
             ImageFormat::default(),
             (),
             &texture_storage,
@@ -115,7 +135,7 @@ fn load_map_sprite_sheet(world: &mut World) -> Handle<SpriteSheet> {
     let loader = world.read_resource::<Loader>();
     let sprite_sheet_store = world.read_resource::<AssetStorage<SpriteSheet>>();
     loader.load(
-        "texture/debug_spritesheet.ron",
+        sprite_file,
         SpriteSheetFormat(texture_handle),
         (),
         &sprite_sheet_store,
@@ -131,26 +151,4 @@ fn pick_map_sprite_index(x: usize, y: usize) -> usize {
         index += 2;
     }
     index
-}
-
-fn load_builder_sprite_sheet(world: &mut World) -> Handle<SpriteSheet> {
-    let texture_handle = {
-        let loader = world.read_resource::<Loader>();
-        let texture_storage = world.read_resource::<AssetStorage<Texture>>();
-        loader.load(
-            "texture/builder.png",
-            ImageFormat::default(),
-            (),
-            &texture_storage,
-        )
-    };
-
-    let loader = world.read_resource::<Loader>();
-    let sprite_sheet_store = world.read_resource::<AssetStorage<SpriteSheet>>();
-    loader.load(
-        "texture/builder_spritesheet.ron",
-        SpriteSheetFormat(texture_handle),
-        (),
-        &sprite_sheet_store,
-    )
 }
