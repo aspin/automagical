@@ -108,19 +108,21 @@ fn initialize_world_map(
         };
 
         if tile.x == 4 {
-            let mut conveyor_transform = transform.clone();
-            conveyor_transform.set_translation_z(0.1);
-            let sprite_render = SpriteRender {
-                sprite_sheet: conveyor_sprite_sheet.clone(),
-                sprite_number: 0
-            };
-            world
-                .create_entity()
-                .with(Conveyor::new())
-                .with(conveyor_transform)
-                .with(sprite_render)
-                .build();
+            if tile.y != 4 {
+                let mut conveyor_transform = transform.clone();
+                conveyor_transform.set_translation_z(0.1);
+                let sprite_render = SpriteRender {
+                    sprite_sheet: conveyor_sprite_sheet.clone(),
+                    sprite_number: 0
+                };
+                world
+                    .create_entity()
+                    .with(Conveyor::new(16., 16.))
+                    .with(conveyor_transform)
+                    .with(sprite_render)
+                    .build();
 
+            }
             if tile.y == 1 {
                 for i in 0..2 {
                     let mut resource_transform = transform.clone();

@@ -1,3 +1,4 @@
+use amethyst::core::Transform;
 
 pub struct Physics {
     pub velocity: (f32, Orientation),
@@ -8,7 +9,7 @@ pub struct Physics {
 impl Physics {
     pub fn new(width: f32, height: f32) -> Physics {
         Physics {
-            velocity: (1.0, Orientation::Up),
+            velocity: (0.0, Orientation::Up),
             width, height
         }
     }
@@ -27,9 +28,24 @@ impl Physics {
         };
         (x_factor * time_delta * self.velocity.0, y_factor * time_delta * self.velocity.0, 0.)
     }
+
+    pub fn intersects(
+        &self,
+        own_transform: &Transform,
+        other_transform: &Transform
+    ) -> bool {
+        let translation = own_transform.translation();
+        let (left_x, right_x) = (translation.x - self.width / 2., translation.x + self.width / 2.);
+        let (bottom_y, top_x) = (translation.y - self.height / 2., translation.y + self.height / 2.);
+
+        let other_translation = other_transform.translation();
+
+        other_translation.x >= left_x && other_translation.x <= right_x
+        && other_translation.y >= bottom_y && other_translation.y <= top_x
+    }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Orientation {
     Left,
     Right,
