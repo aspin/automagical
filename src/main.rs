@@ -1,3 +1,4 @@
+mod components;
 mod resources;
 mod entities;
 mod automagical;

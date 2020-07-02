@@ -1,10 +1,15 @@
 use amethyst::ecs::prelude::{Component, DenseVecStorage};
+use crate::components::physics::Physics;
 
-pub struct Resource {}
+pub struct Resource {
+    pub physics: Physics
+}
 
 impl Resource {
-    pub fn new() -> Resource {
-        Resource {}
+    pub fn new(width: f32, height: f32) -> Resource {
+        Resource {
+            physics: Physics::new(width, height)
+        }
     }
 }
 

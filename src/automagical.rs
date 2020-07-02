@@ -134,7 +134,7 @@ fn initialize_world_map(
                     };
                     world
                         .create_entity()
-                        .with(Resource::new())
+                        .with(Resource::new(4., 4.))
                         .with(resource_transform)
                         .with(sprite_render)
                         .build();

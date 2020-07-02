@@ -1,3 +1,4 @@
+mod resource_physics;
 mod conveyor_movement;
 mod builder;
 
