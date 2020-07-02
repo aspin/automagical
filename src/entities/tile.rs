@@ -4,13 +4,12 @@ use crate::utils::color::{Color, BLACK};
 pub struct Tile {
     pub x: usize,
     pub y: usize,
-    pub color: Color,
 }
 
 impl Tile {
     pub fn new(x: usize, y: usize) -> Tile {
         Tile {
-            x, y, color: BLACK
+            x, y
         }
     }
 

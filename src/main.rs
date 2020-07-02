@@ -39,7 +39,8 @@ fn main() -> amethyst::Result<()> {
         .with_bundle(TransformBundle::new())?
         .with_bundle(InputBundle::<StringBindings>::new().with_bindings_from_file(binding_path)?)?
         .with_bundle(UiBundle::<StringBindings>::new())?
-        .with(systems::BuilderSystem, "builder_system", &["input_system"]);
+        .with(systems::BuilderSystem, "builder_system", &["input_system"])
+        .with(systems::ConveyorMovementSystem, "conveyor_movement", &[]);
 
     let assets_dir = app_root.join("assets");
     let mut game = Application::new(assets_dir, Automagical::default(), game_data)?;

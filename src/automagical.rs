@@ -5,7 +5,7 @@ use amethyst::{
     prelude::*,
     renderer::{Camera, ImageFormat, SpriteRender, SpriteSheet, SpriteSheetFormat, Texture},
 };
-use crate::entities::{CoreBuilder, Conveyor};
+use crate::entities::{CoreBuilder, Conveyor, Resource};
 use crate::resources::WorldMap;
 use crate::entities::Tile;
 use crate::utils::constants::{TILE_SIDE_LENGTH, TILE_OFFSET};
@@ -64,6 +64,7 @@ impl SimpleState for Automagical {
             TILE_COUNT_X,
             TILE_COUNT_Y,
             self.conveyor_sprite_handle.clone().unwrap(),
+            self.resource_sprite_handle.clone().unwrap(),
         );
         initialize_builder(world, self.character_sprite_handle.clone().unwrap());
     }
@@ -86,10 +87,10 @@ fn initialize_world_map(
     tile_count_x: usize,
     tile_count_y: usize,
     conveyor_sprite_sheet: Handle<SpriteSheet>,
+    resource_sprite_sheet: Handle<SpriteSheet>,
 ) {
     // TODO: remove this line once a system uses it
     world.register::<Tile>();
-    world.register::<Conveyor>();
 
     let tiles: Vec<Tile> = Tile::generate_tile_map(tile_count_x, tile_count_y);
     let mut entities: Vec<Entity> = Vec::with_capacity(tile_count_x * tile_count_y);
@@ -107,7 +108,8 @@ fn initialize_world_map(
         };
 
         if tile.x == 4 {
-            let conveyor_transform = transform.clone();
+            let mut conveyor_transform = transform.clone();
+            conveyor_transform.set_translation_z(0.1);
             let sprite_render = SpriteRender {
                 sprite_sheet: conveyor_sprite_sheet.clone(),
                 sprite_number: 0
@@ -118,6 +120,26 @@ fn initialize_world_map(
                 .with(conveyor_transform)
                 .with(sprite_render)
                 .build();
+
+            if tile.y == 1 {
+                for i in 0..2 {
+                    let mut resource_transform = transform.clone();
+                    resource_transform.set_translation_z(0.2);
+                    resource_transform.set_translation_y(
+                        resource_transform.translation().y + (i as f32) * 4.
+                    );
+                    let sprite_render = SpriteRender {
+                        sprite_sheet: resource_sprite_sheet.clone(),
+                        sprite_number: 0
+                    };
+                    world
+                        .create_entity()
+                        .with(Resource::new())
+                        .with(resource_transform)
+                        .with(sprite_render)
+                        .build();
+                }
+            }
         }
 
         let entity = world

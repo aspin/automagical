@@ -53,12 +53,12 @@ impl<'s> System<'s> for BuilderSystem {
 
             // set orientation after all movement has been computed
             core_builder.orientation = Orientation::from_movement(delta_x, delta_y);
-            println!(
-                "orientation: {:?}, coordinates: ({}, {})",
-                core_builder.orientation,
-                transform.translation().x,
-                transform.translation().y
-            );
+            // println!(
+            //     "orientation: {:?}, coordinates: ({}, {})",
+            //     core_builder.orientation,
+            //     transform.translation().x,
+            //     transform.translation().y
+            // );
         }
     }
 }
