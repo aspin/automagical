@@ -16,15 +16,19 @@ impl<'s> System<'s> for ConveyorMovementSystem {
 
     fn run(&mut self, (mut transforms, conveyors, mut resources): Self::SystemData) {
         for (resource, resource_transform) in (&mut resources, &transforms).join() {
-            let mut orientation: Option<Orientation> = Option::None;
+            let mut new_physics: Option<(f32, Orientation)> = Option::None;
             for (conveyor, conveyor_transform) in (&conveyors, &transforms).join() {
-                if conveyor.physics.intersects(conveyor_transform, resource_transform) {
-                    orientation.replace(conveyor.physics.velocity.1.clone());
+                if conveyor.physics.intersects(
+                    conveyor_transform, resource_transform
+                ) {
+                    new_physics.replace(
+                        (conveyor.speed, conveyor.physics.velocity.1.clone())
+                    );
                 }
             }
 
-            if let Some(new_orientation) = orientation {
-                resource.physics.velocity = (10., new_orientation);
+            if let Some((speed, orientation)) = new_physics {
+                resource.physics.velocity = (speed, orientation);
             } else {
                 resource.physics.velocity.0 = 0.;
             }

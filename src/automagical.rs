@@ -96,11 +96,9 @@ fn initialize_world_map(
     let mut entities: Vec<Entity> = Vec::with_capacity(tile_count_x * tile_count_y);
     for tile in tiles {
         let mut transform = Transform::default();
-        transform.set_translation_xyz(
-            tile.x as f32 * TILE_SIDE_LENGTH + TILE_OFFSET,
-            tile.y as f32 * TILE_SIDE_LENGTH + TILE_OFFSET,
-            0.0
-        );
+        let x = tile.x as f32 * TILE_SIDE_LENGTH + TILE_OFFSET;
+        let y = tile.y as f32 * TILE_SIDE_LENGTH + TILE_OFFSET;
+        transform.set_translation_xyz(x, y, 0.0);
 
         let sprite_render = SpriteRender {
             sprite_sheet: tile_sprite_sheet.clone(),
@@ -108,21 +106,13 @@ fn initialize_world_map(
         };
 
         if tile.x == 4 {
-            if tile.y != 4 {
-                let mut conveyor_transform = transform.clone();
-                conveyor_transform.set_translation_z(0.1);
-                let sprite_render = SpriteRender {
-                    sprite_sheet: conveyor_sprite_sheet.clone(),
-                    sprite_number: 0
-                };
-                world
-                    .create_entity()
-                    .with(Conveyor::new(16., 16.))
-                    .with(conveyor_transform)
-                    .with(sprite_render)
-                    .build();
-
-            }
+            Conveyor::create_entity(
+                world,
+                tile.y as f32 * 5.,
+                x,
+                y,
+                conveyor_sprite_sheet.clone()
+            );
             if tile.y == 1 {
                 for i in 0..2 {
                     let mut resource_transform = transform.clone();
