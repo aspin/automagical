@@ -1,4 +1,5 @@
 use amethyst::core::Transform;
+use amethyst::ecs::prelude::{Component, DenseVecStorage};
 
 pub struct Physics {
     pub velocity: (f32, Orientation),
@@ -43,6 +44,10 @@ impl Physics {
         other_translation.x >= left_x && other_translation.x <= right_x
         && other_translation.y >= bottom_y && other_translation.y <= top_x
     }
+}
+
+impl Component for Physics {
+    type Storage = DenseVecStorage<Self>;
 }
 
 #[derive(Debug, Clone)]

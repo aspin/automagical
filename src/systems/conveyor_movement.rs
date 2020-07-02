@@ -1,21 +1,21 @@
 use amethyst::core::Transform;
 use amethyst::derive::SystemDesc;
 use amethyst::ecs::{Join, ReadStorage, System, SystemData, WriteStorage};
-use crate::entities::{Resource, Conveyor};
-use crate::components::physics::Orientation;
+use crate::entities::Conveyor;
+use crate::components::physics::{Orientation, Physics};
 
 #[derive(SystemDesc)]
 pub struct ConveyorMovementSystem;
 
 impl<'s> System<'s> for ConveyorMovementSystem {
     type SystemData = (
-        WriteStorage<'s, Transform>,
+        ReadStorage<'s, Transform>,
         ReadStorage<'s, Conveyor>,
-        WriteStorage<'s, Resource>
+        WriteStorage<'s, Physics>
     );
 
-    fn run(&mut self, (mut transforms, conveyors, mut resources): Self::SystemData) {
-        for (resource, resource_transform) in (&mut resources, &transforms).join() {
+    fn run(&mut self, (transforms, conveyors, mut physics): Self::SystemData) {
+        for (physic, resource_transform) in (&mut physics, &transforms).join() {
             let mut new_physics: Option<(f32, Orientation)> = Option::None;
             for (conveyor, conveyor_transform) in (&conveyors, &transforms).join() {
                 if conveyor.physics.intersects(
@@ -28,9 +28,9 @@ impl<'s> System<'s> for ConveyorMovementSystem {
             }
 
             if let Some((speed, orientation)) = new_physics {
-                resource.physics.velocity = (speed, orientation);
+                physic.velocity = (speed, orientation);
             } else {
-                resource.physics.velocity.0 = 0.;
+                physic.velocity.0 = 0.;
             }
         }
     }

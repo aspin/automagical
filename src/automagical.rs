@@ -66,7 +66,12 @@ impl SimpleState for Automagical {
             self.conveyor_sprite_handle.clone().unwrap(),
             self.resource_sprite_handle.clone().unwrap(),
         );
-        initialize_builder(world, self.character_sprite_handle.clone().unwrap());
+        CoreBuilder::create_entity(
+            world,
+            CAMERA_WIDTH * 0.5,
+            CAMERA_HEIGHT * 0.5,
+            self.character_sprite_handle.clone().unwrap()
+        );
     }
 }
 
@@ -91,6 +96,7 @@ fn initialize_world_map(
 ) {
     // TODO: remove this line once a system uses it
     world.register::<Tile>();
+    world.register::<Resource>();
 
     let tiles: Vec<Tile> = Tile::generate_tile_map(tile_count_x, tile_count_y);
     let mut entities: Vec<Entity> = Vec::with_capacity(tile_count_x * tile_count_y);
@@ -115,21 +121,12 @@ fn initialize_world_map(
             );
             if tile.y == 1 {
                 for i in 0..2 {
-                    let mut resource_transform = transform.clone();
-                    resource_transform.set_translation_z(0.2);
-                    resource_transform.set_translation_y(
-                        resource_transform.translation().y + (i as f32) * 4.
+                    Resource::create_entity(
+                        world,
+                        x,
+                        transform.translation().y + (i as f32) * 4.,
+                        resource_sprite_sheet.clone()
                     );
-                    let sprite_render = SpriteRender {
-                        sprite_sheet: resource_sprite_sheet.clone(),
-                        sprite_number: 0
-                    };
-                    world
-                        .create_entity()
-                        .with(Resource::new(4., 4.))
-                        .with(resource_transform)
-                        .with(sprite_render)
-                        .build();
                 }
             }
         }
@@ -144,23 +141,6 @@ fn initialize_world_map(
         entities.push(entity);
     }
     world.insert(WorldMap::new(entities, tile_count_x, tile_count_y));
-}
-
-fn initialize_builder(world: &mut World, sprite_sheet_handle: Handle<SpriteSheet>) {
-    let mut transform = Transform::default();
-    transform.set_translation_xyz(CAMERA_WIDTH * 0.5, CAMERA_HEIGHT * 0.5, 0.5);
-
-    let sprite_render = SpriteRender {
-        sprite_sheet: sprite_sheet_handle,
-        sprite_number: 0,
-    };
-
-    world
-        .create_entity()
-        .with(CoreBuilder::new())
-        .with(transform)
-        .with(sprite_render)
-        .build();
 }
 
 fn load_sprite_sheet(world: &mut World, texture_file: &str, sprite_file: &str) -> Handle<SpriteSheet> {

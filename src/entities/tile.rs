@@ -1,5 +1,4 @@
 use amethyst::ecs::prelude::{Component, DenseVecStorage};
-use crate::utils::color::{Color, BLACK};
 
 pub struct Tile {
     pub x: usize,
