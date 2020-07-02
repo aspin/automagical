@@ -4,4 +4,5 @@ mod builder;
 
 pub use self::builder::BuilderSystem;
 pub use self::conveyor_movement::ConveyorMovementSystem;
+pub use self::resource_physics::ResourcePhysicsSystem;
 

@@ -8,9 +8,24 @@ pub struct Physics {
 impl Physics {
     pub fn new(width: f32, height: f32) -> Physics {
         Physics {
-            velocity: (0.0, Orientation::Up),
+            velocity: (1.0, Orientation::Up),
             width, height
         }
+    }
+
+    pub fn generate_movement(&self, time_delta: f32) -> (f32, f32, f32) {
+        let (move_x, move_y) = self.velocity.1.positive_axes();
+        let x_factor = if move_x {
+            1.
+        } else {
+            0.
+        };
+        let y_factor = if move_y {
+            1.
+        } else {
+            0.
+        };
+        (x_factor * time_delta * self.velocity.0, y_factor * time_delta * self.velocity.0, 0.)
     }
 }
 
