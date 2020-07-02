@@ -20,7 +20,8 @@ const TILE_COUNT_Y: usize = 10;
 pub struct Automagical {
     character_sprite_handle: Option<Handle<SpriteSheet>>,
     map_sprite_handle: Option<Handle<SpriteSheet>>,
-    conveyor_sprite_handle: Option<Handle<SpriteSheet>>
+    conveyor_sprite_handle: Option<Handle<SpriteSheet>>,
+    resource_sprite_handle: Option<Handle<SpriteSheet>>,
 }
 
 impl SimpleState for Automagical {
@@ -46,6 +47,13 @@ impl SimpleState for Automagical {
                 world,
                 "texture/conveyor.png",
                 "texture/conveyor_spritesheet.ron"
+            )
+        );
+        self.resource_sprite_handle.replace(
+            load_sprite_sheet(
+                world,
+                "texture/wood.png",
+                "texture/resource_spritesheet.ron"
             )
         );
 
