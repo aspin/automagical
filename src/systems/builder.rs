@@ -30,27 +30,27 @@ impl<'s> System<'s> for BuilderSystem {
             transform.set_translation_y(new_y);
 
             // snap to grid after movement is completed
-            if delta_x == 0. && (builder_x - TILE_OFFSET) % TILE_SIDE_LENGTH != 0. {
-                transform.set_translation_x(
-                    round_to_nearest(
-                        builder_x,
-                        TILE_SIDE_LENGTH,
-                        TILE_OFFSET,
-                        core_builder.orientation.positive_axes().0
-                    )
-                );
-            }
+            // if delta_x == 0. && (builder_x - TILE_OFFSET) % TILE_SIDE_LENGTH != 0. {
+            //     transform.set_translation_x(
+            //         round_to_nearest(
+            //             builder_x,
+            //             TILE_SIDE_LENGTH,
+            //             TILE_OFFSET,
+            //             core_builder.orientation.positive_axes().0
+            //         )
+            //     );
+            // }
 
-            if delta_y == 0. && (builder_y - TILE_OFFSET) % TILE_SIDE_LENGTH != 0. {
-                transform.set_translation_y(
-                    round_to_nearest(
-                        builder_y,
-                        TILE_SIDE_LENGTH,
-                        TILE_OFFSET,
-                        core_builder.orientation.positive_axes().1
-                    )
-                );
-            }
+            // if delta_y == 0. && (builder_y - TILE_OFFSET) % TILE_SIDE_LENGTH != 0. {
+            //     transform.set_translation_y(
+            //         round_to_nearest(
+            //             builder_y,
+            //             TILE_SIDE_LENGTH,
+            //             TILE_OFFSET,
+            //             core_builder.orientation.positive_axes().1
+            //         )
+            //     );
+            // }
 
             // set orientation after all movement has been computed
             core_builder.orientation = Orientation::from_movement(delta_x, delta_y);
