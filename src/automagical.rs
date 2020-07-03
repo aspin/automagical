@@ -10,11 +10,11 @@ use crate::resources::WorldMap;
 use crate::entities::Tile;
 use crate::utils::constants::{TILE_SIDE_LENGTH, TILE_OFFSET};
 
-const CAMERA_WIDTH: f32 = 160.;
-const CAMERA_HEIGHT: f32 = 160.;
+const CAMERA_WIDTH: f32 = 320.;
+const CAMERA_HEIGHT: f32 = 320.;
 
-const TILE_COUNT_X: usize = 10;
-const TILE_COUNT_Y: usize = 10;
+const TILE_COUNT_X: usize = 20;
+const TILE_COUNT_Y: usize = 20;
 
 #[derive(Default)]
 pub struct Automagical {
@@ -101,42 +101,32 @@ fn initialize_world_map(
     let tiles: Vec<Tile> = Tile::generate_tile_map(tile_count_x, tile_count_y);
     let mut entities: Vec<Entity> = Vec::with_capacity(tile_count_x * tile_count_y);
     for tile in tiles {
-        let mut transform = Transform::default();
-        let x = tile.x as f32 * TILE_SIDE_LENGTH + TILE_OFFSET;
-        let y = tile.y as f32 * TILE_SIDE_LENGTH + TILE_OFFSET;
-        transform.set_translation_xyz(x, y, 0.0);
+        let x = tile.x;
+        let y = tile.y;
+        let x_location = tile.x as f32 * TILE_SIDE_LENGTH + TILE_OFFSET;
+        let y_location = tile.y as f32 * TILE_SIDE_LENGTH + TILE_OFFSET;
+        let entity = tile.create_entity(world, tile_sprite_sheet.clone());
 
-        let sprite_render = SpriteRender {
-            sprite_sheet: tile_sprite_sheet.clone(),
-            sprite_number: pick_map_sprite_index(tile.x, tile.y),
-        };
+        if x == 4 {
 
-        if tile.x == 4 {
             Conveyor::create_entity(
                 world,
-                tile.y as f32 * 5.,
-                x,
-                y,
+                y as f32 * 5.,
+                x_location,
+                y_location,
                 conveyor_sprite_sheet.clone()
             );
-            if tile.y == 1 {
+            if y == 1 {
                 for i in 0..2 {
                     Resource::create_entity(
                         world,
-                        x,
-                        transform.translation().y + (i as f32) * 4.,
+                        x_location,
+                        y_location + (i as f32) * 4.,
                         resource_sprite_sheet.clone()
                     );
                 }
             }
         }
-
-        let entity = world
-            .create_entity()
-            .with(tile)
-            .with(transform)
-            .with(sprite_render)
-            .build();
 
         entities.push(entity);
     }
@@ -165,13 +155,3 @@ fn load_sprite_sheet(world: &mut World, texture_file: &str, sprite_file: &str) -
     )
 }
 
-fn pick_map_sprite_index(x: usize, y: usize) -> usize {
-    let mut index = 0;
-    if x % 2 != 0 {
-        index += 1;
-    }
-    if y % 2 != 0 {
-        index += 2;
-    }
-    index
-}
