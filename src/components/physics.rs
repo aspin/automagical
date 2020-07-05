@@ -1,6 +1,16 @@
 use amethyst::core::Transform;
 use amethyst::ecs::prelude::{Component, DenseVecStorage};
 
+pub struct Coordinate {
+    pub x: f32,
+    pub y: f32,
+}
+
+pub struct Velocity {
+    speed: f32,
+    orientation: Orientation,
+}
+
 pub struct Physics {
     pub velocity: (f32, Orientation),
     pub width: f32,

@@ -4,19 +4,31 @@ use amethyst::ecs::prelude::{Component, DenseVecStorage, Entity};
 use amethyst::prelude::{World, WorldExt, Builder};
 use amethyst::renderer::{SpriteSheet, SpriteRender};
 use crate::utils::constants::{TILE_SIDE_LENGTH, TILE_OFFSET};
+use crate::entities::Conveyor;
+use crate::components::physics::Coordinate;
 
 pub struct Tile {
     pub x: usize,
     pub y: usize,
+    pub occupied: bool,
 }
 
 impl Tile {
     pub fn new(x: usize, y: usize) -> Tile {
         Tile {
-            x, y
+            x, y, occupied: false
         }
     }
 
+    /// Generates a tile map to be used in the world map.
+    /// For efficiency, vector is compacted in one dimensions.
+    ///
+    /// i = 0 => x = 0, y = 0
+    /// i = 1 => x = 1, y = 0
+    /// i = 2 => x = 2, y = 0
+    /// etc.
+    ///
+    /// TODO: move this to world_map.rs
     pub fn generate_tile_map(width: usize, height: usize) -> Vec<Tile> {
         let mut tiles: Vec<Tile> = Vec::with_capacity(width * height);
         for y in 0..height {
@@ -27,15 +39,21 @@ impl Tile {
         tiles
     }
 
+    fn center_location(&self) -> Coordinate {
+        Coordinate {
+            x: self.x as f32 * TILE_SIDE_LENGTH + TILE_OFFSET,
+            y: self.y as f32 * TILE_SIDE_LENGTH + TILE_OFFSET,
+        }
+    }
+
     pub fn create_entity(
         self,
         world: &mut World,
         tile_sprite_sheet: Handle<SpriteSheet>,
     ) -> Entity {
         let mut transform = Transform::default();
-        let x_location = self.x as f32 * TILE_SIDE_LENGTH + TILE_OFFSET;
-        let y_location = self.y as f32 * TILE_SIDE_LENGTH + TILE_OFFSET;
-        transform.set_translation_xyz(x_location, y_location, 0.0);
+        let Coordinate {x, y} = self.center_location();
+        transform.set_translation_xyz(x, y, 0.0 );
 
         let sprite_render = SpriteRender {
             sprite_sheet: tile_sprite_sheet.clone(),
@@ -48,6 +66,27 @@ impl Tile {
             .with(transform)
             .with(sprite_render)
             .build()
+    }
+
+    pub fn place_conveyor(
+        &mut self,
+        world: &mut World,
+        conveyor_sprite_sheet: Handle<SpriteSheet>,
+    ) -> Option<Entity> {
+        if self.occupied {
+            Option::None
+        } else {
+            let Coordinate {x, y} = self.center_location();
+            Some(
+                Conveyor::create_entity(
+                    world,
+                    self.y as f32 * 5.,
+                    x,
+                    y,
+                    conveyor_sprite_sheet.clone()
+                )
+            )
+        }
     }
 }
 

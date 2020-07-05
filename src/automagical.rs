@@ -1,7 +1,7 @@
 use amethyst::{
     assets::{AssetStorage, Handle, Loader},
     core::transform::Transform,
-    ecs::Entity,
+    ecs::{Entity, ReadStorage},
     prelude::*,
     renderer::{Camera, ImageFormat, SpriteRender, SpriteSheet, SpriteSheetFormat, Texture},
 };
@@ -101,36 +101,42 @@ fn initialize_world_map(
     let tiles: Vec<Tile> = Tile::generate_tile_map(tile_count_x, tile_count_y);
     let mut entities: Vec<Entity> = Vec::with_capacity(tile_count_x * tile_count_y);
     for tile in tiles {
-        let x = tile.x;
-        let y = tile.y;
-        let x_location = tile.x as f32 * TILE_SIDE_LENGTH + TILE_OFFSET;
-        let y_location = tile.y as f32 * TILE_SIDE_LENGTH + TILE_OFFSET;
+        // let x = tile.x;
+        // let y = tile.y;
+        // let x_location = tile.x as f32 * TILE_SIDE_LENGTH + TILE_OFFSET;
+        // let y_location = tile.y as f32 * TILE_SIDE_LENGTH + TILE_OFFSET;
+
         let entity = tile.create_entity(world, tile_sprite_sheet.clone());
 
-        if x == 4 {
-
-            Conveyor::create_entity(
-                world,
-                y as f32 * 5.,
-                x_location,
-                y_location,
-                conveyor_sprite_sheet.clone()
-            );
-            if y == 1 {
-                for i in 0..2 {
-                    Resource::create_entity(
-                        world,
-                        x_location,
-                        y_location + (i as f32) * 4.,
-                        resource_sprite_sheet.clone()
-                    );
-                }
-            }
-        }
+        // if x == 4 {
+        //     Conveyor::create_entity(
+        //         world,
+        //         y as f32 * 5.,
+        //         x_location,
+        //         y_location,
+        //         conveyor_sprite_sheet.clone()
+        //     );
+        //     if y == 1 {
+        //         for i in 0..2 {
+        //             Resource::create_entity(
+        //                 world,
+        //                 x_location,
+        //                 y_location + (i as f32) * 4.,
+        //                 resource_sprite_sheet.clone()
+        //             );
+        //         }
+        //     }
+        // }
 
         entities.push(entity);
     }
-    world.insert(WorldMap::new(entities, tile_count_x, tile_count_y));
+    world.insert(WorldMap::new(
+        entities,
+        tile_count_x,
+        tile_count_y,
+        CAMERA_WIDTH,
+        CAMERA_HEIGHT
+    ));
 }
 
 fn load_sprite_sheet(world: &mut World, texture_file: &str, sprite_file: &str) -> Handle<SpriteSheet> {

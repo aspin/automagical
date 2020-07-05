@@ -46,6 +46,11 @@ fn main() -> amethyst::Result<()> {
             systems::ResourcePhysicsSystem,
             "resource_physics",
             &["conveyor_movement"]
+        )
+        .with(
+            systems::BuildingSystem,
+            "building_system",
+            &["input_system"]
         );
 
     let assets_dir = app_root.join("assets");
