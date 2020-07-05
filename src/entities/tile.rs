@@ -1,6 +1,6 @@
 use amethyst::assets::Handle;
 use amethyst::core::transform::Transform;
-use amethyst::ecs::prelude::{Component, DenseVecStorage, Entity};
+use amethyst::ecs::prelude::{Component, DenseVecStorage, Entity, EntityBuilder};
 use amethyst::prelude::{World, WorldExt, Builder};
 use amethyst::renderer::{SpriteSheet, SpriteRender};
 use crate::utils::constants::{TILE_SIDE_LENGTH, TILE_OFFSET};
@@ -39,7 +39,7 @@ impl Tile {
         tiles
     }
 
-    fn center_location(&self) -> Coordinate {
+    pub fn center_location(&self) -> Coordinate {
         Coordinate {
             x: self.x as f32 * TILE_SIDE_LENGTH + TILE_OFFSET,
             y: self.y as f32 * TILE_SIDE_LENGTH + TILE_OFFSET,
@@ -66,27 +66,6 @@ impl Tile {
             .with(transform)
             .with(sprite_render)
             .build()
-    }
-
-    pub fn place_conveyor(
-        &mut self,
-        world: &mut World,
-        conveyor_sprite_sheet: Handle<SpriteSheet>,
-    ) -> Option<Entity> {
-        if self.occupied {
-            Option::None
-        } else {
-            let Coordinate {x, y} = self.center_location();
-            Some(
-                Conveyor::create_entity(
-                    world,
-                    self.y as f32 * 5.,
-                    x,
-                    y,
-                    conveyor_sprite_sheet.clone()
-                )
-            )
-        }
     }
 }
 

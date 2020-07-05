@@ -1,14 +1,19 @@
+use amethyst::assets::Handle;
 use amethyst::ecs::Entity;
+use amethyst::renderer::SpriteSheet;
 
 /// TODO: world map struct will not currently support infinitely expanding maps
 /// for now, the implementation will be of a fixed size
 
 pub struct WorldMap {
     tiles: Vec<Entity>,
-    width: usize,  // number of tiles
+    width: usize,
+    // number of tiles
     height: usize,
-    world_width: f32,  // number of pixels
+    world_width: f32,
+    // number of pixels
     world_height: f32,
+    pub conveyor_sprite_handle: Handle<SpriteSheet>,
 }
 
 impl WorldMap {
@@ -18,8 +23,16 @@ impl WorldMap {
         height: usize,
         world_width: f32,
         world_height: f32,
+        conveyor_sprite_handle: Handle<SpriteSheet>,
     ) -> WorldMap {
-        WorldMap { tiles, width, height, world_width, world_height }
+        WorldMap {
+            tiles,
+            width,
+            height,
+            world_width,
+            world_height,
+            conveyor_sprite_handle: conveyor_sprite_handle,
+        }
     }
 
     pub fn get_tile_entity(&self, x: usize, y: usize) -> Option<&Entity> {
@@ -67,12 +80,10 @@ mod test {
             side_length,
             side_length,
             side_length as f32 * side_dimension,
-            side_length as f32 * side_dimension
+            side_length as f32 * side_dimension,
         );
 
-        let matching_tile_entity = world_map.coordinate_to_tile(
-            78., 41.
-        ).unwrap();
+        let matching_tile_entity = world_map.coordinate_to_tile(78., 41.).unwrap();
 
         // entities are ordered opposite the tile map
         let expected_entity = entities.get(10 * 2 + 5).unwrap();
@@ -80,4 +91,3 @@ mod test {
         assert_eq!(matching_tile_entity, expected_entity);
     }
 }
-

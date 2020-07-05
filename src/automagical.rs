@@ -130,12 +130,14 @@ fn initialize_world_map(
 
         entities.push(entity);
     }
+
     world.insert(WorldMap::new(
         entities,
         tile_count_x,
         tile_count_y,
         CAMERA_WIDTH,
-        CAMERA_HEIGHT
+        CAMERA_HEIGHT,
+        conveyor_sprite_sheet
     ));
 }
 
