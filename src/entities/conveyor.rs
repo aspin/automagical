@@ -1,14 +1,10 @@
-use amethyst::assets::Handle;
-use amethyst::core::transform::Transform;
-use amethyst::ecs::prelude::{Component, DenseVecStorage, Entity};
-use amethyst::ecs::world::EntityResBuilder;
-use amethyst::prelude::{World, WorldExt, Builder};
-use amethyst::renderer::{SpriteSheet, SpriteRender};
+use amethyst::ecs::prelude::{Component, DenseVecStorage};
 use crate::components::physics::Physics;
 
+const NORMAL_CONVEYOR_SPEED: f32 = 8.;
 const CONVEYOR_WIDTH: f32 = 16.;
 const CONVEYOR_HEIGHT: f32 = 16.;
-const CONVEYOR_Z_INDEX: f32 = 0.1;
+pub const CONVEYOR_Z_INDEX: f32 = 0.1;
 
 pub struct Conveyor {
     pub speed: f32,
@@ -21,6 +17,10 @@ impl Conveyor {
             speed,
             physics: Physics::new(width, height)
         }
+    }
+
+    pub fn normal() -> Conveyor {
+        Self::new(NORMAL_CONVEYOR_SPEED, CONVEYOR_WIDTH, CONVEYOR_HEIGHT)
     }
 }
 

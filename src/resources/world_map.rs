@@ -1,6 +1,4 @@
-use amethyst::assets::Handle;
 use amethyst::ecs::Entity;
-use amethyst::renderer::SpriteSheet;
 
 /// TODO: world map struct will not currently support infinitely expanding maps
 /// for now, the implementation will be of a fixed size
@@ -13,7 +11,6 @@ pub struct WorldMap {
     world_width: f32,
     // number of pixels
     world_height: f32,
-    pub conveyor_sprite_handle: Handle<SpriteSheet>,
 }
 
 impl WorldMap {
@@ -23,7 +20,6 @@ impl WorldMap {
         height: usize,
         world_width: f32,
         world_height: f32,
-        conveyor_sprite_handle: Handle<SpriteSheet>,
     ) -> WorldMap {
         WorldMap {
             tiles,
@@ -31,7 +27,6 @@ impl WorldMap {
             height,
             world_width,
             world_height,
-            conveyor_sprite_handle: conveyor_sprite_handle,
         }
     }
 

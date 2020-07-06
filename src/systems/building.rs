@@ -3,15 +3,13 @@ use amethyst::derive::SystemDesc;
 use amethyst::ecs::{Join, Read, ReadExpect, ReadStorage, System, SystemData, WriteStorage, Entities, LazyUpdate};
 use amethyst::input::{InputHandler, StringBindings};
 use amethyst::core::math::geometry::Point3;
-use amethyst::renderer::{Camera, SpriteRender, Texture};
+use amethyst::renderer::{Camera, SpriteRender};
 use amethyst::window::ScreenDimensions;
-use crate::entities::{Tile, Conveyor};
+use crate::entities::Tile;
 use crate::resources::WorldMap;
 use crate::components::physics::Coordinate;
-
-const CONVEYOR_WIDTH: f32 = 16.;
-const CONVEYOR_HEIGHT: f32 = 16.;
-const CONVEYOR_Z_INDEX: f32 = 0.1;
+use crate::entities::conveyor::{CONVEYOR_Z_INDEX, Conveyor};
+use crate::resources::textures::Textures;
 
 #[derive(SystemDesc)]
 pub struct BuildingSystem;
@@ -28,6 +26,7 @@ impl<'s> System<'s> for BuildingSystem {
         ReadExpect<'s, ScreenDimensions>,
         WriteStorage<'s, Conveyor>,
         WriteStorage<'s, SpriteRender>,
+        ReadExpect<'s, Textures>,
     );
 
     fn run(
@@ -43,6 +42,7 @@ impl<'s> System<'s> for BuildingSystem {
             screen_dimensions,
             mut conveyors,
             mut sprites,
+            textures,
         ): Self::SystemData) {
         let clicked = input.action_is_down("place").unwrap();
         // TODO: if let Some(clicked) = input.action_is_down; clicked { ?
@@ -73,18 +73,12 @@ impl<'s> System<'s> for BuildingSystem {
                         transform.set_translation_xyz(x, y, CONVEYOR_Z_INDEX);
 
                         let sprite_render = SpriteRender {
-                            sprite_sheet: world_map.conveyor_sprite_handle.clone(),
+                            sprite_sheet: textures.conveyor_sprite_handle.clone(),
                             sprite_number: 0
                         };
-                        let speed = 5.;
 
                         entities.build_entity()
-                            .with(
-                                Conveyor::new(
-                                    speed, CONVEYOR_WIDTH, CONVEYOR_HEIGHT
-                                ),
-                                &mut conveyors
-                            )
+                            .with(Conveyor::normal(), &mut conveyors)
                             .with(transform, &mut transforms)
                             .with(sprite_render, &mut sprites)
                             .build();

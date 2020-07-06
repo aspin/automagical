@@ -1,10 +1,9 @@
 use amethyst::assets::Handle;
 use amethyst::core::transform::Transform;
-use amethyst::ecs::prelude::{Component, DenseVecStorage, Entity, EntityBuilder};
+use amethyst::ecs::prelude::{Component, DenseVecStorage, Entity};
 use amethyst::prelude::{World, WorldExt, Builder};
 use amethyst::renderer::{SpriteSheet, SpriteRender};
 use crate::utils::constants::{TILE_SIDE_LENGTH, TILE_OFFSET};
-use crate::entities::Conveyor;
 use crate::components::physics::Coordinate;
 
 pub struct Tile {

@@ -1,8 +1,8 @@
 use amethyst::core::Transform;
 use amethyst::derive::SystemDesc;
 use amethyst::ecs::{Join, ReadStorage, System, SystemData, WriteStorage};
-use crate::entities::Conveyor;
 use crate::components::physics::{Orientation, Physics};
+use crate::entities::conveyor::Conveyor;
 
 #[derive(SystemDesc)]
 pub struct ConveyorMovementSystem;

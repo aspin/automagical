@@ -3,7 +3,6 @@ use amethyst::derive::SystemDesc;
 use amethyst::ecs::{Join, Read, System, SystemData, WriteStorage};
 use amethyst::input::{InputHandler, StringBindings};
 use crate::entities::CoreBuilder;
-use crate::utils::constants::{TILE_OFFSET, TILE_SIDE_LENGTH};
 use crate::components::physics::Orientation;
 
 #[derive(SystemDesc)]
