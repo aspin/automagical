@@ -4,6 +4,7 @@
         "horizontal": Emulated(pos: Key(D), neg: Key(A)),
     },
     actions: {
-        "place": [[Mouse(Left)]]
+        "place": [[Mouse(Left)]],
+        "remove": [[Mouse(Right)]],
     },
 )

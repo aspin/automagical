@@ -9,13 +9,13 @@ use crate::components::physics::Coordinate;
 pub struct Tile {
     pub x: usize,
     pub y: usize,
-    pub occupied: bool,
+    pub placed_object: Option<Entity>,
 }
 
 impl Tile {
     pub fn new(x: usize, y: usize) -> Tile {
         Tile {
-            x, y, occupied: false
+            x, y, placed_object: Option::None
         }
     }
 
@@ -65,6 +65,10 @@ impl Tile {
             .with(transform)
             .with(sprite_render)
             .build()
+    }
+
+    pub fn occupied(&self) -> bool {
+        self.placed_object.is_some()
     }
 }
 

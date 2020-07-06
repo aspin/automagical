@@ -44,9 +44,9 @@ impl<'s> System<'s> for BuildingSystem {
             mut sprites,
             textures,
         ): Self::SystemData) {
-        let clicked = input.action_is_down("place").unwrap();
+        let left_clicked = input.action_is_down("place").unwrap();
         // TODO: if let Some(clicked) = input.action_is_down; clicked { ?
-        if clicked {
+        if left_clicked {
             if let Some((mouse_x, mouse_y)) = input.mouse_position() {
                 if let Some((camera, transform)) = (&cameras, &transforms).join().next() {
                     let mouse_point = Point3::new(mouse_x, mouse_y, 0.0);
@@ -63,11 +63,14 @@ impl<'s> System<'s> for BuildingSystem {
                         world_point.x, world_point.y
                     ).unwrap();
                     let tile = tiles.get_mut(*tile_entity).unwrap();
-                    if tile.occupied {
-
+                    if tile.occupied() {
+                        // TODO: this is fired as long as mouse is held down
+                        println!("removing tile!")
+                        // let placed_object = tile.placed_object.unwrap();
+                        // entities.delete(placed_object);
+                        // tile.placed_object.take();
                     } else {
-                        tile.occupied = true;
-
+                        println!("placing!");
                         let Coordinate {x, y} = tile.center_location();
                         let mut transform = Transform::default();
                         transform.set_translation_xyz(x, y, CONVEYOR_Z_INDEX);
@@ -77,11 +80,43 @@ impl<'s> System<'s> for BuildingSystem {
                             sprite_number: 0
                         };
 
-                        entities.build_entity()
+                        let placed_conveyor = entities
+                            .build_entity()
                             .with(Conveyor::normal(), &mut conveyors)
                             .with(transform, &mut transforms)
                             .with(sprite_render, &mut sprites)
                             .build();
+                        tile.placed_object.replace(placed_conveyor);
+                    }
+                }
+            }
+        }
+
+
+        let right_clicked = input.action_is_down("remove").unwrap();
+        if right_clicked {
+            if let Some((mouse_x, mouse_y)) = input.mouse_position() {
+                if let Some((camera, transform)) = (&cameras, &transforms).join().next() {
+                    let mouse_point = Point3::new(mouse_x, mouse_y, 0.0);
+                    let world_point = camera
+                        .projection()
+                        .screen_to_world_point(
+                            mouse_point,
+                            screen_dimensions.diagonal(),
+                            transform
+                        );
+
+                    // TODO: this should probably be safer?
+                    let tile_entity = world_map.coordinate_to_tile(
+                        world_point.x, world_point.y
+                    ).unwrap();
+                    let tile = tiles.get_mut(*tile_entity).unwrap();
+                    if tile.occupied() {
+                        println!("trying to remove!");
+                        let placed_object = tile.placed_object.unwrap();
+                        entities.delete(placed_object);
+                        tile.placed_object.take();
+                    } else {
                     }
                 }
             }
