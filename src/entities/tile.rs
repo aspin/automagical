@@ -66,10 +66,6 @@ impl Tile {
             .with(sprite_render)
             .build()
     }
-
-    pub fn occupied(&self) -> bool {
-        self.placed_object.is_some()
-    }
 }
 
 impl Component for Tile {
