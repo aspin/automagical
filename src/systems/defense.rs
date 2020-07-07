@@ -76,7 +76,7 @@ impl<'s> System<'s> for DefenseSystem {
                         transform,
                         sprite_render,
                         Physics {
-                            velocity: (5., Orientation::Top),
+                            velocity: (50., Orientation::Right),
                             width: 8.0,
                             height: 4.0
                         }

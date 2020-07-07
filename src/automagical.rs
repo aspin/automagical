@@ -7,8 +7,9 @@ use amethyst::{
     core::transform::Transform,
     ecs::Entity,
     prelude::*,
-    renderer::{Camera, SpriteSheet},
+    renderer::{Camera, SpriteSheet, SpriteRender},
 };
+use crate::entities::tower::Tower;
 
 const CAMERA_WIDTH: f32 = 320.;
 const CAMERA_HEIGHT: f32 = 320.;
@@ -36,6 +37,7 @@ impl SimpleState for Automagical {
             map_sprite_handle.clone(),
             TILE_COUNT_X,
             TILE_COUNT_Y,
+            tower_sprite_handle.clone()
         );
         CoreBuilder::create_entity(
             world,
@@ -70,6 +72,7 @@ fn initialize_world_map(
     tile_sprite_sheet: Handle<SpriteSheet>,
     tile_count_x: usize,
     tile_count_y: usize,
+    tower_sprite_sheet: Handle<SpriteSheet>
 ) {
     // TODO: remove this line once a system uses it
     world.register::<Resource>();
@@ -88,4 +91,18 @@ fn initialize_world_map(
         CAMERA_WIDTH,
         CAMERA_HEIGHT,
     ));
+
+    let mut transform = Transform::default();
+    transform.set_translation_xyz(16., 16., 0.2);
+
+    let sprite_render = SpriteRender {
+        sprite_sheet: tower_sprite_sheet,
+        sprite_number: 0,
+    };
+    world
+        .create_entity()
+        .with(Tower::arrow_tower())
+        .with(transform)
+        .with(sprite_render)
+        .build();
 }
