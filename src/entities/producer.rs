@@ -4,16 +4,21 @@ use amethyst::ecs::prelude::{Component, DenseVecStorage, Entity};
 use amethyst::prelude::{World, WorldExt, Builder};
 use amethyst::renderer::{SpriteSheet, SpriteRender};
 
-const PRODUCTION_RATE: u32 = 1;
+const PRODUCTION_RATE: f32 = 1.;
+const CAPACITY: f32 = 10.;
 
 pub struct Producer {
-    production_rate: u32,
+    pub production_rate: f32,
+    pub capacity: f32,
+    pub inventory: f32,
 }
 
 impl Producer {
     fn log_factory() -> Producer {
         Producer {
             production_rate: PRODUCTION_RATE,
+            capacity: CAPACITY,
+            inventory: 0.,
         }
     }
 
@@ -37,6 +42,10 @@ impl Producer {
             .with(transform)
             .with(sprite_render)
             .build()
+    }
+
+    pub fn update_inventory(&mut self, delta_seconds: f32) {
+        self.inventory += (delta_seconds * self.production_rate).min(self.capacity);
     }
 }
 

@@ -51,7 +51,11 @@ fn main() -> amethyst::Result<()> {
             systems::BuildingSystem,
             "building_system",
             &["input_system"]
+        )
+        .with(
+            systems::ProductionSystem, "production_system", &[]
         );
+
 
     let assets_dir = app_root.join("assets");
     let mut game = Application::new(assets_dir, Automagical::default(), game_data)?;

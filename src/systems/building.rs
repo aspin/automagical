@@ -43,7 +43,8 @@ impl<'s> System<'s> for BuildingSystem {
             mut conveyors,
             mut sprites,
             textures,
-        ): Self::SystemData) {
+        ): Self::SystemData
+    ) {
         let left_clicked = input.action_is_down("place").unwrap();
         let right_clicked = input.action_is_down("remove").unwrap();
 
