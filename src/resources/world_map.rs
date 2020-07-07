@@ -41,6 +41,12 @@ impl WorldMap {
         self.get_tile_entity(x, y)
     }
 
+    pub fn coordinate_to_x_y(&self, x_coordinate: f32, y_coordinate: f32) -> (usize, usize) {
+        let x = (x_coordinate / self.tile_width()) as usize;
+        let y = (y_coordinate / self.tile_height()) as usize;
+        (x, y)
+    }
+
     fn tile_width(&self) -> f32 {
         self.world_width / self.width as f32
     }

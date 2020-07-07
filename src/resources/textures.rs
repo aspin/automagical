@@ -9,6 +9,8 @@ pub struct Textures {
     pub map_sprite_handle: Handle<SpriteSheet>,
     pub conveyor_sprite_handle: Handle<SpriteSheet>,
     pub resource_sprite_handle: Handle<SpriteSheet>,
+    pub tower_sprite_handle: Handle<SpriteSheet>,
+    pub projectile_sprite_handle: Handle<SpriteSheet>,
 }
 
 impl Textures {
@@ -17,12 +19,16 @@ impl Textures {
         map_sprite_handle: Handle<SpriteSheet>,
         conveyor_sprite_handle: Handle<SpriteSheet>,
         resource_sprite_handle: Handle<SpriteSheet>,
+        tower_sprite_handle: Handle<SpriteSheet>,
+        projectile_sprite_handle: Handle<SpriteSheet>,
     ) -> Textures {
         Textures {
             character_sprite_handle,
             map_sprite_handle,
             conveyor_sprite_handle,
-            resource_sprite_handle
+            resource_sprite_handle,
+            tower_sprite_handle,
+            projectile_sprite_handle
         }
     }
 
@@ -88,5 +94,13 @@ pub fn load_tower_sprite_sheet(world: &mut World) -> Handle<SpriteSheet> {
         world,
         "texture/arrow_tower.png",
         "texture/arrow_tower.ron"
+    )
+}
+
+pub fn load_projectile_sprite_sheet(world: &mut World) -> Handle<SpriteSheet> {
+    load_sprite_sheet(
+        world,
+        "texture/arrow.png",
+        "texture/arrow.ron"
     )
 }
