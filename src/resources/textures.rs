@@ -82,3 +82,11 @@ pub fn load_resource_sprite_sheet(world: &mut World) -> Handle<SpriteSheet> {
         "texture/resource_spritesheet.ron"
     )
 }
+
+pub fn load_tower_sprite_sheet(world: &mut World) -> Handle<SpriteSheet> {
+    load_sprite_sheet(
+        world,
+        "texture/arrow_tower.png",
+        "texture/arrow_tower.ron"
+    )
+}

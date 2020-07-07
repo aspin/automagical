@@ -1,3 +1,4 @@
+pub mod tower;
 mod resource;
 pub mod conveyor;
 mod tile;
