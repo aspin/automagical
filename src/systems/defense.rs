@@ -53,7 +53,8 @@ impl<'s> System<'s> for DefenseSystem {
                 } else {
                     tower.time_since_last_shot.take();
                 }
-            } else {
+            } else if tower.inventory > 0. {
+                tower.inventory -= 1.;
                 tower.time_since_last_shot.replace(tower.fire_rate);
 
                 let tower_center = transform.translation();
@@ -76,7 +77,7 @@ impl<'s> System<'s> for DefenseSystem {
                         transform,
                         sprite_render,
                         Physics {
-                            velocity: (50., Orientation::Right),
+                            velocity: (100., Orientation::Right),
                             width: 8.0,
                             height: 4.0
                         }

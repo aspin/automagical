@@ -13,7 +13,7 @@ impl Tower {
         Tower {
             fire_rate: 0.5,
             capacity: 100.,
-            inventory: 100.,
+            inventory: 10.,
             time_since_last_shot: Option::None,
         }
     }

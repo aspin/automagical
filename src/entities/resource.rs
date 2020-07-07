@@ -11,6 +11,10 @@ pub struct Resource {
 }
 
 impl Resource {
+    pub fn new() -> Resource {
+        Resource {}
+    }
+
     pub fn create_entity(
         world: &mut World,
         x: f32,
