@@ -11,7 +11,6 @@ pub struct Velocity {
     orientation: Orientation,
 }
 
-#[derive(Debug)]
 pub struct Physics {
     pub velocity: (f32, Orientation),
     pub width: f32,

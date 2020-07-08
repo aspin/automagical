@@ -10,6 +10,7 @@ use amethyst::{
     renderer::{Camera, SpriteSheet, SpriteRender},
 };
 use crate::entities::tower::Tower;
+use crate::utils::constants::BUILDING_Z_INDEX;
 
 const CAMERA_WIDTH: f32 = 320.;
 const CAMERA_HEIGHT: f32 = 320.;
@@ -93,7 +94,7 @@ fn initialize_world_map(
     ));
 
     let mut transform = Transform::default();
-    transform.set_translation_xyz(16., 16., 0.2);
+    transform.set_translation_xyz(8., 8., BUILDING_Z_INDEX);
 
     let sprite_render = SpriteRender {
         sprite_sheet: tower_sprite_sheet,

@@ -5,7 +5,6 @@ pub struct Tower {
     pub capacity: f32,
     pub inventory: f32,
     pub time_since_last_shot: Option<f32>,
-    // ammo type
 }
 
 impl Tower {
@@ -16,6 +15,22 @@ impl Tower {
             inventory: 10.,
             time_since_last_shot: Option::None,
         }
+    }
+
+    pub fn pass_time_between_shots(&mut self, time_delta: f32) {
+        if let Some(time_since_last_shot) = self.time_since_last_shot {
+            let updated_time = time_since_last_shot - time_delta;
+            if updated_time > 0. {
+                self.time_since_last_shot.replace(updated_time);
+            } else {
+                self.time_since_last_shot.take();
+            }
+        }
+    }
+
+    pub fn on_fire(&mut self) {
+        self.inventory -= 1.;
+        self.time_since_last_shot.replace(self.fire_rate);
     }
 }
 

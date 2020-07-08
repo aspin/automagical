@@ -17,7 +17,11 @@ impl<'s> System<'s> for ConveyorMovementSystem {
     );
 
     fn run(&mut self, (transforms, conveyors, mut physics, resources): Self::SystemData) {
-        for (physic, resource_transform, _resource) in (&mut physics, &transforms, &resources).join() {
+        for (
+            physic,
+            resource_transform,
+            _resource
+        ) in (&mut physics, &transforms, &resources).join() {
             let mut new_physics: Option<(f32, Orientation)> = Option::None;
             for (conveyor, conveyor_transform) in (&conveyors, &transforms).join() {
                 if conveyor.physics.intersects(

@@ -1,4 +1,10 @@
-use amethyst::ecs::Entity;
+use amethyst::core::Transform;
+use amethyst::ecs::{Entity, Storage};
+use amethyst::ecs::storage::MaskedStorage;
+
+use crate::entities::Tile;
+use crate::components::physics::Coordinate;
+use shred::Fetch;
 
 /// TODO: world map struct will not currently support infinitely expanding maps
 /// for now, the implementation will be of a fixed size
@@ -36,8 +42,7 @@ impl WorldMap {
     }
 
     pub fn coordinate_to_tile(&self, x_coordinate: f32, y_coordinate: f32) -> Option<&Entity> {
-        let x = (x_coordinate / self.tile_width()) as usize;
-        let y = (y_coordinate / self.tile_height()) as usize;
+        let (x, y) = self.coordinate_to_x_y(x_coordinate, y_coordinate);
         self.get_tile_entity(x, y)
     }
 
@@ -45,6 +50,26 @@ impl WorldMap {
         let x = (x_coordinate / self.tile_width()) as usize;
         let y = (y_coordinate / self.tile_height()) as usize;
         (x, y)
+    }
+
+    pub fn coordinate_to_tile_transform(
+        &self,
+        object_transform: &Transform,
+        tiles_storage: &Storage<Tile, Fetch<MaskedStorage<Tile>>>,
+        z_index: f32,
+    ) -> Option<Transform> {
+        let translation = object_transform.translation();
+        let (x, y) = self.coordinate_to_x_y(translation.x, translation.y);
+
+        if let Some(generation_tile) = self.get_tile_entity(x, y) {
+            let Coordinate {x, y} = tiles_storage.get(*generation_tile).unwrap().center_location();
+
+            let mut transform = Transform::default();
+            transform.set_translation_xyz(x, y, z_index);
+            Option::Some(transform)
+        } else {
+            Option::None
+        }
     }
 
     fn tile_width(&self) -> f32 {
