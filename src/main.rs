@@ -56,6 +56,11 @@ fn main() -> amethyst::Result<()> {
             systems::DefenseSystem,
             "defense_system",
             &[]
+        )
+        .with(
+            systems::ProjectileSystem,
+            "projectile_system",
+            &[]
         );
 
     let assets_dir = app_root.join("assets");

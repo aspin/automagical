@@ -1,16 +1,18 @@
 use amethyst::ecs::prelude::{Component, DenseVecStorage};
 use crate::components::physics::{Physics, Orientation};
 
-const ARROW_LIFESPAN: f32 = 3.;
+const ARROW_LIFESPAN: f32 = 1.;
 
 pub struct Projectile {
+    pub ttl: f32,
     pub lifespan: f32
 }
 
 impl Projectile {
     pub fn arrow() -> Projectile {
         Projectile {
-            lifespan: ARROW_LIFESPAN
+            lifespan: ARROW_LIFESPAN,
+            ttl: ARROW_LIFESPAN
         }
     }
 
