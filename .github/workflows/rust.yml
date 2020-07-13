@@ -16,6 +16,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Dependencies
+      run: sudo apt-get install -y libasound2-dev
     - name: Build
       run: cargo build --no-default-features --features empty --verbose
     - name: Run tests
