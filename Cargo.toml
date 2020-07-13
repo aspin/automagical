@@ -9,7 +9,7 @@ amethyst = "0.15.0"
 shred = "0.10.2"
 
 [features]
-default = ["metal"]
+default = []
 empty = ["amethyst/empty"]
 metal = ["amethyst/metal"]
 vulkan = ["amethyst/vulkan"]
