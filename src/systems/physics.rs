@@ -5,9 +5,9 @@ use amethyst::ecs::{Join, Read, ReadStorage, System, SystemData, WriteStorage};
 use crate::components::physics::Physics;
 
 #[derive(SystemDesc)]
-pub struct ResourcePhysicsSystem;
+pub struct PhysicsSystem;
 
-impl<'s> System<'s> for ResourcePhysicsSystem {
+impl<'s> System<'s> for PhysicsSystem {
     type SystemData = (
         WriteStorage<'s, Transform>,
         ReadStorage<'s, Physics>,

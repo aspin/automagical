@@ -4,8 +4,8 @@ use amethyst::ecs::prelude::{Component, DenseVecStorage, Entity};
 use amethyst::prelude::{World, WorldExt, Builder};
 use amethyst::renderer::{SpriteSheet, SpriteRender};
 use crate::components::physics::Physics;
+use crate::utils::constants::RESOURCE_Z_INDEX;
 
-const RESOURCE_Z_INDEX: f32 = 0.2;
 
 pub struct Resource {
 }
