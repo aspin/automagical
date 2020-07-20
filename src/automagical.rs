@@ -49,7 +49,7 @@ impl SimpleState for Automagical {
         );
         Producer::create_log_factory(
             world,
-            16.,
+            64.,
             16.,
             producer_sprite_handle.clone()
         );
