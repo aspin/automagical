@@ -1,14 +1,16 @@
 use crate::entities::{Tile, Producer};
 use crate::entities::{CoreBuilder, Resource};
-use crate::resources::textures::{load_character_sprite_sheet, load_conveyor_sprite_sheet, load_map_sprite_sheet, load_resource_sprite_sheet, Textures, load_producer_sprite_sheet};
+use crate::resources::textures::{load_character_sprite_sheet, load_conveyor_sprite_sheet, load_map_sprite_sheet, load_resource_sprite_sheet, Textures, load_producer_sprite_sheet, load_tower_sprite_sheet, load_projectile_sprite_sheet};
 use crate::resources::WorldMap;
 use amethyst::{
     assets::Handle,
     core::transform::Transform,
     ecs::Entity,
     prelude::*,
-    renderer::{Camera, SpriteSheet},
+    renderer::{Camera, SpriteSheet, SpriteRender},
 };
+use crate::entities::tower::Tower;
+use crate::utils::constants::BUILDING_Z_INDEX;
 
 const CAMERA_WIDTH: f32 = 320.;
 const CAMERA_HEIGHT: f32 = 320.;
@@ -28,6 +30,8 @@ impl SimpleState for Automagical {
         let conveyor_sprite_handle = load_conveyor_sprite_sheet(world);
         let resource_sprite_handle = load_resource_sprite_sheet(world);
         let producer_sprite_handle = load_producer_sprite_sheet(world);
+        let tower_sprite_handle = load_tower_sprite_sheet(world);
+        let projectile_sprite_handle = load_projectile_sprite_sheet(world);
 
         initialize_camera(world);
         initialize_world_map(
@@ -35,6 +39,7 @@ impl SimpleState for Automagical {
             map_sprite_handle.clone(),
             TILE_COUNT_X,
             TILE_COUNT_Y,
+            tower_sprite_handle.clone()
         );
         CoreBuilder::create_entity(
             world,
@@ -54,6 +59,8 @@ impl SimpleState for Automagical {
             conveyor_sprite_handle,
             resource_sprite_handle,
             producer_sprite_handle,
+            tower_sprite_handle,
+            projectile_sprite_handle,
         ));
     }
 }
@@ -74,6 +81,7 @@ fn initialize_world_map(
     tile_sprite_sheet: Handle<SpriteSheet>,
     tile_count_x: usize,
     tile_count_y: usize,
+    tower_sprite_sheet: Handle<SpriteSheet>
 ) {
     // TODO: remove this line once a system uses it
     world.register::<Resource>();
@@ -93,4 +101,18 @@ fn initialize_world_map(
         CAMERA_WIDTH,
         CAMERA_HEIGHT,
     ));
+
+    let mut transform = Transform::default();
+    transform.set_translation_xyz(8., 8., BUILDING_Z_INDEX);
+
+    let sprite_render = SpriteRender {
+        sprite_sheet: tower_sprite_sheet,
+        sprite_number: 0,
+    };
+    world
+        .create_entity()
+        .with(Tower::arrow_tower())
+        .with(transform)
+        .with(sprite_render)
+        .build();
 }

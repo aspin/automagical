@@ -43,7 +43,7 @@ fn main() -> amethyst::Result<()> {
         .with(systems::BuilderSystem, "builder_system", &["input_system"])
         .with(systems::ConveyorMovementSystem, "conveyor_movement", &[])
         .with(
-            systems::ResourcePhysicsSystem,
+            systems::PhysicsSystem,
             "resource_physics",
             &["conveyor_movement"]
         )
@@ -54,6 +54,16 @@ fn main() -> amethyst::Result<()> {
         )
         .with(
             systems::ProductionSystem, "production_system", &[]
+        )
+        .with(
+            systems::DefenseSystem,
+            "defense_system",
+            &[]
+        )
+        .with(
+            systems::ProjectileSystem,
+            "projectile_system",
+            &[]
         );
 
 

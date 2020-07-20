@@ -4,9 +4,9 @@ use amethyst::ecs::prelude::{Component, DenseVecStorage, Entity};
 use amethyst::prelude::{World, WorldExt, Builder};
 use amethyst::renderer::{SpriteSheet, SpriteRender};
 use crate::components::physics::{Orientation, Physics};
+use crate::utils::constants::BUILDER_Z_INDEX;
 
 const DEFAULT_BUILDER_SPEED: f32 = 2.;
-const BUILDER_Z_INDEX: f32 = 0.5;
 
 #[derive(Debug)]
 pub struct CoreBuilder {

@@ -8,8 +8,9 @@ use amethyst::window::ScreenDimensions;
 use crate::entities::Tile;
 use crate::resources::WorldMap;
 use crate::components::physics::Coordinate;
-use crate::entities::conveyor::{CONVEYOR_Z_INDEX, Conveyor};
+use crate::entities::conveyor::Conveyor;
 use crate::resources::textures::Textures;
+use crate::utils::constants::CONVEYOR_Z_INDEX;
 
 #[derive(SystemDesc)]
 pub struct BuildingSystem;

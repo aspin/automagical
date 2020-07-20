@@ -4,7 +4,6 @@ use crate::components::physics::Physics;
 const NORMAL_CONVEYOR_SPEED: f32 = 8.;
 const CONVEYOR_WIDTH: f32 = 16.;
 const CONVEYOR_HEIGHT: f32 = 16.;
-pub const CONVEYOR_Z_INDEX: f32 = 0.1;
 
 pub struct Conveyor {
     pub speed: f32,
