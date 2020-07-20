@@ -34,7 +34,7 @@ impl<'s> System<'s> for BuildingSystem {
         &mut self,
         (
             entities,
-            updater,
+            _updater,
             mut tiles,
             input,
             world_map,

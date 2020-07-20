@@ -1,5 +1,5 @@
 use crate::entities::{Tile, Producer};
-use crate::entities::{CoreBuilder, Resource};
+use crate::entities::CoreBuilder;
 use crate::resources::textures::{load_character_sprite_sheet, load_conveyor_sprite_sheet, load_map_sprite_sheet, load_resource_sprite_sheet, Textures, load_producer_sprite_sheet, load_tower_sprite_sheet, load_projectile_sprite_sheet};
 use crate::resources::WorldMap;
 use amethyst::{
@@ -83,10 +83,6 @@ fn initialize_world_map(
     tile_count_y: usize,
     tower_sprite_sheet: Handle<SpriteSheet>
 ) {
-    // TODO: remove this line once a system uses it
-    world.register::<Resource>();
-    world.register::<Producer>();
-
     let tiles: Vec<Tile> = Tile::generate_tile_map(tile_count_x, tile_count_y);
     let mut entities: Vec<Entity> = Vec::with_capacity(tile_count_x * tile_count_y);
     for tile in tiles {

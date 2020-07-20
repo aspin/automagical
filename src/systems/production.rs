@@ -9,6 +9,7 @@ use crate::resources::WorldMap;
 use crate::resources::textures::Textures;
 use crate::components::physics::{Coordinate, Physics};
 
+#[derive(SystemDesc)]
 pub struct ProductionSystem;
 
 impl<'s> System<'s> for ProductionSystem {
