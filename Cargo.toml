@@ -5,14 +5,10 @@ authors = ["aspin"]
 edition = "2018"
 
 [dependencies]
-amethyst = "0.15.0"
-shred = "0.10.2"
+bevy = "0.1.2"
 
 [features]
 default = []
-empty = ["amethyst/empty"]
-metal = ["amethyst/metal"]
-vulkan = ["amethyst/vulkan"]
 
 [profile.dev]
 debug = 0
