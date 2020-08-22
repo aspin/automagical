@@ -34,7 +34,7 @@ impl<'s> System<'s> for BuildingSystem {
         &mut self,
         (
             entities,
-            updater,
+            _updater,
             mut tiles,
             input,
             world_map,
@@ -44,7 +44,8 @@ impl<'s> System<'s> for BuildingSystem {
             mut conveyors,
             mut sprites,
             textures,
-        ): Self::SystemData) {
+        ): Self::SystemData
+    ) {
         let left_clicked = input.action_is_down("place").unwrap();
         let right_clicked = input.action_is_down("remove").unwrap();
 

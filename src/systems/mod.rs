@@ -1,3 +1,4 @@
+mod production;
 mod projectile;
 mod defense;
 mod building;
@@ -10,4 +11,5 @@ pub use self::builder::BuilderSystem;
 pub use self::conveyor_movement::ConveyorMovementSystem;
 pub use self::physics::PhysicsSystem;
 pub use self::building::BuildingSystem;
+pub use self::production::ProductionSystem;
 pub use self::projectile::ProjectileSystem;

@@ -1,6 +1,6 @@
-use crate::entities::Tile;
-use crate::entities::{CoreBuilder, Resource};
-use crate::resources::textures::{load_character_sprite_sheet, load_conveyor_sprite_sheet, load_map_sprite_sheet, load_resource_sprite_sheet, Textures, load_tower_sprite_sheet, load_projectile_sprite_sheet};
+use crate::entities::{Tile, Producer};
+use crate::entities::CoreBuilder;
+use crate::resources::textures::{load_character_sprite_sheet, load_conveyor_sprite_sheet, load_map_sprite_sheet, load_resource_sprite_sheet, Textures, load_producer_sprite_sheet, load_tower_sprite_sheet, load_projectile_sprite_sheet};
 use crate::resources::WorldMap;
 use amethyst::{
     assets::Handle,
@@ -29,6 +29,7 @@ impl SimpleState for Automagical {
         let character_sprite_handle = load_character_sprite_sheet(world);
         let conveyor_sprite_handle = load_conveyor_sprite_sheet(world);
         let resource_sprite_handle = load_resource_sprite_sheet(world);
+        let producer_sprite_handle = load_producer_sprite_sheet(world);
         let tower_sprite_handle = load_tower_sprite_sheet(world);
         let projectile_sprite_handle = load_projectile_sprite_sheet(world);
 
@@ -46,13 +47,20 @@ impl SimpleState for Automagical {
             CAMERA_HEIGHT * 0.5,
             character_sprite_handle.clone(),
         );
+        Producer::create_log_factory(
+            world,
+            64.,
+            16.,
+            producer_sprite_handle.clone()
+        );
         world.insert(Textures::new(
             character_sprite_handle,
             map_sprite_handle,
             conveyor_sprite_handle,
             resource_sprite_handle,
+            producer_sprite_handle,
             tower_sprite_handle,
-            projectile_sprite_handle
+            projectile_sprite_handle,
         ));
     }
 }
@@ -75,9 +83,6 @@ fn initialize_world_map(
     tile_count_y: usize,
     tower_sprite_sheet: Handle<SpriteSheet>
 ) {
-    // TODO: remove this line once a system uses it
-    world.register::<Resource>();
-
     let tiles: Vec<Tile> = Tile::generate_tile_map(tile_count_x, tile_count_y);
     let mut entities: Vec<Entity> = Vec::with_capacity(tile_count_x * tile_count_y);
     for tile in tiles {

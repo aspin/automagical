@@ -7,7 +7,7 @@ use amethyst::renderer::SpriteRender;
 use crate::entities::tower::Tower;
 use crate::entities::{Projectile, Tile};
 use crate::resources::WorldMap;
-use crate::components::physics::{Coordinate, Physics, Orientation};
+use crate::components::physics::Physics;
 use crate::resources::textures::Textures;
 use crate::utils::constants::PROJECTILE_Z_INDEX;
 

@@ -9,6 +9,7 @@ pub struct Textures {
     pub map_sprite_handle: Handle<SpriteSheet>,
     pub conveyor_sprite_handle: Handle<SpriteSheet>,
     pub resource_sprite_handle: Handle<SpriteSheet>,
+    pub producer_sprite_handle: Handle<SpriteSheet>,
     pub tower_sprite_handle: Handle<SpriteSheet>,
     pub projectile_sprite_handle: Handle<SpriteSheet>,
 }
@@ -19,6 +20,7 @@ impl Textures {
         map_sprite_handle: Handle<SpriteSheet>,
         conveyor_sprite_handle: Handle<SpriteSheet>,
         resource_sprite_handle: Handle<SpriteSheet>,
+        producer_sprite_handle: Handle<SpriteSheet>,
         tower_sprite_handle: Handle<SpriteSheet>,
         projectile_sprite_handle: Handle<SpriteSheet>,
     ) -> Textures {
@@ -27,12 +29,11 @@ impl Textures {
             map_sprite_handle,
             conveyor_sprite_handle,
             resource_sprite_handle,
+            producer_sprite_handle,
             tower_sprite_handle,
-            projectile_sprite_handle
+            projectile_sprite_handle,
         }
     }
-
-
 }
 
 fn load_sprite_sheet(world: &mut World, texture_file: &str, sprite_file: &str) -> Handle<SpriteSheet> {
@@ -86,6 +87,14 @@ pub fn load_resource_sprite_sheet(world: &mut World) -> Handle<SpriteSheet> {
         world,
         "texture/wood.png",
         "texture/resource_spritesheet.ron"
+    )
+}
+
+pub fn load_producer_sprite_sheet(world: & mut World) -> Handle < SpriteSheet > {
+    load_sprite_sheet(
+        world,
+        "texture/producer.png",
+        "texture/producer.ron"
     )
 }
 
