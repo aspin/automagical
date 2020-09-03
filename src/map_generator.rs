@@ -19,15 +19,17 @@ pub struct World {
 
 fn generate_world(
     mut commands: Commands,
-    atlas_handle: Res<AtlasHandles>,
+    atlas_handles: Res<AtlasHandles>,
     mut world: ResMut<World>
 ) {
     if world.generated {
         return;
     }
 
-    if let Some(biome_atlas_id) = atlas_handle.grassland_biome_id {
-        let biome_atlas_handle = Handle::from_id(biome_atlas_id);
+
+
+    if atlas_handles.loaded() {
+        let biome_atlas_handle = Handle::from_id(atlas_handles.grassland_biome_id.unwrap());
 
         for x in 0..10 {
             for y in 0..10 {
@@ -39,7 +41,19 @@ fn generate_world(
                 });
             }
         }
+
+        let builder_atlas_handle = Handle::from_id(atlas_handles.builder_id.unwrap());
+        commands
+            .spawn(
+                SpriteSheetComponents {
+                    texture_atlas: builder_atlas_handle,
+                    sprite: TextureAtlasSprite::new(7),
+                    translation: Translation::new(0., 0., 1.),
+                    ..Default::default()
+                }
+            )
+            .with(Timer::from_seconds(0.5, false));
+
         world.generated = true;
     }
-
 }
