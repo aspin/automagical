@@ -47,14 +47,9 @@ fn loader(
                 far: 10000.,
                 ..Default::default()
             },
-            scale: Scale(0.1),
+            scale: Scale(0.3),
             ..Default::default()
         });
-        // .spawn(SpriteComponents {
-        //     material: materials.add(builder_handle.into()),
-        //     translation: Translation::new(0.0, 0.0, 1.0),
-        //     ..Default::default()
-        // });
 }
 
 fn post_load(
