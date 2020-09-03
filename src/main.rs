@@ -1,14 +1,13 @@
+mod asset_loader;
+mod map_generator;
+
 use bevy::prelude::*;
 
 fn main() {
-    App::build::run();
+    App::build()
+        .add_default_plugins()
+        .add_plugin(asset_loader::AssetLoaderPlugin)
+        .add_plugin(map_generator::MapGeneratorPlugin)
+        .run();
 }
 
-struct Person;
-
-struct Name(String);
-
-// fn add_people(mut commands: Commands) {
-//     commands
-//         .spawn()
-// }
