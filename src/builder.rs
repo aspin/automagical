@@ -12,7 +12,7 @@ pub fn animate(
             let (mut offset, mut duration, length, loop_around) = match builder.state {
                 BuilderState::Idle => (7, vec![0.5, 0.1, 0.06, 0.1, 0.1, 0.1], 6, true),
                 BuilderState::Attack => (0, vec![0.5, 0.1, 0.3, 0.1, 0.1, 0.1, 0.1], 7, false),
-                BuilderState::Move => (14, vec![0.5, 0.1, 0.1], 4, false),
+                BuilderState::Move => (14, vec![0.5, 0.1, 0.1, 0.1], 4, false),
             };
 
             let next_index = builder.animation_index + 1;

@@ -23,6 +23,7 @@ pub struct Builder {
     pub animation_index: u32,
 }
 
+#[derive(PartialEq)]
 pub enum BuilderState {
     Idle,
     Move,
