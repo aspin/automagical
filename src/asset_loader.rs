@@ -24,12 +24,21 @@ pub struct SpriteHandles {
 #[derive(Default)]
 pub struct AtlasHandles {
     pub grassland_biome_id: Option<HandleId>,
+    pub desert_biome_id: Option<HandleId>,
+    pub rocklands_biome_id: Option<HandleId>,
     pub builder_id: Option<HandleId>,
 }
 
 impl AtlasHandles {
     pub fn loaded(&self) -> bool {
-        self.grassland_biome_id.is_some() && self.builder_id.is_some()
+        self.biomes_loaded()
+            && self.builder_id.is_some()
+    }
+
+    pub fn biomes_loaded(&self) -> bool {
+        self.grassland_biome_id.is_some()
+            && self.rocklands_biome_id.is_some()
+            && self.desert_biome_id.is_some()
     }
 }
 
@@ -63,8 +72,10 @@ fn post_load(
         return;
     }
 
-    let grassland_loaded = atlas_handles.grassland_biome_id.is_some();
-    if !grassland_loaded {
+    println!("Loading assets...");
+
+    let biomes_loaded = atlas_handles.biomes_loaded();
+    if !biomes_loaded {
         if let Some(LoadState::Loaded(_)) = asset_server.get_group_load_state(
             &sprite_handles.biome_handles
         ) {
@@ -76,9 +87,31 @@ fn post_load(
                 grass_handle, grass_texture.size, 4, 1
             );
 
-            let texture_atlas_handle = texture_atlases.add(grassland_atlas);
+            let grassland_atlas_handle = texture_atlases.add(grassland_atlas);
 
-            atlas_handles.grassland_biome_id.replace(texture_atlas_handle.id);
+            atlas_handles.grassland_biome_id.replace(grassland_atlas_handle.id);
+
+            let desert_handle = asset_server
+                .get_handle("assets/texture/biome/desert.png")
+                .unwrap();
+            let desert_texture = textures.get(&desert_handle).unwrap();
+            let desert_atlas = TextureAtlas::from_grid(
+                desert_handle, desert_texture.size, 4, 1
+            );
+
+            let desert_atlas_handle = texture_atlases.add(desert_atlas);
+            atlas_handles.desert_biome_id.replace(desert_atlas_handle.id);
+
+            let rockland_handle = asset_server
+                .get_handle("assets/texture/biome/rocklands.png")
+                .unwrap();
+            let rockland_texture = textures.get(&rockland_handle).unwrap();
+            let rockland_atlas = TextureAtlas::from_grid(
+                rockland_handle, rockland_texture.size, 4, 1
+            );
+
+            let rockland_atlas_handle = texture_atlases.add(rockland_atlas);
+            atlas_handles.rocklands_biome_id.replace(rockland_atlas_handle.id);
         }
     }
 
@@ -95,7 +128,7 @@ fn post_load(
         }
     }
 
-    if builder_loaded && grassland_loaded {
+    if atlas_handles.loaded() {
         sprite_handles.loaded = true;
     }
 }

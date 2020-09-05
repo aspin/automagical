@@ -50,18 +50,31 @@ fn generate_world(
     }
 
     if atlas_handles.loaded() {
-        let biome_atlas_handle = Handle::from_id(atlas_handles.grassland_biome_id.unwrap());
+        let grassland_atlas_handle = Handle::from_id(atlas_handles.grassland_biome_id.unwrap());
+        let desert_atlas_handle = Handle::from_id(atlas_handles.desert_biome_id.unwrap());
 
         for x in -10..10 {
             for y in -10..10 {
                 commands.spawn(SpriteSheetComponents {
-                    texture_atlas: biome_atlas_handle,
+                    texture_atlas: grassland_atlas_handle,
                     sprite: TextureAtlasSprite::new(rand::random::<u32>() % 4),
                     translation: Translation::new((x * 16) as f32, (y * 16) as f32, 0.0),
                     ..Default::default()
                 });
             }
         }
+
+        for x in -5..-2 {
+            for y in -9..1 {
+                commands.spawn(SpriteSheetComponents {
+                    texture_atlas: desert_atlas_handle,
+                    sprite: TextureAtlasSprite::new(rand::random::<u32>() % 4),
+                    translation: Translation::new((x * 16) as f32, (y * 16) as f32, 0.1),
+                    ..Default::default()
+                });
+            }
+        }
+
 
         let builder_atlas_handle = Handle::from_id(atlas_handles.builder_id.unwrap());
         commands
