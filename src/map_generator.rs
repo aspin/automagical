@@ -1,6 +1,13 @@
 use bevy::prelude::*;
 
 use crate::asset_loader::AtlasHandles;
+use crate::builder::Builder;
+use crate::world_map::{WorldMap, tile_to_position};
+use bevy::render::camera::Camera;
+
+pub const WORLD_MAP_RENDER_WIDTH: usize = 13;
+pub const WORLD_MAP_RENDER_HEIGHT: usize = 10;
+pub const TILE_LENGTH: u32 = 16;
 
 pub struct MapGeneratorPlugin;
 
@@ -8,7 +15,7 @@ impl Plugin for MapGeneratorPlugin {
     fn build(&self, app: &mut AppBuilder) {
         app
             .init_resource::<World>()
-            .add_system(generate_world.system());
+            .add_system(render_world.system());
     }
 }
 
@@ -17,78 +24,61 @@ pub struct World {
     generated: bool
 }
 
-pub struct Builder {
-    pub name: String,
-    pub state: BuilderState,
-    pub animation_index: u32,
-}
-
-#[derive(PartialEq)]
-pub enum BuilderState {
-    Idle,
-    Move,
-    Attack,
-}
-
-impl Builder {
-    fn new(name: &str) -> Builder {
-        Builder {
-            name: String::from(name),
-            state: BuilderState::Idle,
-            animation_index: 0,
-        }
-    }
-}
-
-fn generate_world(
+fn render_world(
     mut commands: Commands,
     atlas_handles: Res<AtlasHandles>,
-    mut world: ResMut<World>
+    mut world: ResMut<World>,
+    mut world_map: ResMut<WorldMap>,
+    mut query_camera: Query<(&Camera, &Translation)>,
 ) {
-    if world.generated {
-        return;
-    }
-
     if atlas_handles.loaded() {
-        let grassland_atlas_handle = Handle::from_id(atlas_handles.grassland_biome_id.unwrap());
-        let desert_atlas_handle = Handle::from_id(atlas_handles.desert_biome_id.unwrap());
+        if !world.generated {
+            let builder_atlas_handle = Handle::from_id(atlas_handles.builder_id.unwrap());
+            commands
+                .spawn(
+                    SpriteSheetComponents {
+                        texture_atlas: builder_atlas_handle,
+                        sprite: TextureAtlasSprite::new(7),
+                        translation: Translation::new(0., 0., 1.),
+                        ..Default::default()
+                    }
+                )
+                .with(Timer::from_seconds(0.5, false))
+                .with(Builder::new("Bob the builder"));
 
-        for x in -10..10 {
-            for y in -10..10 {
-                commands.spawn(SpriteSheetComponents {
-                    texture_atlas: grassland_atlas_handle,
-                    sprite: TextureAtlasSprite::new(rand::random::<u32>() % 4),
-                    translation: Translation::new((x * 16) as f32, (y * 16) as f32, 0.0),
-                    ..Default::default()
-                });
-            }
+            world.generated = true;
         }
 
-        for x in -5..-2 {
-            for y in -9..1 {
-                commands.spawn(SpriteSheetComponents {
-                    texture_atlas: desert_atlas_handle,
-                    sprite: TextureAtlasSprite::new(rand::random::<u32>() % 4),
-                    translation: Translation::new((x * 16) as f32, (y * 16) as f32, 0.1),
-                    ..Default::default()
-                });
-            }
-        }
-
-
-        let builder_atlas_handle = Handle::from_id(atlas_handles.builder_id.unwrap());
-        commands
-            .spawn(
-                SpriteSheetComponents {
-                    texture_atlas: builder_atlas_handle,
-                    sprite: TextureAtlasSprite::new(7),
-                    translation: Translation::new(0., 0., 1.),
-                    ..Default::default()
+        // can probably be assertion?
+        let query_camera_iterator = &mut query_camera.iter();
+        if let Some((_camera, camera_translation)) = query_camera_iterator.into_iter().next() {
+            let center_tile = world_map.center_tile();
+            let (tiles_to_render, tiles_to_despawn) = world_map.get_tiles_for_update(
+                camera_translation.x(), camera_translation.y()
+            );
+            for tile in tiles_to_render {
+                // println!("render {} {} as {:?}", tile.x, tile.y, tile.biome);
+                if tile.rendered_entity.is_none() {
+                    tile.rendered_entity.replace(
+                        commands
+                            .spawn(SpriteSheetComponents {
+                                texture_atlas: tile.get_biome_handle(&atlas_handles),
+                                sprite: TextureAtlasSprite::new(rand::random::<u32>() % 4),
+                                translation: tile_to_position(&center_tile, tile.x, tile.y),
+                                ..Default::default()
+                            })
+                            .current_entity()
+                            .unwrap()
+                    );
                 }
-            )
-            .with(Timer::from_seconds(0.5, false))
-            .with(Builder::new("Bob the builder"));
+            }
+            for tile in tiles_to_despawn {
+                let entity = tile.rendered_entity.unwrap();
+                commands.despawn(entity);
+                tile.rendered_entity.take();
+            }
+        }
 
-        world.generated = true;
+
     }
 }

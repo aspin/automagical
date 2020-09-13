@@ -1,9 +1,9 @@
 use bevy::prelude::*;
 
-use crate::map_generator::{Builder, BuilderState};
 use bevy::render::camera::Camera;
+use crate::builder::{Builder, BuilderState};
 
-const WIZARD_SPEED: f32 = 3.;
+const WIZARD_SPEED: f32 = 10.;
 
 pub fn control_builder(
     keyboard_input: Res<Input<KeyCode>>,

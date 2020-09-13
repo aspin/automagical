@@ -1,8 +1,30 @@
 use bevy::prelude::*;
 
-use crate::map_generator::{Builder, BuilderState};
 
 const ANIMATION_SPEED: f32 = 0.5;
+
+pub struct Builder {
+    pub name: String,
+    pub state: BuilderState,
+    pub animation_index: u32,
+}
+
+#[derive(PartialEq)]
+pub enum BuilderState {
+    Idle,
+    Move,
+    Attack,
+}
+
+impl Builder {
+    pub fn new(name: &str) -> Builder {
+        Builder {
+            name: String::from(name),
+            state: BuilderState::Idle,
+            animation_index: 0,
+        }
+    }
+}
 
 pub fn animate(
     mut query: Query<(&mut Timer, &mut TextureAtlasSprite, &mut Builder)>
