@@ -2,6 +2,8 @@ use bevy::prelude::*;
 use bevy::render::camera::OrthographicProjection;
 use bevy::asset::{HandleId, LoadState};
 
+use crate::construction::CursorState;
+
 pub struct AssetLoaderPlugin;
 
 impl Plugin for AssetLoaderPlugin {
@@ -19,6 +21,7 @@ pub struct SpriteHandles {
     biome_handles: Vec<HandleId>,
     builder_handle: Handle<Texture>,
     projectile_handles: Vec<HandleId>,
+    conveyor_handle: Handle<Texture>,
     loaded: bool
 }
 
@@ -29,6 +32,7 @@ pub struct AtlasHandles {
     pub rocklands_biome_id: Option<HandleId>,
     pub builder_id: Option<HandleId>,
     pub arrow_id: Option<HandleId>,
+    pub conveyor_id: Option<HandleId>,
 }
 
 impl AtlasHandles {
@@ -36,6 +40,7 @@ impl AtlasHandles {
         self.biomes_loaded()
             && self.builder_id.is_some()
             && self.projectiles_loaded()
+            && self.conveyor_id.is_some()
     }
 
     pub fn biomes_loaded(&self) -> bool {
@@ -57,8 +62,9 @@ fn loader(
     map_sprite_handles.biome_handles = asset_server.load_asset_folder("assets/texture/biome").unwrap();
     map_sprite_handles.projectile_handles = asset_server.load_asset_folder("assets/texture/projectile").unwrap();
     map_sprite_handles.builder_handle = asset_server.load("assets/texture/wizard.png").unwrap();
+    map_sprite_handles.conveyor_handle = asset_server.load("assets/texture/conveyor.png").unwrap();
 
-    commands
+    let entity = commands
         .spawn(Camera2dComponents {
             orthographic_projection: OrthographicProjection {
                 far: 10000.,
@@ -66,7 +72,15 @@ fn loader(
             },
             scale: Scale(0.3),
             ..Default::default()
-        });
+        })
+        .current_entity()
+        .unwrap();
+
+    commands.insert_resource(CursorState {
+        camera_entity: entity,
+        cursor: Default::default(),
+        cursor_position: Option::None
+    });
 }
 
 fn post_load(
@@ -151,6 +165,19 @@ fn post_load(
             );
             let builder_atlas_handle = texture_atlases.add(builder_atlas);
             atlas_handles.builder_id.replace(builder_atlas_handle.id);
+        }
+    }
+
+    let conveyor_loaded = atlas_handles.conveyor_id.is_some();
+    if !conveyor_loaded {
+        let conveyor_handle = sprite_handles.conveyor_handle;
+        if let Some(LoadState::Loaded(_)) = asset_server.get_load_state(conveyor_handle) {
+            let conveyor_texture = textures.get(&conveyor_handle).unwrap();
+            let conveyor_atlas = TextureAtlas::from_grid(
+                conveyor_handle, conveyor_texture.size, 1, 1
+            );
+            let conveyor_atlas_handle = texture_atlases.add(conveyor_atlas);
+            atlas_handles.conveyor_id.replace(conveyor_atlas_handle.id);
         }
     }
 

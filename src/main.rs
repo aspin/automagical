@@ -5,6 +5,7 @@ mod controls;
 mod world_map;
 mod coordinate;
 mod projectile;
+mod construction;
 
 use bevy::prelude::*;
 use bevy_rapier3d::physics::RapierPhysicsPlugin;
@@ -20,6 +21,8 @@ fn main() {
         .add_system(builder::produce_projectiles.system())
         .add_system(projectile::expire_projectiles.system())
         .add_system(controls::control_builder.system())
+        .add_system(construction::update_cursor_position.system())
+        .add_system(construction::place_object.system())
         .run();
 }
 

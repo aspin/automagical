@@ -53,14 +53,13 @@ impl WorldMap {
         TileCoordinate(self.width / 2 as usize, self.height / 2 as usize)
     }
 
-    fn position_to_tile(&self, camera_x: f32, camera_y: f32) -> TileCoordinate {
+    pub fn position_to_tile(&self, x: f32, y: f32) -> TileCoordinate {
         let center = self.center_tile();
-        let x_offset = (camera_x / TILE_LENGTH as f32) as i32;
-        let y_offset = (camera_y / TILE_LENGTH as f32) as i32;
+        let x_offset = (x / TILE_LENGTH as f32) as i32;
+        let y_offset = (y / TILE_LENGTH as f32) as i32;
         TileCoordinate((center.0 as i32 + x_offset) as usize, (center.1 as i32 + y_offset) as usize)
     }
 
-    #[allow(dead_code)]
     pub fn tile_to_position(&self, x: usize, y: usize) -> Translation {
         tile_to_position(&self.center_tile(), x, y)
     }
