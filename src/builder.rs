@@ -71,27 +71,34 @@ pub fn produce_projectiles(
 ) {
     if let Some(arrow_id) = atlas_handles.arrow_id {
         if builder.state == BuilderState::Attack && builder.animation_index == 3 {
-            let arrow_atlas_handle = Handle::from_id(arrow_id);
+            for i in 0..3 {
+                let arrow_atlas_handle = Handle::from_id(arrow_id);
 
-            let arrow_body = RigidBodyBuilder::new_dynamic()
-                .translation(builder_translation.x() + 16., builder_translation.y(), 2.)
-                .linvel(1000., 0., 0.);
-            let arrow_collider = ColliderBuilder::cuboid(8., 4., 4.);
-            let projectile = Projectile::arrow();
-            let projectile_timer = Timer::from_seconds(projectile.ttl, false);
+                let y_offset = -4.;
+                let y_width = 4.;
+                let arrow_body = RigidBodyBuilder::new_dynamic()
+                    .translation(
+                        builder_translation.x() + 16.,
+                        builder_translation.y() + (i as f32) * y_width + y_offset,
+                        2.)
+                    .linvel(1000., 0., 0.);
+                let arrow_collider = ColliderBuilder::cuboid(0., 0., 0.);
+                let projectile = Projectile::arrow();
+                let projectile_timer = Timer::from_seconds(projectile.ttl, false);
 
-            println!("Spawning arrow at {} {}", builder_translation.x(), builder_translation.y());
+                println!("Spawning arrow at {} {}", builder_translation.x(), builder_translation.y());
 
-            commands.spawn(
-                SpriteSheetComponents {
-                    texture_atlas: arrow_atlas_handle,
-                    sprite: TextureAtlasSprite::new(0),
-                    ..Default::default()
-                })
-                .with(projectile)
-                .with(arrow_body)
-                .with(arrow_collider)
-                .with(projectile_timer);
+                commands.spawn(
+                    SpriteSheetComponents {
+                        texture_atlas: arrow_atlas_handle,
+                        sprite: TextureAtlasSprite::new(0),
+                        ..Default::default()
+                    })
+                    .with(projectile)
+                    .with(arrow_body)
+                    .with(arrow_collider)
+                    .with(projectile_timer);
+            }
         }
     }
 }
