@@ -1,19 +1,24 @@
 mod asset_loader;
-mod map_generator;
+mod world_renderer;
 mod builder;
 mod controls;
 mod world_map;
 mod coordinate;
+mod projectile;
 
 use bevy::prelude::*;
+use bevy_rapier3d::physics::RapierPhysicsPlugin;
 
 fn main() {
     App::build()
         .init_resource::<world_map::WorldMap>()
         .add_default_plugins()
+        .add_plugin(RapierPhysicsPlugin)
         .add_plugin(asset_loader::AssetLoaderPlugin)
-        .add_plugin(map_generator::MapGeneratorPlugin)
+        .add_plugin(world_renderer::MapGeneratorPlugin)
         .add_system(builder::animate.system())
+        .add_system(builder::produce_projectiles.system())
+        .add_system(projectile::expire_projectiles.system())
         .add_system(controls::control_builder.system())
         .run();
 }

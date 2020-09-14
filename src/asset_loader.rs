@@ -18,6 +18,7 @@ impl Plugin for AssetLoaderPlugin {
 pub struct SpriteHandles {
     biome_handles: Vec<HandleId>,
     builder_handle: Handle<Texture>,
+    projectile_handles: Vec<HandleId>,
     loaded: bool
 }
 
@@ -27,18 +28,24 @@ pub struct AtlasHandles {
     pub desert_biome_id: Option<HandleId>,
     pub rocklands_biome_id: Option<HandleId>,
     pub builder_id: Option<HandleId>,
+    pub arrow_id: Option<HandleId>,
 }
 
 impl AtlasHandles {
     pub fn loaded(&self) -> bool {
         self.biomes_loaded()
             && self.builder_id.is_some()
+            && self.projectiles_loaded()
     }
 
     pub fn biomes_loaded(&self) -> bool {
         self.grassland_biome_id.is_some()
             && self.rocklands_biome_id.is_some()
             && self.desert_biome_id.is_some()
+    }
+
+    pub fn projectiles_loaded(&self) -> bool {
+        self.arrow_id.is_some()
     }
 }
 
@@ -48,6 +55,7 @@ fn loader(
     mut map_sprite_handles: ResMut<SpriteHandles>,
 ) {
     map_sprite_handles.biome_handles = asset_server.load_asset_folder("assets/texture/biome").unwrap();
+    map_sprite_handles.projectile_handles = asset_server.load_asset_folder("assets/texture/projectile").unwrap();
     map_sprite_handles.builder_handle = asset_server.load("assets/texture/wizard.png").unwrap();
 
     commands
@@ -112,6 +120,24 @@ fn post_load(
 
             let rockland_atlas_handle = texture_atlases.add(rockland_atlas);
             atlas_handles.rocklands_biome_id.replace(rockland_atlas_handle.id);
+        }
+    }
+
+    let projectile_loaded = atlas_handles.projectiles_loaded();
+    if !projectile_loaded {
+        if let Some(LoadState::Loaded(_)) = asset_server.get_group_load_state(
+            &sprite_handles.projectile_handles
+        ) {
+            let arrow_handle = asset_server
+                .get_handle("assets/texture/projectile/arrow.png")
+                .unwrap();
+            let arrow_texture = textures.get(&arrow_handle).unwrap();
+            let arrow_atlas = TextureAtlas::from_grid(
+                arrow_handle, arrow_texture.size, 1, 1
+            );
+
+            let arrow_atlas_handle = texture_atlases.add(arrow_atlas);
+            atlas_handles.arrow_id.replace(arrow_atlas_handle.id);
         }
     }
 

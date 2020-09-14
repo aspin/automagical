@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use crate::map_generator::{WORLD_MAP_RENDER_WIDTH, WORLD_MAP_RENDER_HEIGHT, TILE_LENGTH};
+use crate::world_renderer::{WORLD_MAP_RENDER_WIDTH, WORLD_MAP_RENDER_HEIGHT, TILE_LENGTH};
 use crate::asset_loader::AtlasHandles;
 
 pub const WORLD_MAP_WIDTH: usize = 300;
@@ -37,14 +37,7 @@ impl WorldMap {
                 tiles.push(Tile::new(x, y));
             }
         }
-        let mut wm = WorldMap { tiles, width, height };
-        for x in 200..300 {
-            for y in 125..175 {
-                wm.get_tile_mut(x, y).unwrap().biome = Biome::Desert;
-            }
-        }
-        // println!("{:?}", wm.tiles);
-        wm
+        WorldMap { tiles, width, height }
     }
 
     #[allow(dead_code)]

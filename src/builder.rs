@@ -1,4 +1,8 @@
 use bevy::prelude::*;
+use bevy_rapier3d::rapier::dynamics::RigidBodyBuilder;
+use bevy_rapier3d::rapier::geometry::ColliderBuilder;
+use crate::projectile::Projectile;
+use crate::asset_loader::AtlasHandles;
 
 
 const ANIMATION_SPEED: f32 = 0.5;
@@ -55,6 +59,39 @@ pub fn animate(
 
             timer.reset();
             timer.duration = duration[builder.animation_index as usize] * ANIMATION_SPEED;
+        }
+    }
+}
+
+pub fn produce_projectiles(
+    mut commands: Commands,
+    atlas_handles: Res<AtlasHandles>,
+    builder: &Builder,
+    builder_translation: &Translation
+) {
+    if let Some(arrow_id) = atlas_handles.arrow_id {
+        if builder.state == BuilderState::Attack && builder.animation_index == 3 {
+            let arrow_atlas_handle = Handle::from_id(arrow_id);
+
+            let arrow_body = RigidBodyBuilder::new_dynamic()
+                .translation(builder_translation.x() + 16., builder_translation.y(), 2.)
+                .linvel(1000., 0., 0.);
+            let arrow_collider = ColliderBuilder::cuboid(8., 4., 4.);
+            let projectile = Projectile::arrow();
+            let projectile_timer = Timer::from_seconds(projectile.ttl, false);
+
+            println!("Spawning arrow at {} {}", builder_translation.x(), builder_translation.y());
+
+            commands.spawn(
+                SpriteSheetComponents {
+                    texture_atlas: arrow_atlas_handle,
+                    sprite: TextureAtlasSprite::new(0),
+                    ..Default::default()
+                })
+                .with(projectile)
+                .with(arrow_body)
+                .with(arrow_collider)
+                .with(projectile_timer);
         }
     }
 }
