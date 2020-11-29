@@ -4,6 +4,8 @@ use bevy::asset::{HandleId, LoadState};
 
 use crate::construction::CursorState;
 
+pub const TILE_LENGTH: u32 = 16;
+
 pub struct AssetLoaderPlugin;
 
 impl Plugin for AssetLoaderPlugin {
@@ -64,20 +66,20 @@ fn loader(
     map_sprite_handles.builder_handle = asset_server.load("texture/wizard.png");
     map_sprite_handles.conveyor_handle = asset_server.load("texture/conveyor.png");
 
-    let entity = commands
+    let camera_entity = commands
         .spawn(Camera2dComponents {
-            orthographic_projection: OrthographicProjection {
-                far: 10000.,
+            transform: Transform {
+                scale: Vec3::new(0.3, 0.3, 0.3),
+                translation: Vec3::new(0., 0., 10.),
                 ..Default::default()
             },
-            transform: Transform::from_scale(Vec3::new(0.3, 0.3, 0.3)),
             ..Default::default()
         })
         .current_entity()
         .unwrap();
 
     commands.insert_resource(CursorState {
-        camera_entity: entity,
+        camera_entity,
         cursor: Default::default(),
         cursor_position: Option::None
     });
@@ -97,14 +99,14 @@ fn post_load(
     println!("Loading assets...");
 
     let biomes_loaded = atlas_handles.biomes_loaded();
+    let tile_size = Vec2::new(TILE_LENGTH as f32, TILE_LENGTH as f32);
     if !biomes_loaded {
         if let LoadState::Loaded = asset_server.get_group_load_state(
             sprite_handles.biome_handles.iter().map(|handle| handle.id)
         ) {
             let grass_handle = asset_server.get_handle("texture/biome/grass.png");
-            let grass_texture = textures.get(&grass_handle).unwrap();
             let grassland_atlas = TextureAtlas::from_grid(
-                grass_handle, grass_texture.size, 4, 1
+                grass_handle, tile_size, 4, 1
             );
 
             let grassland_atlas_handle = texture_atlases.add(grassland_atlas);
@@ -112,18 +114,16 @@ fn post_load(
             atlas_handles.grassland_biome_id.replace(grassland_atlas_handle.id);
 
             let desert_handle = asset_server.get_handle("texture/biome/desert.png");
-            let desert_texture = textures.get(&desert_handle).unwrap();
             let desert_atlas = TextureAtlas::from_grid(
-                desert_handle, desert_texture.size, 4, 1
+                desert_handle, tile_size, 4, 1
             );
 
             let desert_atlas_handle = texture_atlases.add(desert_atlas);
             atlas_handles.desert_biome_id.replace(desert_atlas_handle.id);
 
             let rockland_handle = asset_server.get_handle("texture/biome/rocklands.png");
-            let rockland_texture = textures.get(&rockland_handle).unwrap();
             let rockland_atlas = TextureAtlas::from_grid(
-                rockland_handle, rockland_texture.size, 4, 1
+                rockland_handle, tile_size, 4, 1
             );
 
             let rockland_atlas_handle = texture_atlases.add(rockland_atlas);
@@ -151,9 +151,8 @@ fn post_load(
     if !builder_loaded {
         let builder_handle = asset_server.get_handle(&sprite_handles.builder_handle);
         if let LoadState::Loaded = asset_server.get_load_state(&builder_handle) {
-            let builder_texture = textures.get(&builder_handle).unwrap();
             let builder_atlas = TextureAtlas::from_grid(
-                builder_handle, builder_texture.size, 7, 3
+                builder_handle, tile_size, 7, 3
             );
             let builder_atlas_handle = texture_atlases.add(builder_atlas);
             atlas_handles.builder_id.replace(builder_atlas_handle.id);
@@ -164,9 +163,8 @@ fn post_load(
     if !conveyor_loaded {
         let conveyor_handle = asset_server.get_handle(&sprite_handles.conveyor_handle);
         if let LoadState::Loaded = asset_server.get_load_state(&conveyor_handle) {
-            let conveyor_texture = textures.get(&conveyor_handle).unwrap();
             let conveyor_atlas = TextureAtlas::from_grid(
-                conveyor_handle, conveyor_texture.size, 1, 1
+                conveyor_handle, tile_size, 1, 1
             );
             let conveyor_atlas_handle = texture_atlases.add(conveyor_atlas);
             atlas_handles.conveyor_id.replace(conveyor_atlas_handle.id);
@@ -177,3 +175,4 @@ fn post_load(
         sprite_handles.loaded = true;
     }
 }
+

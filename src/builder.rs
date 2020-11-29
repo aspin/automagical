@@ -86,7 +86,7 @@ pub fn produce_projectiles(
                 let projectile = Projectile::arrow();
                 let projectile_timer = Timer::from_seconds(projectile.ttl, false);
 
-                println!("Spawning arrow at {} {}", builder_transform.translation.x(), builder_transform.translation.y());
+                // println!("Spawning arrow at {} {}", builder_transform.translation.x(), builder_transform.translation.y());
 
                 commands.spawn(
                     SpriteSheetComponents {

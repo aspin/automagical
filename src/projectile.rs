@@ -19,7 +19,7 @@ pub fn expire_projectiles(
     timer: &Timer
 ) {
     if timer.finished {
-        println!("Projectile has expired at position: {:?}", transform);
+        // println!("Projectile has expired at position: {:?}", transform);
         commands.despawn(entity);
     }
     // println!("Projectile position: {:?}", transform);

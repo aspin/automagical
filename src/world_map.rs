@@ -1,6 +1,6 @@
 use bevy::prelude::*;
-use crate::world_renderer::{WORLD_MAP_RENDER_WIDTH, WORLD_MAP_RENDER_HEIGHT, TILE_LENGTH};
-use crate::asset_loader::AtlasHandles;
+use crate::world_renderer::{WORLD_MAP_RENDER_WIDTH, WORLD_MAP_RENDER_HEIGHT};
+use crate::asset_loader::{AtlasHandles, TILE_LENGTH};
 
 pub const WORLD_MAP_WIDTH: usize = 300;
 pub const WORLD_MAP_HEIGHT: usize = 300;

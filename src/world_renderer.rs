@@ -9,7 +9,6 @@ use bevy_rapier3d::rapier::na::Vector;
 
 pub const WORLD_MAP_RENDER_WIDTH: usize = 13;
 pub const WORLD_MAP_RENDER_HEIGHT: usize = 10;
-pub const TILE_LENGTH: u32 = 16;
 
 pub struct MapGeneratorPlugin;
 
@@ -93,7 +92,5 @@ fn render_world(
                 tile.rendered_entity.take();
             }
         }
-
-
     }
 }
