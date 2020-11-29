@@ -60,7 +60,7 @@ impl WorldMap {
         TileCoordinate((center.0 as i32 + x_offset) as usize, (center.1 as i32 + y_offset) as usize)
     }
 
-    pub fn tile_to_position(&self, x: usize, y: usize) -> Translation {
+    pub fn tile_to_position(&self, x: usize, y: usize) -> Transform {
         tile_to_position(&self.center_tile(), x, y)
     }
 
@@ -112,15 +112,17 @@ impl Tile {
             Biome::Grassland => atlas_handles.grassland_biome_id.unwrap(),
             Biome::Desert => atlas_handles.desert_biome_id.unwrap()
         };
-        Handle::from_id(handle_id)
+        Handle::weak(handle_id)
     }
 }
 
-pub fn tile_to_position(center_tile: &TileCoordinate, x: usize, y: usize) -> Translation {
-    Translation::new(
-        ((x as i32 - center_tile.0 as i32) * TILE_LENGTH as i32) as f32,
-        ((y as i32 - center_tile.1 as i32) * TILE_LENGTH as i32) as f32,
-        0.
+pub fn tile_to_position(center_tile: &TileCoordinate, x: usize, y: usize) -> Transform {
+    Transform::from_translation(
+        Vec3::new(
+            ((x as i32 - center_tile.0 as i32) * TILE_LENGTH as i32) as f32,
+            ((y as i32 - center_tile.1 as i32) * TILE_LENGTH as i32) as f32,
+            0.
+        )
     )
 }
 

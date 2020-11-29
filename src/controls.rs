@@ -7,15 +7,17 @@ const WIZARD_SPEED: f32 = 10.;
 
 pub fn control_builder(
     keyboard_input: Res<Input<KeyCode>>,
-    mut query_builder: Query<(&mut Timer, &mut Builder, &mut Translation)>,
-    mut query_camera: Query<(&Camera, &mut Translation)>,
+    mut query_builder: Query<(&mut Timer, &mut Builder, &mut Transform)>,
+    mut query_camera: Query<(&Camera, &mut Transform)>,
 ) {
 
-    let query_builder_iterator = &mut query_builder.iter();
-    let query_camera_iterator = &mut query_camera.iter();
+    let query_builder_iterator = &mut query_builder.iter_mut();
+    let query_camera_iterator = &mut query_camera.iter_mut();
 
-    if let Some((mut builder_timer, mut builder, mut builder_translation)) = query_builder_iterator.into_iter().next() {
-        if let Some((_camera, mut camera_translation)) = query_camera_iterator.into_iter().next() {
+    // TODO: should be able to rework this?
+
+    if let Some((mut builder_timer, mut builder, mut builder_transform)) = query_builder_iterator.into_iter().next() {
+        if let Some((_camera, mut camera_transform)) = query_camera_iterator.into_iter().next() {
             let press_up = keyboard_input.pressed(KeyCode::W);
             let press_down = keyboard_input.pressed(KeyCode::S);
             let press_left = keyboard_input.pressed(KeyCode::A);
@@ -30,21 +32,21 @@ pub fn control_builder(
                 }
 
                 if press_up {
-                    (* builder_translation.0.y_mut()) += WIZARD_SPEED;
+                    (* builder_transform.translation.y_mut()) += WIZARD_SPEED;
                 }
                 if press_down {
-                    (* builder_translation.0.y_mut()) -= WIZARD_SPEED;
+                    (* builder_transform.translation.y_mut()) -= WIZARD_SPEED;
                 }
                 if press_left {
-                    (* builder_translation.0.x_mut()) -= WIZARD_SPEED;
+                    (* builder_transform.translation.x_mut()) -= WIZARD_SPEED;
                 }
                 if press_right {
-                    (* builder_translation.0.x_mut()) += WIZARD_SPEED;
+                    (* builder_transform.translation.x_mut()) += WIZARD_SPEED;
                 }
             }
 
-            (* camera_translation.0.x_mut()) = builder_translation.0.x();
-            (* camera_translation.0.y_mut()) = builder_translation.0.y();
+            (* camera_transform.translation.x_mut()) = builder_transform.translation.x();
+            (* camera_transform.translation.y_mut()) = builder_transform.translation.y();
 
             if keyboard_input.pressed(KeyCode::Space) {
                 if builder.state != BuilderState::Attack {

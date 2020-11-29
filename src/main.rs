@@ -13,7 +13,7 @@ use bevy_rapier3d::physics::RapierPhysicsPlugin;
 fn main() {
     App::build()
         .init_resource::<world_map::WorldMap>()
-        .add_default_plugins()
+        .add_plugins(DefaultPlugins)
         .add_plugin(RapierPhysicsPlugin)
         .add_plugin(asset_loader::AssetLoaderPlugin)
         .add_plugin(world_renderer::MapGeneratorPlugin)

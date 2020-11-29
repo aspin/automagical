@@ -14,7 +14,7 @@ pub fn update_cursor_position(
     windows: Res<Windows>,
     camera_query: Query<&Transform>
 ) {
-    let camera_transform = camera_query.get::<Transform>(
+    let camera_transform = camera_query.get_component::<Transform>(
         cursor_state.camera_entity
     ).unwrap();
 
@@ -23,10 +23,10 @@ pub fn update_cursor_position(
         &events_cursor
     ) {
         let window = windows.get(event.id).unwrap();
-        let size = Vec2::new(window.width as f32, window.height as f32);
+        let size = Vec2::new(window.width() as f32, window.height() as f32);
 
         let position = event.position - size / 2.0;
-        let position_world = camera_transform.value * position.extend(0.0).extend(1.0);
+        let position_world = camera_transform.compute_matrix() * position.extend(0.0).extend(1.0);
 
         cursor_state.cursor_position.replace(position_world);
     }
@@ -46,13 +46,15 @@ pub fn place_object(
                     cursor_coordinates.x(), cursor_coordinates.y()
                 );
                 let tile_position = world_map.tile_to_position(map_tile.0, map_tile.1);
-                let conveyor_atlas_handle = Handle::from_id(conveyor_id);
+                let conveyor_atlas_handle = Handle::weak(conveyor_id);
 
                 commands.spawn(
                     SpriteSheetComponents {
                         texture_atlas: conveyor_atlas_handle,
                         sprite: TextureAtlasSprite::new(0),
-                        translation: Translation::new(tile_position.x(), tile_position.y(), 2.),
+                        transform: Transform::from_translation(
+                            Vec3::new(tile_position.translation.x(), tile_position.translation.y(), 2.)
+                        ),
                         ..Default::default()
                     }
                 );

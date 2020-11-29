@@ -33,7 +33,7 @@ impl Builder {
 pub fn animate(
     mut query: Query<(&mut Timer, &mut TextureAtlasSprite, &mut Builder)>
 ) {
-    for (mut timer, mut sprite, mut builder) in &mut query.iter() {
+    for (mut timer, mut sprite, mut builder) in query.iter_mut() {
         if timer.finished {
             let (mut offset, mut duration, length, loop_around) = match builder.state {
                 BuilderState::Idle => (7, vec![0.5, 0.1, 0.06, 0.1, 0.1, 0.1], 6, true),
@@ -67,26 +67,26 @@ pub fn produce_projectiles(
     mut commands: Commands,
     atlas_handles: Res<AtlasHandles>,
     builder: &Builder,
-    builder_translation: &Translation
+    builder_transform: &Transform
 ) {
     if let Some(arrow_id) = atlas_handles.arrow_id {
         if builder.state == BuilderState::Attack && builder.animation_index == 3 {
             for i in 0..3 {
-                let arrow_atlas_handle = Handle::from_id(arrow_id);
+                let arrow_atlas_handle = Handle::weak(arrow_id);
 
                 let y_offset = -4.;
                 let y_width = 4.;
                 let arrow_body = RigidBodyBuilder::new_dynamic()
                     .translation(
-                        builder_translation.x() + 16.,
-                        builder_translation.y() + (i as f32) * y_width + y_offset,
+                        builder_transform.translation.x() + 16.,
+                        builder_transform.translation.y() + (i as f32) * y_width + y_offset,
                         2.)
                     .linvel(1000., 0., 0.);
                 let arrow_collider = ColliderBuilder::cuboid(0., 0., 0.);
                 let projectile = Projectile::arrow();
                 let projectile_timer = Timer::from_seconds(projectile.ttl, false);
 
-                println!("Spawning arrow at {} {}", builder_translation.x(), builder_translation.y());
+                println!("Spawning arrow at {} {}", builder_transform.translation.x(), builder_transform.translation.y());
 
                 commands.spawn(
                     SpriteSheetComponents {
