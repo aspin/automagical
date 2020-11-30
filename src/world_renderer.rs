@@ -7,6 +7,9 @@ use bevy::render::camera::Camera;
 use bevy_rapier3d::physics::RapierConfiguration;
 use bevy_rapier3d::rapier::na::Vector;
 use crate::data::animation::UnitType;
+use crate::enemy::Enemy;
+use bevy_rapier3d::rapier::dynamics::RigidBodyBuilder;
+use bevy_rapier3d::rapier::geometry::ColliderBuilder;
 
 pub const WORLD_MAP_RENDER_WIDTH: usize = 13;
 pub const WORLD_MAP_RENDER_HEIGHT: usize = 10;
@@ -92,15 +95,26 @@ fn render_world(
                 }
                 if tile.contains_enemy {
                     let enemy_atlas_handle = Handle::weak(atlas_handles.enemy_id.unwrap());
-                    println!("Spawning enemy now!");
+                    let enemy_transform = tile_to_position(&center_tile, tile.x, tile.y);
+
+                    let enemy_body = RigidBodyBuilder::new_dynamic()
+                        .translation(
+                            enemy_transform.translation.x(),
+                            enemy_transform.translation.y(),
+                            enemy_transform.translation.z()
+                        );
+                    let enemy_collider = ColliderBuilder::cuboid(16., 16., 16.);
                     commands
                         .spawn(SpriteSheetComponents {
                             texture_atlas: enemy_atlas_handle,
                             sprite: TextureAtlasSprite::new(7),
-                            transform: tile_to_position(&center_tile, tile.x, tile.y),
+                            transform: enemy_transform,
                             ..Default::default()
                         })
-                        .with_bundle(AnimationBundle::new(UnitType::Enemy));
+                        .with(enemy_body)
+                        .with(enemy_collider)
+                        .with_bundle(AnimationBundle::new(UnitType::Enemy))
+                        .with(Enemy::generic_enemy());
                 }
             }
             for tile in tiles_to_despawn {

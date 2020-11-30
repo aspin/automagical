@@ -7,6 +7,7 @@ mod projectile;
 mod world_map;
 mod world_renderer;
 mod data;
+mod enemy;
 
 use bevy::prelude::*;
 use bevy_rapier3d::physics::RapierPhysicsPlugin;

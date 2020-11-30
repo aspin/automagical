@@ -111,7 +111,7 @@ pub fn produce_projectiles(
 
                 let x = builder_transform.translation.x() + x_offset;
                 let y = builder_transform.translation.y() + (i as f32) * y_width + y_offset;
-                let z = 2.;
+                let z = 1.;
 
                 // some temporary logic since bevy_rapier is slow to update from bevy
                 // https://github.com/dimforge/bevy_rapier/issues/6
@@ -127,7 +127,7 @@ pub fn produce_projectiles(
                     .translation(x, y, z)
                     .rotation(AngVector::new(0.0, y_rot, 0.0))
                     .linvel(x_velocity, 0., 0.);
-                let arrow_collider = ColliderBuilder::cuboid(0., 0., 0.);
+                let arrow_collider = ColliderBuilder::cuboid(8., 4., 16.);
 
                 // println!("Spawning arrow at {:?}", arrow_initial_transform);
 
