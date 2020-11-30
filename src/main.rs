@@ -8,6 +8,7 @@ mod world_map;
 mod world_renderer;
 mod data;
 mod enemy;
+mod damage;
 
 use bevy::prelude::*;
 use bevy_rapier3d::physics::RapierPhysicsPlugin;
@@ -25,5 +26,6 @@ fn main() {
         .add_system(controls::control_builder.system())
         .add_system(construction::update_cursor_position.system())
         .add_system(construction::place_object.system())
+        .add_system(damage::examine_collisions.system())
         .run();
 }

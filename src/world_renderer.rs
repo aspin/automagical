@@ -13,7 +13,7 @@ use bevy_rapier3d::rapier::geometry::ColliderBuilder;
 
 pub const WORLD_MAP_RENDER_WIDTH: usize = 13;
 pub const WORLD_MAP_RENDER_HEIGHT: usize = 10;
-pub const ENEMY_DENSITY: f32 = 0.01;
+pub const ENEMY_DENSITY: f32 = 0.001;
 
 pub struct MapGeneratorPlugin;
 
@@ -38,12 +38,13 @@ fn generate_world(
         for y in 125..175 {
             let mut tile = world_map.get_tile_mut(x, y).unwrap();
             tile.biome = Biome::Desert;
-            if (rand::random::<u32>() % 100) as f32 / 100. <= ENEMY_DENSITY {
+            if (rand::random::<u32>() % 1000) as f32 / 1000. <= ENEMY_DENSITY {
                 tile.contains_enemy = true;
                 println!("Enemy should be spawned at {} {}", x, y)
             }
         }
     }
+    world_map.get_tile_mut(160, 150).unwrap().contains_enemy = true;
     rapier_config.gravity = Vector::y() * 0.;
 }
 
@@ -96,25 +97,27 @@ fn render_world(
                 if tile.contains_enemy {
                     let enemy_atlas_handle = Handle::weak(atlas_handles.enemy_id.unwrap());
                     let enemy_transform = tile_to_position(&center_tile, tile.x, tile.y);
-
-                    let enemy_body = RigidBodyBuilder::new_dynamic()
-                        .translation(
-                            enemy_transform.translation.x(),
-                            enemy_transform.translation.y(),
-                            enemy_transform.translation.z()
-                        );
-                    let enemy_collider = ColliderBuilder::cuboid(16., 16., 16.);
-                    commands
+                    let enemy_entity = commands
                         .spawn(SpriteSheetComponents {
                             texture_atlas: enemy_atlas_handle,
                             sprite: TextureAtlasSprite::new(7),
                             transform: enemy_transform,
                             ..Default::default()
                         })
-                        .with(enemy_body)
-                        .with(enemy_collider)
                         .with_bundle(AnimationBundle::new(UnitType::Enemy))
-                        .with(Enemy::generic_enemy());
+                        .with(Enemy::generic_enemy())
+                        .current_entity()
+                        .unwrap();
+
+                    let enemy_body = RigidBodyBuilder::new_static()
+                        .translation(
+                            enemy_transform.translation.x(),
+                            enemy_transform.translation.y(),
+                            enemy_transform.translation.z()
+                        );
+                    let enemy_collider = ColliderBuilder::cuboid(16., 16., 16.)
+                        .user_data(enemy_entity.to_bits() as u128);
+                    commands.insert(enemy_entity, (enemy_body, enemy_collider));
                 }
             }
             for tile in tiles_to_despawn {

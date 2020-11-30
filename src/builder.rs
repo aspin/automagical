@@ -123,15 +123,9 @@ pub fn produce_projectiles(
                 let mut arrow_initial_transform = Transform::from_translation(Vec3::new(x, y, z));
                 arrow_initial_transform.rotate(rotation);
 
-                let arrow_body = RigidBodyBuilder::new_dynamic()
-                    .translation(x, y, z)
-                    .rotation(AngVector::new(0.0, y_rot, 0.0))
-                    .linvel(x_velocity, 0., 0.);
-                let arrow_collider = ColliderBuilder::cuboid(8., 4., 16.);
-
                 // println!("Spawning arrow at {:?}", arrow_initial_transform);
 
-                commands
+                let arrow_entity = commands
                     .spawn(SpriteSheetComponents {
                         texture_atlas: arrow_atlas_handle,
                         sprite: TextureAtlasSprite::new(0),
@@ -139,9 +133,18 @@ pub fn produce_projectiles(
                         ..Default::default()
                     })
                     .with(projectile)
-                    .with(arrow_body)
-                    .with(arrow_collider)
-                    .with(projectile_timer);
+                    .with(projectile_timer)
+                    .current_entity()
+                    .unwrap();
+
+                let arrow_body = RigidBodyBuilder::new_dynamic()
+                    .translation(x, y, z)
+                    .rotation(AngVector::new(0.0, y_rot, 0.0))
+                    .linvel(x_velocity, 0., 0.);
+                let arrow_collider = ColliderBuilder::cuboid(8., 4., 16.)
+                    .user_data(arrow_entity.to_bits() as u128);
+
+                commands.insert(arrow_entity, (arrow_body, arrow_collider));
             }
         }
     }
