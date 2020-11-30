@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::builder::{Builder, BuilderState};
+use crate::builder::{Builder, BuilderState, CardinalDirection};
 use bevy::render::camera::Camera;
 
 const WIZARD_SPEED: f32 = 10.;
@@ -40,9 +40,17 @@ pub fn control_builder(
                 }
                 if press_left {
                     (*builder_transform.translation.x_mut()) -= WIZARD_SPEED;
+                    if builder.facing == CardinalDirection::East {
+                        builder.facing = CardinalDirection::West;
+                        builder_transform.rotation = Quat::from_rotation_y(std::f32::consts::PI);
+                    }
                 }
                 if press_right {
                     (*builder_transform.translation.x_mut()) += WIZARD_SPEED;
+                    if builder.facing == CardinalDirection::West {
+                        builder.facing = CardinalDirection::East;
+                        builder_transform.rotation = Quat::default();
+                    }
                 }
             }
 

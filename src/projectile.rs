@@ -1,15 +1,20 @@
+use crate::builder::CardinalDirection;
 use bevy::prelude::*;
+
+pub const ARROW_SPEED: f32 = 700.;
 
 pub struct Projectile {
     pub damage: i32,
     pub ttl: f32,
+    pub facing: CardinalDirection,
 }
 
 impl Projectile {
-    pub fn arrow() -> Projectile {
+    pub fn arrow(facing: CardinalDirection) -> Projectile {
         Projectile {
             damage: 12,
             ttl: 2.,
+            facing,
         }
     }
 }
@@ -18,7 +23,7 @@ pub fn expire_projectiles(
     mut commands: Commands,
     entity: Entity,
     _projectile: &Projectile,
-    transform: &Transform,
+    _transform: &Transform,
     timer: &Timer,
 ) {
     if timer.finished {
