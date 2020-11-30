@@ -1,11 +1,12 @@
 use bevy::prelude::*;
 
 use crate::asset_loader::AtlasHandles;
-use crate::builder::Builder;
+use crate::builder::{Builder, Animated};
 use crate::world_map::{tile_to_position, Biome, WorldMap};
 use bevy::render::camera::Camera;
 use bevy_rapier3d::physics::RapierConfiguration;
 use bevy_rapier3d::rapier::na::Vector;
+use crate::data::animation::UnitType;
 
 pub const WORLD_MAP_RENDER_WIDTH: usize = 13;
 pub const WORLD_MAP_RENDER_HEIGHT: usize = 10;
@@ -51,6 +52,7 @@ fn render_world(
                     transform: Transform::from_translation(Vec3::new(0., 0., 1.)),
                     ..Default::default()
                 })
+                .with(Animated::new(UnitType::Wizard))
                 .with(Timer::from_seconds(0.5, false))
                 .with(Builder::new("Bob the builder"));
 
