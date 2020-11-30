@@ -27,12 +27,28 @@ pub struct Animated {
 }
 
 impl Animated {
-    pub fn new(unit_type: UnitType) -> Self {
+    fn new(unit_type: UnitType) -> Self {
         Animated {
             unit_type,
             state: AnimationState::Idle,
             animation_index: 0,
             facing: CardinalDirection::East,
+        }
+    }
+}
+
+#[derive(Bundle)]
+pub struct AnimationBundle {
+    pub animated: Animated,
+    pub timer: Timer,
+}
+
+impl AnimationBundle {
+    pub fn new(unit_type: UnitType) -> Self {
+        let animation_info = animation::get_animation_info(&unit_type, &AnimationState::Idle);
+        AnimationBundle {
+            animated: Animated::new(unit_type),
+            timer: Timer::from_seconds(animation_info.durations[0], false)
         }
     }
 }

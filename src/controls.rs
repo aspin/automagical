@@ -16,7 +16,7 @@ pub fn control_builder(
 
     // TODO: should be able to rework this?
 
-    if let Some((mut builder_timer, mut builder, mut animated, mut builder_transform)) =
+    if let Some((mut builder_timer, mut _builder, mut animated, mut builder_transform)) =
         query_builder_iterator.into_iter().next()
     {
         if let Some((_camera, mut camera_transform)) = query_camera_iterator.into_iter().next() {
