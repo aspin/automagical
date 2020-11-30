@@ -1,21 +1,11 @@
 # automagical
 
-## How to run
+An experiment in Rust game development with [bevy]. Currently using free assets for development: https://0x72.itch.io/microfantasy
 
-To run the game, run the following command, which defaults to the `metal` graphics backend:
+## How to run
 
 ```bash
 cargo run
 ```
 
-Windows and Linux users may explicitly choose `"vulkan"` with the following command:
-
-```bash
-cargo run --no-default-features --features "vulkan"
-```
-
-Mac OS X users may explicitly choose `"metal"` with the following command:
-
-```bash
-cargo run --no-default-features --features "metal"
-```
+[bevy]: https://bevyengine.org/
