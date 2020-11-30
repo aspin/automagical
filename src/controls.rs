@@ -8,7 +8,7 @@ const WIZARD_SPEED: f32 = 10.;
 
 pub fn control_builder(
     keyboard_input: Res<Input<KeyCode>>,
-    mut query_builder: Query<(&mut Timer, &mut Builder, &mut Animated, &mut Transform)>,
+    mut query_builder: Query<(&mut Timer, &Builder, &mut Animated, &mut Transform)>,
     mut query_camera: Query<(&Camera, &mut Transform)>,
 ) {
     let query_builder_iterator = &mut query_builder.iter_mut();
@@ -16,7 +16,7 @@ pub fn control_builder(
 
     // TODO: should be able to rework this?
 
-    if let Some((mut builder_timer, mut _builder, mut animated, mut builder_transform)) =
+    if let Some((mut builder_timer, _builder, mut animated, mut builder_transform)) =
         query_builder_iterator.into_iter().next()
     {
         if let Some((_camera, mut camera_transform)) = query_camera_iterator.into_iter().next() {

@@ -10,6 +10,7 @@ use crate::data::animation::UnitType;
 
 pub const WORLD_MAP_RENDER_WIDTH: usize = 13;
 pub const WORLD_MAP_RENDER_HEIGHT: usize = 10;
+pub const ENEMY_DENSITY: f32 = 0.01;
 
 pub struct MapGeneratorPlugin;
 
@@ -26,10 +27,18 @@ pub struct World {
     generated: bool,
 }
 
-fn generate_world(mut world_map: ResMut<WorldMap>, mut rapier_config: ResMut<RapierConfiguration>) {
+fn generate_world(
+    mut world_map: ResMut<WorldMap>,
+    mut rapier_config: ResMut<RapierConfiguration>
+) {
     for x in 200..300 {
         for y in 125..175 {
-            world_map.get_tile_mut(x, y).unwrap().biome = Biome::Desert;
+            let mut tile = world_map.get_tile_mut(x, y).unwrap();
+            tile.biome = Biome::Desert;
+            if (rand::random::<u32>() % 100) as f32 / 100. <= ENEMY_DENSITY {
+                tile.contains_enemy = true;
+                println!("Enemy should be spawned at {} {}", x, y)
+            }
         }
     }
     rapier_config.gravity = Vector::y() * 0.;
@@ -80,6 +89,18 @@ fn render_world(
                             .current_entity()
                             .unwrap(),
                     );
+                }
+                if tile.contains_enemy {
+                    let enemy_atlas_handle = Handle::weak(atlas_handles.enemy_id.unwrap());
+                    println!("Spawning enemy now!");
+                    commands
+                        .spawn(SpriteSheetComponents {
+                            texture_atlas: enemy_atlas_handle,
+                            sprite: TextureAtlasSprite::new(7),
+                            transform: tile_to_position(&center_tile, tile.x, tile.y),
+                            ..Default::default()
+                        })
+                        .with_bundle(AnimationBundle::new(UnitType::Enemy));
                 }
             }
             for tile in tiles_to_despawn {
