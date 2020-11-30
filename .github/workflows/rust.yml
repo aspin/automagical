@@ -16,9 +16,20 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Dependencies
+    - name: OS Dependencies
       run: sudo apt-get update && sudo apt-get install pkg-config libx11-dev libasound2-dev libudev-dev
+    - name: Cache Rust Dependencies
+      uses: actions/cache@v2
+      with:
+        path: |
+          target
+          ~/.cargo/registry/index
+          ~/.cargo/registry/cache
+          ~/.cargo/git
+        key: ${{ runner.OS }}-build-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.OS }}-build-
     - name: Build
-      run: cargo build --verbose
+      run: cargo build --verbose --release
     - name: Run tests
       run: cargo test --verbose
