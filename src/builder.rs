@@ -26,7 +26,7 @@ pub enum CardinalDirection {
     North,
     South,
     West,
-    East
+    East,
 }
 
 impl Builder {
@@ -104,9 +104,7 @@ pub fn produce_projectiles(
                     y_rot = std::f32::consts::PI;
                 }
                 let rotation = Quat::from_rotation_y(std::f32::consts::PI);
-                let mut arrow_initial_transform = Transform::from_translation(
-                    Vec3::new(x, y, z)
-                );
+                let mut arrow_initial_transform = Transform::from_translation(Vec3::new(x, y, z));
                 arrow_initial_transform.rotate(rotation);
 
                 let arrow_body = RigidBodyBuilder::new_dynamic()

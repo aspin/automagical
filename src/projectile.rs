@@ -1,5 +1,5 @@
-use bevy::prelude::*;
 use crate::builder::CardinalDirection;
+use bevy::prelude::*;
 
 pub const ARROW_SPEED: f32 = 700.;
 
@@ -14,7 +14,7 @@ impl Projectile {
         Projectile {
             damage: 12,
             ttl: 2.,
-            facing
+            facing,
         }
     }
 }
