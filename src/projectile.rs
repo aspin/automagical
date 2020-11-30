@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use crate::builder::CardinalDirection;
 
-pub const ARROW_SPEED: f32 = 10.;
+pub const ARROW_SPEED: f32 = 700.;
 
 pub struct Projectile {
     pub damage: i32,

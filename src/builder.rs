@@ -115,7 +115,7 @@ pub fn produce_projectiles(
                     .linvel(x_velocity, 0., 0.);
                 let arrow_collider = ColliderBuilder::cuboid(0., 0., 0.);
 
-                println!("Spawning arrow at {:?}", arrow_initial_transform);
+                // println!("Spawning arrow at {:?}", arrow_initial_transform);
 
                 commands
                     .spawn(SpriteSheetComponents {
