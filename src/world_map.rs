@@ -1,6 +1,6 @@
-use bevy::prelude::*;
-use crate::world_renderer::{WORLD_MAP_RENDER_WIDTH, WORLD_MAP_RENDER_HEIGHT};
 use crate::asset_loader::{AtlasHandles, TILE_LENGTH};
+use crate::world_renderer::{WORLD_MAP_RENDER_HEIGHT, WORLD_MAP_RENDER_WIDTH};
+use bevy::prelude::*;
 
 pub const WORLD_MAP_WIDTH: usize = 300;
 pub const WORLD_MAP_HEIGHT: usize = 300;
@@ -18,7 +18,7 @@ pub struct WorldMap {
 #[derive(Debug)]
 pub enum Biome {
     Grassland,
-    Desert
+    Desert,
 }
 
 #[derive(Debug)]
@@ -37,7 +37,11 @@ impl WorldMap {
                 tiles.push(Tile::new(x, y));
             }
         }
-        WorldMap { tiles, width, height }
+        WorldMap {
+            tiles,
+            width,
+            height,
+        }
     }
 
     #[allow(dead_code)]
@@ -57,14 +61,21 @@ impl WorldMap {
         let center = self.center_tile();
         let x_offset = (x / TILE_LENGTH as f32) as i32;
         let y_offset = (y / TILE_LENGTH as f32) as i32;
-        TileCoordinate((center.0 as i32 + x_offset) as usize, (center.1 as i32 + y_offset) as usize)
+        TileCoordinate(
+            (center.0 as i32 + x_offset) as usize,
+            (center.1 as i32 + y_offset) as usize,
+        )
     }
 
     pub fn tile_to_position(&self, x: usize, y: usize) -> Transform {
         tile_to_position(&self.center_tile(), x, y)
     }
 
-    pub fn get_tiles_for_update(&mut self, camera_x: f32, camera_y: f32) -> (Vec<&mut Tile>, Vec<&mut Tile>) {
+    pub fn get_tiles_for_update(
+        &mut self,
+        camera_x: f32,
+        camera_y: f32,
+    ) -> (Vec<&mut Tile>, Vec<&mut Tile>) {
         let mut tiles_to_render: Vec<&mut Tile> = Vec::new();
         let mut tiles_to_despawn: Vec<&mut Tile> = Vec::new();
 
@@ -80,7 +91,8 @@ impl WorldMap {
         // println!("render in box: x{}-{}, y{}-{}", left_x, right_x, bot_y, top_y);
 
         for tile in self.tiles.iter_mut() {
-            let render_tile = tile.x >= left_x && tile.x <= right_x && tile.y <= top_y && tile.y >= bot_y;
+            let render_tile =
+                tile.x >= left_x && tile.x <= right_x && tile.y <= top_y && tile.y >= bot_y;
             if tile.rendered_entity.is_some() {
                 if !render_tile {
                     tiles_to_despawn.push(tile);
@@ -104,25 +116,27 @@ impl FromResources for WorldMap {
 
 impl Tile {
     fn new(x: usize, y: usize) -> Tile {
-        Tile { x, y, biome: Biome::Grassland, rendered_entity: Option::None }
+        Tile {
+            x,
+            y,
+            biome: Biome::Grassland,
+            rendered_entity: Option::None,
+        }
     }
 
     pub fn get_biome_handle(&self, atlas_handles: &AtlasHandles) -> Handle<TextureAtlas> {
         let handle_id = match self.biome {
             Biome::Grassland => atlas_handles.grassland_biome_id.unwrap(),
-            Biome::Desert => atlas_handles.desert_biome_id.unwrap()
+            Biome::Desert => atlas_handles.desert_biome_id.unwrap(),
         };
         Handle::weak(handle_id)
     }
 }
 
 pub fn tile_to_position(center_tile: &TileCoordinate, x: usize, y: usize) -> Transform {
-    Transform::from_translation(
-        Vec3::new(
-            ((x as i32 - center_tile.0 as i32) * TILE_LENGTH as i32) as f32,
-            ((y as i32 - center_tile.1 as i32) * TILE_LENGTH as i32) as f32,
-            0.
-        )
-    )
+    Transform::from_translation(Vec3::new(
+        ((x as i32 - center_tile.0 as i32) * TILE_LENGTH as i32) as f32,
+        ((y as i32 - center_tile.1 as i32) * TILE_LENGTH as i32) as f32,
+        0.,
+    ))
 }
-

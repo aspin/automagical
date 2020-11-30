@@ -1,6 +1,6 @@
+use bevy::asset::{HandleId, LoadState};
 use bevy::prelude::*;
 use bevy::render::camera::OrthographicProjection;
-use bevy::asset::{HandleId, LoadState};
 
 use crate::construction::CursorState;
 
@@ -10,8 +10,7 @@ pub struct AssetLoaderPlugin;
 
 impl Plugin for AssetLoaderPlugin {
     fn build(&self, app: &mut AppBuilder) {
-        app
-            .init_resource::<SpriteHandles>()
+        app.init_resource::<SpriteHandles>()
             .init_resource::<AtlasHandles>()
             .add_startup_system(loader.system())
             .add_system(post_load.system());
@@ -24,7 +23,7 @@ pub struct SpriteHandles {
     builder_handle: Handle<Texture>,
     projectile_handles: Vec<HandleUntyped>,
     conveyor_handle: Handle<Texture>,
-    loaded: bool
+    loaded: bool,
 }
 
 #[derive(Default)]
@@ -81,7 +80,7 @@ fn loader(
     commands.insert_resource(CursorState {
         camera_entity,
         cursor: Default::default(),
-        cursor_position: Option::None
+        cursor_position: Option::None,
     });
 }
 
@@ -101,46 +100,47 @@ fn post_load(
     let biomes_loaded = atlas_handles.biomes_loaded();
     let tile_size = Vec2::new(TILE_LENGTH as f32, TILE_LENGTH as f32);
     if !biomes_loaded {
-        if let LoadState::Loaded = asset_server.get_group_load_state(
-            sprite_handles.biome_handles.iter().map(|handle| handle.id)
-        ) {
+        if let LoadState::Loaded = asset_server
+            .get_group_load_state(sprite_handles.biome_handles.iter().map(|handle| handle.id))
+        {
             let grass_handle = asset_server.get_handle("texture/biome/grass.png");
-            let grassland_atlas = TextureAtlas::from_grid(
-                grass_handle, tile_size, 4, 1
-            );
+            let grassland_atlas = TextureAtlas::from_grid(grass_handle, tile_size, 4, 1);
 
             let grassland_atlas_handle = texture_atlases.add(grassland_atlas);
 
-            atlas_handles.grassland_biome_id.replace(grassland_atlas_handle.id);
+            atlas_handles
+                .grassland_biome_id
+                .replace(grassland_atlas_handle.id);
 
             let desert_handle = asset_server.get_handle("texture/biome/desert.png");
-            let desert_atlas = TextureAtlas::from_grid(
-                desert_handle, tile_size, 4, 1
-            );
+            let desert_atlas = TextureAtlas::from_grid(desert_handle, tile_size, 4, 1);
 
             let desert_atlas_handle = texture_atlases.add(desert_atlas);
-            atlas_handles.desert_biome_id.replace(desert_atlas_handle.id);
+            atlas_handles
+                .desert_biome_id
+                .replace(desert_atlas_handle.id);
 
             let rockland_handle = asset_server.get_handle("texture/biome/rocklands.png");
-            let rockland_atlas = TextureAtlas::from_grid(
-                rockland_handle, tile_size, 4, 1
-            );
+            let rockland_atlas = TextureAtlas::from_grid(rockland_handle, tile_size, 4, 1);
 
             let rockland_atlas_handle = texture_atlases.add(rockland_atlas);
-            atlas_handles.rocklands_biome_id.replace(rockland_atlas_handle.id);
+            atlas_handles
+                .rocklands_biome_id
+                .replace(rockland_atlas_handle.id);
         }
     }
 
     let projectile_loaded = atlas_handles.projectiles_loaded();
     if !projectile_loaded {
         if let LoadState::Loaded = asset_server.get_group_load_state(
-            sprite_handles.projectile_handles.iter().map(|handle| handle.id)
+            sprite_handles
+                .projectile_handles
+                .iter()
+                .map(|handle| handle.id),
         ) {
             let arrow_handle = asset_server.get_handle("texture/projectile/arrow.png");
             let arrow_texture = textures.get(&arrow_handle).unwrap();
-            let arrow_atlas = TextureAtlas::from_grid(
-                arrow_handle, arrow_texture.size, 1, 1
-            );
+            let arrow_atlas = TextureAtlas::from_grid(arrow_handle, arrow_texture.size, 1, 1);
 
             let arrow_atlas_handle = texture_atlases.add(arrow_atlas);
             atlas_handles.arrow_id.replace(arrow_atlas_handle.id);
@@ -151,9 +151,7 @@ fn post_load(
     if !builder_loaded {
         let builder_handle = asset_server.get_handle(&sprite_handles.builder_handle);
         if let LoadState::Loaded = asset_server.get_load_state(&builder_handle) {
-            let builder_atlas = TextureAtlas::from_grid(
-                builder_handle, tile_size, 7, 3
-            );
+            let builder_atlas = TextureAtlas::from_grid(builder_handle, tile_size, 7, 3);
             let builder_atlas_handle = texture_atlases.add(builder_atlas);
             atlas_handles.builder_id.replace(builder_atlas_handle.id);
         }
@@ -163,9 +161,7 @@ fn post_load(
     if !conveyor_loaded {
         let conveyor_handle = asset_server.get_handle(&sprite_handles.conveyor_handle);
         if let LoadState::Loaded = asset_server.get_load_state(&conveyor_handle) {
-            let conveyor_atlas = TextureAtlas::from_grid(
-                conveyor_handle, tile_size, 1, 1
-            );
+            let conveyor_atlas = TextureAtlas::from_grid(conveyor_handle, tile_size, 1, 1);
             let conveyor_atlas_handle = texture_atlases.add(conveyor_atlas);
             atlas_handles.conveyor_id.replace(conveyor_atlas_handle.id);
         }
@@ -175,4 +171,3 @@ fn post_load(
         sprite_handles.loaded = true;
     }
 }
-

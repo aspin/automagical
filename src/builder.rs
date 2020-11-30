@@ -1,9 +1,8 @@
+use crate::asset_loader::AtlasHandles;
+use crate::projectile::Projectile;
 use bevy::prelude::*;
 use bevy_rapier3d::rapier::dynamics::RigidBodyBuilder;
 use bevy_rapier3d::rapier::geometry::ColliderBuilder;
-use crate::projectile::Projectile;
-use crate::asset_loader::AtlasHandles;
-
 
 const ANIMATION_SPEED: f32 = 0.5;
 
@@ -30,9 +29,7 @@ impl Builder {
     }
 }
 
-pub fn animate(
-    mut query: Query<(&mut Timer, &mut TextureAtlasSprite, &mut Builder)>
-) {
+pub fn animate(mut query: Query<(&mut Timer, &mut TextureAtlasSprite, &mut Builder)>) {
     for (mut timer, mut sprite, mut builder) in query.iter_mut() {
         if timer.finished {
             let (mut offset, mut duration, length, loop_around) = match builder.state {
@@ -67,7 +64,7 @@ pub fn produce_projectiles(
     mut commands: Commands,
     atlas_handles: Res<AtlasHandles>,
     builder: &Builder,
-    builder_transform: &Transform
+    builder_transform: &Transform,
 ) {
     if let Some(arrow_id) = atlas_handles.arrow_id {
         if builder.state == BuilderState::Attack && builder.animation_index == 3 {
@@ -80,7 +77,8 @@ pub fn produce_projectiles(
                     .translation(
                         builder_transform.translation.x() + 16.,
                         builder_transform.translation.y() + (i as f32) * y_width + y_offset,
-                        2.)
+                        2.,
+                    )
                     .linvel(1000., 0., 0.);
                 let arrow_collider = ColliderBuilder::cuboid(0., 0., 0.);
                 let projectile = Projectile::arrow();
@@ -88,8 +86,8 @@ pub fn produce_projectiles(
 
                 // println!("Spawning arrow at {} {}", builder_transform.translation.x(), builder_transform.translation.y());
 
-                commands.spawn(
-                    SpriteSheetComponents {
+                commands
+                    .spawn(SpriteSheetComponents {
                         texture_atlas: arrow_atlas_handle,
                         sprite: TextureAtlasSprite::new(0),
                         ..Default::default()

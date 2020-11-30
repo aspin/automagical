@@ -1,11 +1,11 @@
 mod asset_loader;
-mod world_renderer;
 mod builder;
+mod construction;
 mod controls;
-mod world_map;
 mod coordinate;
 mod projectile;
-mod construction;
+mod world_map;
+mod world_renderer;
 
 use bevy::prelude::*;
 use bevy_rapier3d::physics::RapierPhysicsPlugin;
@@ -25,4 +25,3 @@ fn main() {
         .add_system(construction::place_object.system())
         .run();
 }
-
