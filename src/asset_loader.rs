@@ -1,6 +1,5 @@
 use bevy::asset::{HandleId, LoadState};
 use bevy::prelude::*;
-use bevy::render::camera::OrthographicProjection;
 
 use crate::construction::CursorState;
 
