@@ -3,12 +3,16 @@ use bevy::prelude::*;
 use crate::builder::{Builder, CardinalDirection, Animated};
 use bevy::render::camera::Camera;
 use crate::data::animation::AnimationState;
+use bevy_rapier3d::rapier::dynamics::RigidBodySet;
+use bevy_rapier3d::physics::RigidBodyHandleComponent;
+use bevy_rapier3d::rapier::math::Vector;
 
-const WIZARD_SPEED: f32 = 10.;
+const WIZARD_SPEED: f32 = 100.;
 
 pub fn control_builder(
     keyboard_input: Res<Input<KeyCode>>,
-    mut query_builder: Query<(&mut Timer, &Builder, &mut Animated, &mut Transform)>,
+    mut rigid_body_set: ResMut<RigidBodySet>,
+    mut query_builder: Query<(&mut Timer, &Builder, &mut Animated, &RigidBodyHandleComponent)>,
     mut query_camera: Query<(&Camera, &mut Transform)>,
 ) {
     let query_builder_iterator = &mut query_builder.iter_mut();
@@ -16,9 +20,10 @@ pub fn control_builder(
 
     // TODO: should be able to rework this?
 
-    if let Some((mut builder_timer, _builder, mut animated, mut builder_transform)) =
+    if let Some((mut builder_timer, _builder, mut animated, builder_body_handle)) =
         query_builder_iterator.into_iter().next()
     {
+        let builder_body = rigid_body_set.get_mut(builder_body_handle.handle()).unwrap();
         if let Some((_camera, mut camera_transform)) = query_camera_iterator.into_iter().next() {
             let press_up = keyboard_input.pressed(KeyCode::W);
             let press_down = keyboard_input.pressed(KeyCode::S);
@@ -34,29 +39,31 @@ pub fn control_builder(
                 }
 
                 if press_up {
-                    (*builder_transform.translation.y_mut()) += WIZARD_SPEED;
+                    builder_body.set_linvel(Vector::new(0., WIZARD_SPEED, 0.), true);
                 }
                 if press_down {
-                    (*builder_transform.translation.y_mut()) -= WIZARD_SPEED;
+                    builder_body.set_linvel(Vector::new(0., -WIZARD_SPEED, 0.), true);
                 }
                 if press_left {
-                    (*builder_transform.translation.x_mut()) -= WIZARD_SPEED;
+                    builder_body.set_linvel(Vector::new(-WIZARD_SPEED, 0., 0.), true);
                     if animated.facing == CardinalDirection::East {
                         animated.facing = CardinalDirection::West;
-                        builder_transform.rotation = Quat::from_rotation_y(std::f32::consts::PI);
+                        // builder_transform.rotation = Quat::from_rotation_y(std::f32::consts::PI);
                     }
                 }
                 if press_right {
-                    (*builder_transform.translation.x_mut()) += WIZARD_SPEED;
+                    builder_body.set_linvel(Vector::new(WIZARD_SPEED, 0., 0.), true);
                     if animated.facing == CardinalDirection::West {
                         animated.facing = CardinalDirection::East;
-                        builder_transform.rotation = Quat::default();
+                        // builder_transform.rotation = Quat::default();
                     }
                 }
+            } else {
+                builder_body.set_linvel(Vector::zeros(), true);
             }
 
-            (*camera_transform.translation.x_mut()) = builder_transform.translation.x();
-            (*camera_transform.translation.y_mut()) = builder_transform.translation.y();
+            (*camera_transform.translation.x_mut()) = builder_body.position().translation.x;
+            (*camera_transform.translation.y_mut()) = builder_body.position().translation.y;
 
             if keyboard_input.pressed(KeyCode::Space) {
                 if animated.state != AnimationState::Attack {

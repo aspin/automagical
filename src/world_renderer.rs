@@ -58,14 +58,25 @@ fn render_world(
     if atlas_handles.loaded() {
         if !world.generated {
             let builder_atlas_handle = Handle::weak(atlas_handles.builder_id.unwrap());
+            let builder_x = 0.;
+            let builder_y = 0.;
+            let builder_z = 1.;
+
+            let builder_body = RigidBodyBuilder::new_dynamic()
+                .translation(builder_x, builder_y, builder_z)
+                .lock_rotations()
+                .lock_translations();
+            let builder_collider = ColliderBuilder::cuboid(16., 16., 16.);
             commands
                 .spawn(SpriteSheetComponents {
                     texture_atlas: builder_atlas_handle,
                     sprite: TextureAtlasSprite::new(7),
-                    transform: Transform::from_translation(Vec3::new(0., 0., 1.)),
+                    transform: Transform::from_translation(Vec3::new(builder_x, builder_y, builder_z)),
                     ..Default::default()
                 })
                 .with_bundle(AnimationBundle::new(UnitType::Wizard))
+                .with(builder_body)
+                .with(builder_collider)
                 .with(Builder::new("Bob the builder"));
 
             world.generated = true;
