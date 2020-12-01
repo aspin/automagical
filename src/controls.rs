@@ -1,18 +1,23 @@
 use bevy::prelude::*;
 
-use crate::builder::{Builder, CardinalDirection, Animated};
-use bevy::render::camera::Camera;
+use crate::builder::{Animated, Builder, CardinalDirection};
 use crate::data::animation::AnimationState;
-use bevy_rapier3d::rapier::dynamics::RigidBodySet;
+use bevy::render::camera::Camera;
 use bevy_rapier3d::physics::RigidBodyHandleComponent;
-use bevy_rapier3d::rapier::math::{Vector, AngVector, Rotation};
+use bevy_rapier3d::rapier::dynamics::RigidBodySet;
+use bevy_rapier3d::rapier::math::{AngVector, Rotation, Vector};
 
 const WIZARD_SPEED: f32 = 100.;
 
 pub fn control_builder(
     keyboard_input: Res<Input<KeyCode>>,
     mut rigid_body_set: ResMut<RigidBodySet>,
-    mut query_builder: Query<(&mut Timer, &Builder, &mut Animated, &RigidBodyHandleComponent)>,
+    mut query_builder: Query<(
+        &mut Timer,
+        &Builder,
+        &mut Animated,
+        &RigidBodyHandleComponent,
+    )>,
     mut query_camera: Query<(&Camera, &mut Transform)>,
 ) {
     let query_builder_iterator = &mut query_builder.iter_mut();
@@ -23,7 +28,9 @@ pub fn control_builder(
     if let Some((mut builder_timer, _builder, mut animated, builder_body_handle)) =
         query_builder_iterator.into_iter().next()
     {
-        let builder_body = rigid_body_set.get_mut(builder_body_handle.handle()).unwrap();
+        let builder_body = rigid_body_set
+            .get_mut(builder_body_handle.handle())
+            .unwrap();
         if let Some((_camera, mut camera_transform)) = query_camera_iterator.into_iter().next() {
             let press_up = keyboard_input.pressed(KeyCode::W);
             let press_down = keyboard_input.pressed(KeyCode::S);
@@ -50,7 +57,8 @@ pub fn control_builder(
                         animated.facing = CardinalDirection::West;
 
                         let mut previous_position = builder_body.position().clone();
-                        previous_position.rotation = Rotation::new(AngVector::new(0.0, std::f32::consts::PI, 0.0));
+                        previous_position.rotation =
+                            Rotation::new(AngVector::new(0.0, std::f32::consts::PI, 0.0));
                         builder_body.set_position(previous_position, true);
                     }
                 }

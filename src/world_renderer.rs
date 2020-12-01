@@ -1,15 +1,15 @@
 use bevy::prelude::*;
 
 use crate::asset_loader::AtlasHandles;
-use crate::builder::{Builder, AnimationBundle};
+use crate::builder::{AnimationBundle, Builder};
+use crate::data::animation::UnitType;
+use crate::enemy::Enemy;
 use crate::world_map::{tile_to_position, Biome, WorldMap};
 use bevy::render::camera::Camera;
 use bevy_rapier3d::physics::RapierConfiguration;
-use bevy_rapier3d::rapier::na::Vector;
-use crate::data::animation::UnitType;
-use crate::enemy::Enemy;
 use bevy_rapier3d::rapier::dynamics::RigidBodyBuilder;
 use bevy_rapier3d::rapier::geometry::ColliderBuilder;
+use bevy_rapier3d::rapier::na::Vector;
 
 pub const WORLD_MAP_RENDER_WIDTH: usize = 13;
 pub const WORLD_MAP_RENDER_HEIGHT: usize = 10;
@@ -30,10 +30,7 @@ pub struct World {
     generated: bool,
 }
 
-fn generate_world(
-    mut world_map: ResMut<WorldMap>,
-    mut rapier_config: ResMut<RapierConfiguration>
-) {
+fn generate_world(mut world_map: ResMut<WorldMap>, mut rapier_config: ResMut<RapierConfiguration>) {
     for x in 200..300 {
         for y in 125..175 {
             let mut tile = world_map.get_tile_mut(x, y).unwrap();
@@ -71,7 +68,9 @@ fn render_world(
                 .spawn(SpriteSheetComponents {
                     texture_atlas: builder_atlas_handle,
                     sprite: TextureAtlasSprite::new(7),
-                    transform: Transform::from_translation(Vec3::new(builder_x, builder_y, builder_z)),
+                    transform: Transform::from_translation(Vec3::new(
+                        builder_x, builder_y, builder_z,
+                    )),
                     ..Default::default()
                 })
                 .with_bundle(AnimationBundle::new(UnitType::Wizard))
@@ -124,10 +123,10 @@ fn render_world(
                         .translation(
                             enemy_transform.translation.x(),
                             enemy_transform.translation.y(),
-                            enemy_transform.translation.z()
+                            enemy_transform.translation.z(),
                         )
-                       .lock_rotations()
-                       .mass(1000., false);
+                        .lock_rotations()
+                        .mass(1000., false);
                     let enemy_collider = ColliderBuilder::cuboid(16., 16., 16.)
                         .user_data(enemy_entity.to_bits() as u128);
                     commands.insert(enemy_entity, (enemy_body, enemy_collider));

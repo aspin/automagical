@@ -1,11 +1,11 @@
 use crate::asset_loader::AtlasHandles;
+use crate::data::animation;
+use crate::data::animation::{AnimationState, UnitType};
 use crate::projectile::{Projectile, ARROW_SPEED};
 use bevy::prelude::*;
 use bevy_rapier3d::rapier::dynamics::RigidBodyBuilder;
 use bevy_rapier3d::rapier::geometry::ColliderBuilder;
 use bevy_rapier3d::rapier::math::AngVector;
-use crate::data::animation::{AnimationState, UnitType};
-use crate::data::animation;
 
 const ANIMATION_SPEED: f32 = 0.5;
 
@@ -15,7 +15,9 @@ pub struct Builder {
 
 impl Builder {
     pub fn new(name: &str) -> Self {
-        Builder { name: String::from(name), }
+        Builder {
+            name: String::from(name),
+        }
     }
 }
 
@@ -48,7 +50,7 @@ impl AnimationBundle {
         let animation_info = animation::get_animation_info(&unit_type, &AnimationState::Idle);
         AnimationBundle {
             animated: Animated::new(unit_type),
-            timer: Timer::from_seconds(animation_info.durations[0], false)
+            timer: Timer::from_seconds(animation_info.durations[0], false),
         }
     }
 }
@@ -64,7 +66,8 @@ pub enum CardinalDirection {
 pub fn animate(mut query: Query<(&mut Timer, &mut TextureAtlasSprite, &mut Animated)>) {
     for (mut timer, mut sprite, mut animated) in query.iter_mut() {
         if timer.finished {
-            let mut animation_info = animation::get_animation_info(&animated.unit_type, &animated.state);
+            let mut animation_info =
+                animation::get_animation_info(&animated.unit_type, &animated.state);
 
             let next_index = animated.animation_index + 1;
             if next_index >= animation_info.length {
@@ -73,7 +76,8 @@ pub fn animate(mut query: Query<(&mut Timer, &mut TextureAtlasSprite, &mut Anima
                 } else {
                     animated.animation_index = 0;
                     animated.state = AnimationState::Idle;
-                    animation_info = animation::get_animation_info(&animated.unit_type, &AnimationState::Idle);
+                    animation_info =
+                        animation::get_animation_info(&animated.unit_type, &AnimationState::Idle);
                 }
             } else {
                 animated.animation_index = next_index;
@@ -82,7 +86,8 @@ pub fn animate(mut query: Query<(&mut Timer, &mut TextureAtlasSprite, &mut Anima
             sprite.index = animation_info.sprite_offset + animated.animation_index;
 
             timer.reset();
-            timer.duration = animation_info.durations[animated.animation_index as usize] * ANIMATION_SPEED;
+            timer.duration =
+                animation_info.durations[animated.animation_index as usize] * ANIMATION_SPEED;
         }
     }
 }
@@ -143,8 +148,8 @@ pub fn produce_projectiles(
                     .rotation(AngVector::new(0.0, y_rot, 0.0))
                     .lock_rotations()
                     .linvel(x_velocity, 0., 0.);
-                let arrow_collider = ColliderBuilder::cuboid(8., 4., 16.)
-                    .user_data(arrow_entity.to_bits() as u128);
+                let arrow_collider =
+                    ColliderBuilder::cuboid(8., 4., 16.).user_data(arrow_entity.to_bits() as u128);
 
                 commands.insert(arrow_entity, (arrow_body, arrow_collider));
             }

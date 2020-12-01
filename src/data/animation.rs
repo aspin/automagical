@@ -8,7 +8,12 @@ pub struct AnimationInfo {
 impl AnimationInfo {
     pub fn new(sprite_offset: u32, durations: Vec<f32>, loop_around: bool) -> Self {
         let length = durations.len() as u32;
-        AnimationInfo { sprite_offset, durations, loop_around, length }
+        AnimationInfo {
+            sprite_offset,
+            durations,
+            loop_around,
+            length,
+        }
     }
 }
 
@@ -20,8 +25,10 @@ pub enum UnitType {
 fn wizard_animation(state: &AnimationState) -> AnimationInfo {
     match state {
         AnimationState::Idle => AnimationInfo::new(7, vec![0.5, 0.1, 0.06, 0.1, 0.1, 0.1], true),
-        AnimationState::Attack => AnimationInfo::new(0, vec![0.5, 0.1, 0.3, 0.1, 0.1, 0.1, 0.1], false),
-        AnimationState::Move => AnimationInfo::new(14, vec![0.5, 0.1, 0.1, 0.1], false)
+        AnimationState::Attack => {
+            AnimationInfo::new(0, vec![0.5, 0.1, 0.3, 0.1, 0.1, 0.1, 0.1], false)
+        }
+        AnimationState::Move => AnimationInfo::new(14, vec![0.5, 0.1, 0.1, 0.1], false),
     }
 }
 
@@ -29,7 +36,7 @@ fn enemy_animation(state: &AnimationState) -> AnimationInfo {
     match state {
         AnimationState::Idle => AnimationInfo::new(7, vec![0.5, 0.1, 0.1, 0.1], true),
         AnimationState::Attack => AnimationInfo::new(0, vec![0.5, 0.1, 0.1, 0.1], false),
-        AnimationState::Move => AnimationInfo::new(14, vec![0.5, 0.1, 0.1, 0.1], false)
+        AnimationState::Move => AnimationInfo::new(14, vec![0.5, 0.1, 0.1, 0.1], false),
     }
 }
 
