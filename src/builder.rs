@@ -92,6 +92,7 @@ pub fn produce_projectiles(
     atlas_handles: Res<AtlasHandles>,
     animated: &Animated,
     builder_transform: &Transform,
+    _builder: &Builder,
 ) {
     if let Some(arrow_id) = atlas_handles.arrow_id {
         if animated.state == AnimationState::Attack && animated.animation_index == 3 {
@@ -119,7 +120,7 @@ pub fn produce_projectiles(
                 if projectile.facing == CardinalDirection::West {
                     y_rot = std::f32::consts::PI;
                 }
-                let rotation = Quat::from_rotation_y(std::f32::consts::PI);
+                let rotation = Quat::from_rotation_y(y_rot);
                 let mut arrow_initial_transform = Transform::from_translation(Vec3::new(x, y, z));
                 arrow_initial_transform.rotate(rotation);
 

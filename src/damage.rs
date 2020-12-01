@@ -37,9 +37,7 @@ pub fn examine_collisions(
                     let projectile = projectile_query.get_component::<Projectile>(projectile).unwrap();
                     enemy.take_damage(projectile.damage);
                     if enemy.hp <= 0 {
-                        println!("despawning enemy");
-                        commands.despawn(entity_1);
-                        commands.despawn(entity_2);
+                        commands.despawn(enemy_entity);
                     } else {
                         println!("enemy hp {}", enemy.hp);
                     }

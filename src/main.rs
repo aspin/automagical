@@ -27,5 +27,6 @@ fn main() {
         .add_system(construction::update_cursor_position.system())
         .add_system(construction::place_object.system())
         .add_system(damage::examine_collisions.system())
+        .add_system(enemy::move_enemies.system())
         .run();
 }

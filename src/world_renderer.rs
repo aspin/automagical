@@ -38,10 +38,10 @@ fn generate_world(
         for y in 125..175 {
             let mut tile = world_map.get_tile_mut(x, y).unwrap();
             tile.biome = Biome::Desert;
-            if (rand::random::<u32>() % 1000) as f32 / 1000. <= ENEMY_DENSITY {
-                tile.contains_enemy = true;
-                println!("Enemy should be spawned at {} {}", x, y)
-            }
+            // if (rand::random::<u32>() % 1000) as f32 / 1000. <= ENEMY_DENSITY {
+            //     tile.contains_enemy = true;
+            //     println!("Enemy should be spawned at {} {}", x, y)
+            // }
         }
     }
     world_map.get_tile_mut(160, 150).unwrap().contains_enemy = true;
@@ -109,7 +109,7 @@ fn render_world(
                         .current_entity()
                         .unwrap();
 
-                    let enemy_body = RigidBodyBuilder::new_static()
+                    let enemy_body = RigidBodyBuilder::new_dynamic()
                         .translation(
                             enemy_transform.translation.x(),
                             enemy_transform.translation.y(),
