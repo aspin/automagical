@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use crate::builder::{Animated, Builder};
+use crate::builder::{Animated, Builder, CardinalDirection};
 use bevy_rapier3d::rapier::dynamics::{RigidBody, RigidBodySet};
 use crate::data::animation::AnimationState;
 use bevy_rapier3d::rapier::math::Vector;
@@ -51,8 +51,16 @@ pub fn move_enemies(
                         builder_position, &*rigid_body
                     ) * ENEMY_SPEED;
 
-                    rigid_body.linvel = Vector::new(
-                        movement_direction.x(), movement_direction.y(), movement_direction.z()
+                    if movement_direction.x() < 0. {
+                        animated.facing = CardinalDirection::West;
+                    } else {
+                        animated.facing = CardinalDirection::East;
+                    }
+                    rigid_body.set_linvel(
+                        Vector::new(
+                            movement_direction.x(), movement_direction.y(), movement_direction.z()
+                        ),
+                        false
                     );
                     rigid_body.wake_up(false);
 
@@ -61,7 +69,10 @@ pub fn move_enemies(
                         animated.animation_index = 0;
                     }
                 } else {
-                    rigid_body.linvel = Vector::new(0., 0., 0.);
+                    rigid_body.set_linvel(
+                        Vector::new(0., 0., 0.),
+                        false
+                    );
                 }
             }
         }
@@ -74,9 +85,9 @@ fn builder_enemy_distance(builder_transform: &Transform, enemy_rigid_body: &Rigi
         builder_transform.translation.y(),
         builder_transform.translation.z()
     );
-    let enemy_x: f32 = enemy_rigid_body.position.translation.x;
-    let enemy_y: f32 = enemy_rigid_body.position.translation.y;
-    let enemy_z: f32 = enemy_rigid_body.position.translation.z;
+    let enemy_x: f32 = enemy_rigid_body.position().translation.x;
+    let enemy_y: f32 = enemy_rigid_body.position().translation.y;
+    let enemy_z: f32 = enemy_rigid_body.position().translation.z;
 
     ((builder_x - enemy_x).powi(2) + (builder_y - enemy_y).powi(2) + (builder_z - enemy_z).powi(2)).sqrt()
 }
@@ -86,8 +97,8 @@ fn get_builder_direction(builder_transform: &Transform, enemy_rigid_body: &Rigid
         builder_transform.translation.x(),
         builder_transform.translation.y(),
     );
-    let enemy_x: f32 = enemy_rigid_body.position.translation.x;
-    let enemy_y: f32 = enemy_rigid_body.position.translation.y;
+    let enemy_x: f32 = enemy_rigid_body.position().translation.x;
+    let enemy_y: f32 = enemy_rigid_body.position().translation.y;
 
     Vec3::new(
         builder_x - enemy_x,

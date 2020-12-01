@@ -114,7 +114,9 @@ fn render_world(
                             enemy_transform.translation.x(),
                             enemy_transform.translation.y(),
                             enemy_transform.translation.z()
-                        );
+                        )
+                       .lock_rotations()
+                       .mass(1000., false);
                     let enemy_collider = ColliderBuilder::cuboid(16., 16., 16.)
                         .user_data(enemy_entity.to_bits() as u128);
                     commands.insert(enemy_entity, (enemy_body, enemy_collider));

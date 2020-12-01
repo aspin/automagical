@@ -141,6 +141,7 @@ pub fn produce_projectiles(
                 let arrow_body = RigidBodyBuilder::new_dynamic()
                     .translation(x, y, z)
                     .rotation(AngVector::new(0.0, y_rot, 0.0))
+                    .lock_rotations()
                     .linvel(x_velocity, 0., 0.);
                 let arrow_collider = ColliderBuilder::cuboid(8., 4., 16.)
                     .user_data(arrow_entity.to_bits() as u128);
