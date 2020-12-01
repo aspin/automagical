@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use crate::builder::{Animated, Builder, CardinalDirection};
 use bevy_rapier3d::rapier::dynamics::{RigidBody, RigidBodySet};
 use crate::data::animation::AnimationState;
-use bevy_rapier3d::rapier::math::Vector;
+use bevy_rapier3d::rapier::math::{Vector, Rotation, AngVector};
 use bevy_rapier3d::physics::RigidBodyHandleComponent;
 
 pub const ENEMY_SPEED: f32 = 30.;
@@ -51,18 +51,21 @@ pub fn move_enemies(
                         builder_position, &*rigid_body
                     ) * ENEMY_SPEED;
 
+                    let mut previous_position = rigid_body.position().clone();
                     if movement_direction.x() < 0. {
                         animated.facing = CardinalDirection::West;
+                        previous_position.rotation = Rotation::new(AngVector::new(0.0, std::f32::consts::PI, 0.0));
                     } else {
                         animated.facing = CardinalDirection::East;
+                        previous_position.rotation = Rotation::new(AngVector::new(0.0, 0.0, 0.0));
                     }
+                    rigid_body.set_position(previous_position, true);
                     rigid_body.set_linvel(
                         Vector::new(
                             movement_direction.x(), movement_direction.y(), movement_direction.z()
                         ),
                         false
                     );
-                    rigid_body.wake_up(false);
 
                     if distance < 25. {
                         animated.state = AnimationState::Attack;
