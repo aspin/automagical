@@ -22,6 +22,7 @@ pub struct SpriteHandles {
     builder_handle: Handle<Texture>,
     projectile_handles: Vec<HandleUntyped>,
     conveyor_handle: Handle<Texture>,
+    enemy_handle: Handle<Texture>,
     loaded: bool,
 }
 
@@ -33,6 +34,7 @@ pub struct AtlasHandles {
     pub builder_id: Option<HandleId>,
     pub arrow_id: Option<HandleId>,
     pub conveyor_id: Option<HandleId>,
+    pub enemy_id: Option<HandleId>,
 }
 
 impl AtlasHandles {
@@ -41,6 +43,7 @@ impl AtlasHandles {
             && self.builder_id.is_some()
             && self.projectiles_loaded()
             && self.conveyor_id.is_some()
+            && self.enemy_id.is_some()
     }
 
     pub fn biomes_loaded(&self) -> bool {
@@ -62,6 +65,7 @@ fn loader(
     map_sprite_handles.biome_handles = asset_server.load_folder("texture/biome").unwrap();
     map_sprite_handles.projectile_handles = asset_server.load_folder("texture/projectile").unwrap();
     map_sprite_handles.builder_handle = asset_server.load("texture/wizard.png");
+    map_sprite_handles.enemy_handle = asset_server.load("texture/enemy.png");
     map_sprite_handles.conveyor_handle = asset_server.load("texture/conveyor.png");
 
     let camera_entity = commands
@@ -153,6 +157,16 @@ fn post_load(
             let builder_atlas = TextureAtlas::from_grid(builder_handle, tile_size, 7, 3);
             let builder_atlas_handle = texture_atlases.add(builder_atlas);
             atlas_handles.builder_id.replace(builder_atlas_handle.id);
+        }
+    }
+
+    let enemy_loaded = atlas_handles.enemy_id.is_some();
+    if !enemy_loaded {
+        let enemy_handle = asset_server.get_handle(&sprite_handles.enemy_handle);
+        if let LoadState::Loaded = asset_server.get_load_state(&enemy_handle) {
+            let enemy_atlas = TextureAtlas::from_grid(enemy_handle, tile_size, 7, 3);
+            let enemy_atlas_handle = texture_atlases.add(enemy_atlas);
+            atlas_handles.enemy_id.replace(enemy_atlas_handle.id);
         }
     }
 

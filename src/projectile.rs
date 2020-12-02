@@ -7,6 +7,7 @@ pub struct Projectile {
     pub damage: i32,
     pub ttl: f32,
     pub facing: CardinalDirection,
+    pub piercing: bool,
 }
 
 impl Projectile {
@@ -15,6 +16,7 @@ impl Projectile {
             damage: 12,
             ttl: 2.,
             facing,
+            piercing: true,
         }
     }
 }

@@ -3,6 +3,9 @@ mod builder;
 mod construction;
 mod controls;
 mod coordinate;
+mod damage;
+mod data;
+mod enemy;
 mod projectile;
 mod world_map;
 mod world_renderer;
@@ -23,5 +26,7 @@ fn main() {
         .add_system(controls::control_builder.system())
         .add_system(construction::update_cursor_position.system())
         .add_system(construction::place_object.system())
+        .add_system(damage::examine_collisions.system())
+        .add_system(enemy::move_enemies.system())
         .run();
 }

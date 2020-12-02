@@ -1,4 +1,6 @@
 use crate::asset_loader::AtlasHandles;
+use crate::data::animation;
+use crate::data::animation::{AnimationState, UnitType};
 use crate::projectile::{Projectile, ARROW_SPEED};
 use bevy::prelude::*;
 use bevy_rapier3d::rapier::dynamics::RigidBodyBuilder;
@@ -9,16 +11,48 @@ const ANIMATION_SPEED: f32 = 0.5;
 
 pub struct Builder {
     pub name: String,
-    pub state: BuilderState,
+}
+
+impl Builder {
+    pub fn new(name: &str) -> Self {
+        Builder {
+            name: String::from(name),
+        }
+    }
+}
+
+pub struct Animated {
+    pub unit_type: UnitType,
+    pub state: AnimationState,
     pub animation_index: u32,
     pub facing: CardinalDirection,
 }
 
-#[derive(PartialEq)]
-pub enum BuilderState {
-    Idle,
-    Move,
-    Attack,
+impl Animated {
+    fn new(unit_type: UnitType) -> Self {
+        Animated {
+            unit_type,
+            state: AnimationState::Idle,
+            animation_index: 0,
+            facing: CardinalDirection::East,
+        }
+    }
+}
+
+#[derive(Bundle)]
+pub struct AnimationBundle {
+    pub animated: Animated,
+    pub timer: Timer,
+}
+
+impl AnimationBundle {
+    pub fn new(unit_type: UnitType) -> Self {
+        let animation_info = animation::get_animation_info(&unit_type, &AnimationState::Idle);
+        AnimationBundle {
+            animated: Animated::new(unit_type),
+            timer: Timer::from_seconds(animation_info.durations[0], false),
+        }
+    }
 }
 
 #[derive(PartialEq, Copy, Clone)]
@@ -29,44 +63,31 @@ pub enum CardinalDirection {
     East,
 }
 
-impl Builder {
-    pub fn new(name: &str) -> Builder {
-        Builder {
-            name: String::from(name),
-            state: BuilderState::Idle,
-            animation_index: 0,
-            facing: CardinalDirection::East,
-        }
-    }
-}
-
-pub fn animate(mut query: Query<(&mut Timer, &mut TextureAtlasSprite, &mut Builder)>) {
-    for (mut timer, mut sprite, mut builder) in query.iter_mut() {
+pub fn animate(mut query: Query<(&mut Timer, &mut TextureAtlasSprite, &mut Animated)>) {
+    for (mut timer, mut sprite, mut animated) in query.iter_mut() {
         if timer.finished {
-            let (mut offset, mut duration, length, loop_around) = match builder.state {
-                BuilderState::Idle => (7, vec![0.5, 0.1, 0.06, 0.1, 0.1, 0.1], 6, true),
-                BuilderState::Attack => (0, vec![0.5, 0.1, 0.3, 0.1, 0.1, 0.1, 0.1], 7, false),
-                BuilderState::Move => (14, vec![0.5, 0.1, 0.1, 0.1], 4, false),
-            };
+            let mut animation_info =
+                animation::get_animation_info(&animated.unit_type, &animated.state);
 
-            let next_index = builder.animation_index + 1;
-            if next_index >= length {
-                if loop_around {
-                    builder.animation_index = next_index % length
+            let next_index = animated.animation_index + 1;
+            if next_index >= animation_info.length {
+                if animation_info.loop_around {
+                    animated.animation_index = next_index % animation_info.length
                 } else {
-                    builder.animation_index = 0;
-                    builder.state = BuilderState::Idle;
-                    offset = 7;
-                    duration = vec![0.5, 0.1, 0.06, 0.1, 0.1, 0.1];
+                    animated.animation_index = 0;
+                    animated.state = AnimationState::Idle;
+                    animation_info =
+                        animation::get_animation_info(&animated.unit_type, &AnimationState::Idle);
                 }
             } else {
-                builder.animation_index = next_index;
+                animated.animation_index = next_index;
             }
 
-            sprite.index = offset + builder.animation_index;
+            sprite.index = animation_info.sprite_offset + animated.animation_index;
 
             timer.reset();
-            timer.duration = duration[builder.animation_index as usize] * ANIMATION_SPEED;
+            timer.duration =
+                animation_info.durations[animated.animation_index as usize] * ANIMATION_SPEED;
         }
     }
 }
@@ -74,19 +95,20 @@ pub fn animate(mut query: Query<(&mut Timer, &mut TextureAtlasSprite, &mut Build
 pub fn produce_projectiles(
     mut commands: Commands,
     atlas_handles: Res<AtlasHandles>,
-    builder: &Builder,
+    animated: &Animated,
     builder_transform: &Transform,
+    _builder: &Builder,
 ) {
     if let Some(arrow_id) = atlas_handles.arrow_id {
-        if builder.state == BuilderState::Attack && builder.animation_index == 3 {
+        if animated.state == AnimationState::Attack && animated.animation_index == 3 {
             for i in 0..3 {
                 let arrow_atlas_handle = Handle::weak(arrow_id);
-                let projectile = Projectile::arrow(builder.facing.clone());
+                let projectile = Projectile::arrow(animated.facing.clone());
                 let projectile_timer = Timer::from_seconds(projectile.ttl, false);
 
                 let mut x_offset: f32 = 16.;
                 let mut x_velocity: f32 = ARROW_SPEED;
-                if builder.facing == CardinalDirection::West {
+                if animated.facing == CardinalDirection::West {
                     x_offset *= -1.;
                     x_velocity *= -1.;
                 }
@@ -95,7 +117,7 @@ pub fn produce_projectiles(
 
                 let x = builder_transform.translation.x() + x_offset;
                 let y = builder_transform.translation.y() + (i as f32) * y_width + y_offset;
-                let z = 2.;
+                let z = 1.;
 
                 // some temporary logic since bevy_rapier is slow to update from bevy
                 // https://github.com/dimforge/bevy_rapier/issues/6
@@ -103,19 +125,13 @@ pub fn produce_projectiles(
                 if projectile.facing == CardinalDirection::West {
                     y_rot = std::f32::consts::PI;
                 }
-                let rotation = Quat::from_rotation_y(std::f32::consts::PI);
+                let rotation = Quat::from_rotation_y(y_rot);
                 let mut arrow_initial_transform = Transform::from_translation(Vec3::new(x, y, z));
                 arrow_initial_transform.rotate(rotation);
 
-                let arrow_body = RigidBodyBuilder::new_dynamic()
-                    .translation(x, y, z)
-                    .rotation(AngVector::new(0.0, y_rot, 0.0))
-                    .linvel(x_velocity, 0., 0.);
-                let arrow_collider = ColliderBuilder::cuboid(0., 0., 0.);
-
                 // println!("Spawning arrow at {:?}", arrow_initial_transform);
 
-                commands
+                let arrow_entity = commands
                     .spawn(SpriteSheetComponents {
                         texture_atlas: arrow_atlas_handle,
                         sprite: TextureAtlasSprite::new(0),
@@ -123,9 +139,19 @@ pub fn produce_projectiles(
                         ..Default::default()
                     })
                     .with(projectile)
-                    .with(arrow_body)
-                    .with(arrow_collider)
-                    .with(projectile_timer);
+                    .with(projectile_timer)
+                    .current_entity()
+                    .unwrap();
+
+                let arrow_body = RigidBodyBuilder::new_dynamic()
+                    .translation(x, y, z)
+                    .rotation(AngVector::new(0.0, y_rot, 0.0))
+                    .lock_rotations()
+                    .linvel(x_velocity, 0., 0.);
+                let arrow_collider =
+                    ColliderBuilder::cuboid(8., 4., 16.).user_data(arrow_entity.to_bits() as u128);
+
+                commands.insert(arrow_entity, (arrow_body, arrow_collider));
             }
         }
     }

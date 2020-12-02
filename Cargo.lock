@@ -562,9 +562,9 @@ dependencies = [
 
 [[package]]
 name = "bevy_rapier3d"
-version = "0.5.0"
+version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8b6789b511fa4d10e64b2929ad29e71676c945ef0fcae23eb3b8c3d470b777be"
+checksum = "2adb655210d6a75a6564a32c12825454b016c7006bc56ce413323a135208442d"
 dependencies = [
  "bevy",
  "concurrent-queue",
@@ -2926,9 +2926,9 @@ checksum = "a871f1e45a3a3f0c73fb60343c811238bb5143a81642e27c2ac7aac27ff01a63"
 
 [[package]]
 name = "rapier3d"
-version = "0.3.2"
+version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5112dd98a3e8d99f6e2e4063e651d19a85ccc6e1e610e24177758a1f2ef6d238"
+checksum = "27eaa6e6fa46de76758472f2b6cd409efb6b2796ea25a88c4e38e2f0394b7a1b"
 dependencies = [
  "approx",
  "arrayvec",

@@ -27,6 +27,7 @@ pub struct Tile {
     pub y: usize,
     pub biome: Biome,
     pub rendered_entity: Option<Entity>,
+    pub contains_enemy: bool,
 }
 
 impl WorldMap {
@@ -121,6 +122,7 @@ impl Tile {
             y,
             biome: Biome::Grassland,
             rendered_entity: Option::None,
+            contains_enemy: false,
         }
     }
 
