@@ -6,6 +6,7 @@ use bevy_rapier3d::rapier::geometry::ColliderBuilder;
 use bevy_rapier3d::rapier::math::AngVector;
 use crate::animation::{UnitType, AnimationState};
 use crate::data;
+use crate::data::AssetType;
 
 const ANIMATION_SPEED: f32 = 0.5;
 
@@ -99,7 +100,7 @@ pub fn produce_projectiles(
     builder_transform: &Transform,
     _builder: &Builder,
 ) {
-    if let Some(arrow_id) = atlas_handles.arrow_id {
+    if let Some(arrow_id) = atlas_handles.get_asset(AssetType::Arrow) {
         if animated.state == AnimationState::Attack && animated.animation_index == 3 {
             for i in 0..3 {
                 let arrow_atlas_handle = Handle::weak(arrow_id);

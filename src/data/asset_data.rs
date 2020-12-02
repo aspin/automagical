@@ -9,18 +9,40 @@ pub struct AssetInfo {
     pub rows: usize,
 }
 
-pub enum AssetType {
-    Arrow,
-    Builder,
-    Enemy,
-    Conveyor
-}
-
 impl AssetInfo {
     pub fn new(sprite_file: String, tile_size: Vec2, columns: usize, rows: usize) -> Self {
         AssetInfo { sprite_file, tile_size, columns, rows }
     }
 }
+
+pub struct AssetGroupInfo {
+    pub folder_path: String,
+    pub assets_info: Vec<(AssetType, AssetInfo)>,
+}
+
+impl AssetGroupInfo {
+    pub fn new(folder_path: String, assets_info: Vec<(AssetType, AssetInfo)>) -> Self {
+        AssetGroupInfo { folder_path, assets_info }
+    }
+}
+
+#[derive(PartialEq, Eq, Copy, Clone, Hash)]
+pub enum AssetType {
+    Arrow,
+    Builder,
+    Enemy,
+    Conveyor,
+    Grassland,
+    Desert,
+    Rockland,
+}
+
+#[derive(PartialEq, Eq, Copy, Clone, Hash)]
+pub enum AssetGroup {
+    Biome,
+    Projectile,
+}
+
 
 pub fn default_tile_size() -> Vec2 {
     Vec2::new(TILE_LENGTH as f32, TILE_LENGTH as f32)
@@ -82,6 +104,28 @@ pub fn get_asset_info(asset_type: AssetType) -> AssetInfo {
         AssetType::Enemy => enemy_asset_info(),
         AssetType::Arrow => arrow_asset_info(),
         AssetType::Conveyor => conveyor_asset_info(),
+        AssetType::Grassland => grassland_asset_info(),
+        AssetType::Desert => desert_asset_info(),
+        AssetType::Rockland => rocklands_asset_info(),
+    }
+}
+
+pub fn get_asset_group_info(asset_group_type: AssetGroup) -> AssetGroupInfo {
+    match asset_group_type {
+        AssetGroup::Biome => AssetGroupInfo::new(
+            String::from("texture/biome"),
+            vec![
+                (AssetType::Grassland, grassland_asset_info()),
+                (AssetType::Desert, desert_asset_info()),
+                (AssetType::Rockland, rocklands_asset_info()),
+            ]
+        ),
+        AssetGroup::Projectile => AssetGroupInfo::new(
+            String::from("texture/projectile"),
+            vec![
+                (AssetType::Arrow, arrow_asset_info())
+            ]
+        )
     }
 }
 
