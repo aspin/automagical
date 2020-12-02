@@ -23,15 +23,13 @@ pub fn control_builder(
     let query_builder_iterator = &mut query_builder.iter_mut();
     let query_camera_iterator = &mut query_camera.iter_mut();
 
-    // TODO: should be able to rework this?
-
     if let Some((mut builder_timer, _builder, mut animated, builder_body_handle)) =
-        query_builder_iterator.into_iter().next()
+        query_builder_iterator.next()
     {
         let builder_body = rigid_body_set
             .get_mut(builder_body_handle.handle())
             .unwrap();
-        if let Some((_camera, mut camera_transform)) = query_camera_iterator.into_iter().next() {
+        if let Some((_camera, mut camera_transform)) = query_camera_iterator.next() {
             let press_up = keyboard_input.pressed(KeyCode::W);
             let press_down = keyboard_input.pressed(KeyCode::S);
             let press_left = keyboard_input.pressed(KeyCode::A);

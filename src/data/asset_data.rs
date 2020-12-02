@@ -1,6 +1,5 @@
 use bevy::math::Vec2;
 use crate::global_constants::TILE_LENGTH;
-use crate::biome::Biome;
 
 pub struct AssetInfo {
     pub sprite_file: String,
