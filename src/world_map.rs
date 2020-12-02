@@ -123,12 +123,7 @@ impl Tile {
     }
 
     pub fn get_biome_handle(&self, atlas_handles: &AtlasHandles) -> Handle<TextureAtlas> {
-        let handle_id = match self.biome {
-            Biome::Grassland => atlas_handles.grassland_biome_id.unwrap(),
-            Biome::Desert => atlas_handles.desert_biome_id.unwrap(),
-            Biome::Rockland => atlas_handles.rocklands_biome_id.unwrap(),
-        };
-        Handle::weak(handle_id)
+        Handle::weak(atlas_handles.get_biome_asset(self.biome).unwrap())
     }
 }
 
