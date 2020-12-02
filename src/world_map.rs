@@ -1,6 +1,8 @@
-use crate::asset_loader::{AtlasHandles, TILE_LENGTH};
+use crate::asset_loader::AtlasHandles;
 use crate::world_renderer::{WORLD_MAP_RENDER_HEIGHT, WORLD_MAP_RENDER_WIDTH};
 use bevy::prelude::*;
+use crate::global_constants::TILE_LENGTH;
+use crate::biome::Biome;
 
 pub const WORLD_MAP_WIDTH: usize = 300;
 pub const WORLD_MAP_HEIGHT: usize = 300;
@@ -13,12 +15,6 @@ pub struct WorldMap {
     // in number of tiles
     width: usize,
     height: usize,
-}
-
-#[derive(Debug)]
-pub enum Biome {
-    Grassland,
-    Desert,
 }
 
 #[derive(Debug)]
@@ -130,6 +126,7 @@ impl Tile {
         let handle_id = match self.biome {
             Biome::Grassland => atlas_handles.grassland_biome_id.unwrap(),
             Biome::Desert => atlas_handles.desert_biome_id.unwrap(),
+            Biome::Rockland => atlas_handles.rocklands_biome_id.unwrap(),
         };
         Handle::weak(handle_id)
     }

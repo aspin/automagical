@@ -2,14 +2,15 @@ use bevy::prelude::*;
 
 use crate::asset_loader::AtlasHandles;
 use crate::builder::{AnimationBundle, Builder};
-use crate::data::animation::UnitType;
+use crate::animation::UnitType;
 use crate::enemy::Enemy;
-use crate::world_map::{tile_to_position, Biome, WorldMap};
+use crate::world_map::{tile_to_position, WorldMap};
 use bevy::render::camera::Camera;
 use bevy_rapier3d::physics::RapierConfiguration;
 use bevy_rapier3d::rapier::dynamics::RigidBodyBuilder;
 use bevy_rapier3d::rapier::geometry::ColliderBuilder;
 use bevy_rapier3d::rapier::na::Vector;
+use crate::biome::Biome;
 
 pub const WORLD_MAP_RENDER_WIDTH: usize = 13;
 pub const WORLD_MAP_RENDER_HEIGHT: usize = 10;

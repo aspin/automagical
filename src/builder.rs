@@ -1,11 +1,11 @@
 use crate::asset_loader::AtlasHandles;
-use crate::data::animation;
-use crate::data::animation::{AnimationState, UnitType};
 use crate::projectile::{Projectile, ARROW_SPEED};
 use bevy::prelude::*;
 use bevy_rapier3d::rapier::dynamics::RigidBodyBuilder;
 use bevy_rapier3d::rapier::geometry::ColliderBuilder;
 use bevy_rapier3d::rapier::math::AngVector;
+use crate::animation::{UnitType, AnimationState};
+use crate::data;
 
 const ANIMATION_SPEED: f32 = 0.5;
 
@@ -47,7 +47,7 @@ pub struct AnimationBundle {
 
 impl AnimationBundle {
     pub fn new(unit_type: UnitType) -> Self {
-        let animation_info = animation::get_animation_info(&unit_type, &AnimationState::Idle);
+        let animation_info = data::get_animation_info(&unit_type, &AnimationState::Idle);
         AnimationBundle {
             animated: Animated::new(unit_type),
             timer: Timer::from_seconds(animation_info.durations[0], false),
@@ -67,7 +67,7 @@ pub fn animate(mut query: Query<(&mut Timer, &mut TextureAtlasSprite, &mut Anima
     for (mut timer, mut sprite, mut animated) in query.iter_mut() {
         if timer.finished {
             let mut animation_info =
-                animation::get_animation_info(&animated.unit_type, &animated.state);
+                data::get_animation_info(&animated.unit_type, &animated.state);
 
             let next_index = animated.animation_index + 1;
             if next_index >= animation_info.length {
@@ -77,7 +77,7 @@ pub fn animate(mut query: Query<(&mut Timer, &mut TextureAtlasSprite, &mut Anima
                     animated.animation_index = 0;
                     animated.state = AnimationState::Idle;
                     animation_info =
-                        animation::get_animation_info(&animated.unit_type, &AnimationState::Idle);
+                        data::get_animation_info(&animated.unit_type, &AnimationState::Idle);
                 }
             } else {
                 animated.animation_index = next_index;

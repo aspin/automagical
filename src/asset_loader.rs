@@ -2,8 +2,10 @@ use bevy::asset::{HandleId, LoadState};
 use bevy::prelude::*;
 
 use crate::construction::CursorState;
-
-pub const TILE_LENGTH: u32 = 16;
+use crate::{biome, data};
+use crate::global_constants::TILE_LENGTH;
+use crate::biome::Biome;
+use crate::data::{AssetType, AssetInfo};
 
 pub struct AssetLoaderPlugin;
 
@@ -64,9 +66,9 @@ fn loader(
 ) {
     map_sprite_handles.biome_handles = asset_server.load_folder("texture/biome").unwrap();
     map_sprite_handles.projectile_handles = asset_server.load_folder("texture/projectile").unwrap();
-    map_sprite_handles.builder_handle = asset_server.load("texture/wizard.png");
-    map_sprite_handles.enemy_handle = asset_server.load("texture/enemy.png");
-    map_sprite_handles.conveyor_handle = asset_server.load("texture/conveyor.png");
+    map_sprite_handles.builder_handle = asset_server.load(data::get_asset_sprite_path(AssetType::Builder).as_str());
+    map_sprite_handles.enemy_handle = asset_server.load(data::get_asset_sprite_path(AssetType::Enemy).as_str());
+    map_sprite_handles.conveyor_handle = asset_server.load(data::get_asset_sprite_path(AssetType::Conveyor).as_str());
 
     let camera_entity = commands
         .spawn(Camera2dComponents {
@@ -100,38 +102,8 @@ fn post_load(
 
     println!("Loading assets...");
 
-    let biomes_loaded = atlas_handles.biomes_loaded();
     let tile_size = Vec2::new(TILE_LENGTH as f32, TILE_LENGTH as f32);
-    if !biomes_loaded {
-        if let LoadState::Loaded = asset_server
-            .get_group_load_state(sprite_handles.biome_handles.iter().map(|handle| handle.id))
-        {
-            let grass_handle = asset_server.get_handle("texture/biome/grass.png");
-            let grassland_atlas = TextureAtlas::from_grid(grass_handle, tile_size, 4, 1);
-
-            let grassland_atlas_handle = texture_atlases.add(grassland_atlas);
-
-            atlas_handles
-                .grassland_biome_id
-                .replace(grassland_atlas_handle.id);
-
-            let desert_handle = asset_server.get_handle("texture/biome/desert.png");
-            let desert_atlas = TextureAtlas::from_grid(desert_handle, tile_size, 4, 1);
-
-            let desert_atlas_handle = texture_atlases.add(desert_atlas);
-            atlas_handles
-                .desert_biome_id
-                .replace(desert_atlas_handle.id);
-
-            let rockland_handle = asset_server.get_handle("texture/biome/rocklands.png");
-            let rockland_atlas = TextureAtlas::from_grid(rockland_handle, tile_size, 4, 1);
-
-            let rockland_atlas_handle = texture_atlases.add(rockland_atlas);
-            atlas_handles
-                .rocklands_biome_id
-                .replace(rockland_atlas_handle.id);
-        }
-    }
+    load_biome_atlases(&mut atlas_handles, &asset_server, &sprite_handles, &mut texture_atlases);
 
     let projectile_loaded = atlas_handles.projectiles_loaded();
     if !projectile_loaded {
@@ -150,37 +122,91 @@ fn post_load(
         }
     }
 
-    let builder_loaded = atlas_handles.builder_id.is_some();
-    if !builder_loaded {
-        let builder_handle = asset_server.get_handle(&sprite_handles.builder_handle);
-        if let LoadState::Loaded = asset_server.get_load_state(&builder_handle) {
-            let builder_atlas = TextureAtlas::from_grid(builder_handle, tile_size, 7, 3);
-            let builder_atlas_handle = texture_atlases.add(builder_atlas);
-            atlas_handles.builder_id.replace(builder_atlas_handle.id);
-        }
-    }
-
-    let enemy_loaded = atlas_handles.enemy_id.is_some();
-    if !enemy_loaded {
-        let enemy_handle = asset_server.get_handle(&sprite_handles.enemy_handle);
-        if let LoadState::Loaded = asset_server.get_load_state(&enemy_handle) {
-            let enemy_atlas = TextureAtlas::from_grid(enemy_handle, tile_size, 7, 3);
-            let enemy_atlas_handle = texture_atlases.add(enemy_atlas);
-            atlas_handles.enemy_id.replace(enemy_atlas_handle.id);
-        }
-    }
-
-    let conveyor_loaded = atlas_handles.conveyor_id.is_some();
-    if !conveyor_loaded {
-        let conveyor_handle = asset_server.get_handle(&sprite_handles.conveyor_handle);
-        if let LoadState::Loaded = asset_server.get_load_state(&conveyor_handle) {
-            let conveyor_atlas = TextureAtlas::from_grid(conveyor_handle, tile_size, 1, 1);
-            let conveyor_atlas_handle = texture_atlases.add(conveyor_atlas);
-            atlas_handles.conveyor_id.replace(conveyor_atlas_handle.id);
-        }
-    }
+    maybe_load_asset_atlas(
+        &mut atlas_handles.builder_id,
+        &sprite_handles.builder_handle,
+        &asset_server,
+        &mut texture_atlases,
+        data::get_asset_info(AssetType::Builder)
+    );
+    maybe_load_asset_atlas(
+        &mut atlas_handles.enemy_id,
+        &sprite_handles.enemy_handle,
+        &asset_server,
+        &mut texture_atlases,
+        data::get_asset_info(AssetType::Enemy)
+    );
+    maybe_load_asset_atlas(
+        &mut atlas_handles.conveyor_id,
+        &sprite_handles.conveyor_handle,
+        &asset_server,
+        &mut texture_atlases,
+        data::get_asset_info(AssetType::Conveyor)
+    );
 
     if atlas_handles.loaded() {
         sprite_handles.loaded = true;
+    }
+}
+
+fn load_biome_atlases(
+    atlas_handles: &mut ResMut<AtlasHandles>,
+    asset_server: &Res<AssetServer>,
+    sprite_handles: &ResMut<SpriteHandles>,
+    texture_atlases: &mut ResMut<Assets<TextureAtlas>>,
+) {
+    if !atlas_handles.biomes_loaded() {
+        if are_assets_loaded(&sprite_handles.biome_handles, asset_server) {
+            atlas_handles
+                .grassland_biome_id
+                .replace(biome::load_biome_atlas(Biome::Grassland, asset_server, texture_atlases));
+
+            atlas_handles
+                .desert_biome_id
+                .replace(biome::load_biome_atlas(Biome::Desert, asset_server, texture_atlases));
+
+            atlas_handles
+                .rocklands_biome_id
+                .replace(biome::load_biome_atlas(Biome::Rockland, asset_server, texture_atlases));
+        }
+    }
+}
+
+fn are_assets_loaded(
+    sprite_handles: &Vec<HandleUntyped>,
+    asset_server: &Res<AssetServer>,
+) -> bool {
+    asset_server.get_group_load_state(sprite_handles.iter().map(|handle| handle.id)) == LoadState::Loaded
+}
+
+fn load_asset_atlas(
+    sprite_handle: &Handle<Texture>,
+    asset_server: &Res<AssetServer>,
+    texture_atlases: &mut ResMut<Assets<TextureAtlas>>,
+    asset_info: AssetInfo,
+) -> Option<HandleId> {
+    let sprite_asset_handle = asset_server.get_handle(sprite_handle);
+    if let LoadState::Loaded = asset_server.get_load_state(&sprite_asset_handle) {
+        let atlas = TextureAtlas::from_grid(
+            sprite_asset_handle, asset_info.tile_size, asset_info.columns, asset_info.rows
+        );
+        let atlas_handle = texture_atlases.add(atlas);
+        Option::Some(atlas_handle.id)
+    } else {
+        Option::None
+    }
+}
+
+fn maybe_load_asset_atlas(
+    atlas_handle: &mut Option<HandleId>,
+    sprite_handle: &Handle<Texture>,
+    asset_server: &Res<AssetServer>,
+    texture_atlases: &mut ResMut<Assets<TextureAtlas>>,
+    asset_info: AssetInfo,
+) {
+    if !atlas_handle.is_some() {
+        if let Some(handle_id) = load_asset_atlas(sprite_handle, asset_server, texture_atlases, asset_info) {
+            atlas_handle.replace(handle_id);
+        }
     }
 }

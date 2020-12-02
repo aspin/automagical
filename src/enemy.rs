@@ -1,5 +1,5 @@
 use crate::builder::{Animated, Builder, CardinalDirection};
-use crate::data::animation::AnimationState;
+use crate::animation::AnimationState;
 use bevy::prelude::*;
 use bevy_rapier3d::physics::RigidBodyHandleComponent;
 use bevy_rapier3d::rapier::dynamics::{RigidBody, RigidBodySet};
