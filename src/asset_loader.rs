@@ -240,14 +240,6 @@ fn load_asset_atlas_of_group(
     texture_atlases.add(biome_atlas).id
 }
 
-fn load_biome_atlas(
-    biome: Biome,
-    asset_server: &Res<AssetServer>,
-    texture_atlases: &mut ResMut<Assets<TextureAtlas>>,
-) -> HandleId {
-    load_asset_atlas_of_group(data::get_biome_asset_info(biome), asset_server, texture_atlases)
-}
-
 fn load_asset_atlas(
     sprite_handle: &Handle<Texture>,
     asset_server: &Res<AssetServer>,
@@ -266,16 +258,3 @@ fn load_asset_atlas(
     }
 }
 
-fn maybe_load_asset_atlas(
-    atlas_handle: &mut Option<HandleId>,
-    sprite_handle: &Handle<Texture>,
-    asset_server: &Res<AssetServer>,
-    texture_atlases: &mut ResMut<Assets<TextureAtlas>>,
-    asset_info: AssetInfo,
-) {
-    if !atlas_handle.is_some() {
-        if let Some(handle_id) = load_asset_atlas(sprite_handle, asset_server, texture_atlases, asset_info) {
-            atlas_handle.replace(handle_id);
-        }
-    }
-}

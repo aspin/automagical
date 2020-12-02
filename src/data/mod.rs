@@ -1,3 +1,7 @@
+/*
+The majority of code in this module should eventually be turned into data-files / prefabs.
+ */
+
 mod animation_data;
 mod asset_data;
 

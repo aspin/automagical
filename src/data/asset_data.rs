@@ -90,14 +90,6 @@ fn conveyor_asset_info() -> AssetInfo {
     )
 }
 
-pub fn get_biome_asset_info(biome: Biome) -> AssetInfo {
-    match biome {
-        Biome::Grassland => grassland_asset_info(),
-        Biome::Desert => desert_asset_info(),
-        Biome::Rockland => rocklands_asset_info(),
-    }
-}
-
 pub fn get_asset_info(asset_type: AssetType) -> AssetInfo {
     match asset_type {
         AssetType::Builder => builder_asset_info(),
