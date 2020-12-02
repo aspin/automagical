@@ -2,8 +2,7 @@ use bevy::asset::{HandleId, LoadState};
 use bevy::prelude::*;
 
 use crate::construction::CursorState;
-use crate::{biome, data};
-use crate::global_constants::TILE_LENGTH;
+use crate::data;
 use crate::biome::Biome;
 use crate::data::{AssetType, AssetInfo};
 
@@ -91,7 +90,6 @@ fn loader(
 
 fn post_load(
     asset_server: Res<AssetServer>,
-    textures: Res<Assets<Texture>>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
     mut sprite_handles: ResMut<SpriteHandles>,
     mut atlas_handles: ResMut<AtlasHandles>,
@@ -102,23 +100,16 @@ fn post_load(
 
     println!("Loading assets...");
 
-    let tile_size = Vec2::new(TILE_LENGTH as f32, TILE_LENGTH as f32);
     load_biome_atlases(&mut atlas_handles, &asset_server, &sprite_handles, &mut texture_atlases);
 
     let projectile_loaded = atlas_handles.projectiles_loaded();
     if !projectile_loaded {
-        if let LoadState::Loaded = asset_server.get_group_load_state(
-            sprite_handles
-                .projectile_handles
-                .iter()
-                .map(|handle| handle.id),
-        ) {
-            let arrow_handle = asset_server.get_handle("texture/projectile/arrow.png");
-            let arrow_texture = textures.get(&arrow_handle).unwrap();
-            let arrow_atlas = TextureAtlas::from_grid(arrow_handle, arrow_texture.size, 1, 1);
-
-            let arrow_atlas_handle = texture_atlases.add(arrow_atlas);
-            atlas_handles.arrow_id.replace(arrow_atlas_handle.id);
+        if are_assets_loaded(&sprite_handles.projectile_handles, &asset_server) {
+            atlas_handles.arrow_id.replace(
+                load_asset_atlas_of_group(
+                    data::get_asset_info(AssetType::Arrow), &asset_server, &mut texture_atlases
+                )
+            );
         }
     }
 
@@ -159,15 +150,15 @@ fn load_biome_atlases(
         if are_assets_loaded(&sprite_handles.biome_handles, asset_server) {
             atlas_handles
                 .grassland_biome_id
-                .replace(biome::load_biome_atlas(Biome::Grassland, asset_server, texture_atlases));
+                .replace(load_biome_atlas(Biome::Grassland, asset_server, texture_atlases));
 
             atlas_handles
                 .desert_biome_id
-                .replace(biome::load_biome_atlas(Biome::Desert, asset_server, texture_atlases));
+                .replace(load_biome_atlas(Biome::Desert, asset_server, texture_atlases));
 
             atlas_handles
                 .rocklands_biome_id
-                .replace(biome::load_biome_atlas(Biome::Rockland, asset_server, texture_atlases));
+                .replace(load_biome_atlas(Biome::Rockland, asset_server, texture_atlases));
         }
     }
 }
@@ -177,6 +168,26 @@ fn are_assets_loaded(
     asset_server: &Res<AssetServer>,
 ) -> bool {
     asset_server.get_group_load_state(sprite_handles.iter().map(|handle| handle.id)) == LoadState::Loaded
+}
+
+fn load_asset_atlas_of_group(
+    asset_info: AssetInfo,
+    asset_server: &Res<AssetServer>,
+    texture_atlases: &mut ResMut<Assets<TextureAtlas>>,
+) -> HandleId {
+    let asset_handle = asset_server.get_handle(asset_info.sprite_file.as_str());
+    let biome_atlas = TextureAtlas::from_grid(
+        asset_handle, asset_info.tile_size, asset_info.columns, asset_info.rows
+    );
+    texture_atlases.add(biome_atlas).id
+}
+
+fn load_biome_atlas(
+    biome: Biome,
+    asset_server: &Res<AssetServer>,
+    texture_atlases: &mut ResMut<Assets<TextureAtlas>>,
+) -> HandleId {
+    load_asset_atlas_of_group(data::get_biome_asset_info(biome), asset_server, texture_atlases)
 }
 
 fn load_asset_atlas(
