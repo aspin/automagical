@@ -49,8 +49,8 @@ impl SpriteHandles {
 
 #[derive(Default)]
 pub struct AtlasHandles {
-    pub handles: HashMap<AssetType, HandleId>,
-    pub handle_groups: HashMap<AssetGroup, Vec<HandleId>>,
+    handles: HashMap<AssetType, HandleId>,
+    handle_groups: HashMap<AssetGroup, Vec<AssetType>>,
 }
 
 impl AtlasHandles {
@@ -69,9 +69,8 @@ impl AtlasHandles {
                         asset_group_info.assets_info.len()
                     );
                     for (asset_type, _asset_info) in asset_group_info.assets_info {
-                        let handle_id = self.load_handle_of_group(asset_type, asset_server, texture_atlases);
-                        // TODO: use lifetime + reference instead
-                        asset_group_handles.push(handle_id.clone())
+                        self.load_handle_of_group(asset_type, asset_server, texture_atlases);
+                        asset_group_handles.push(asset_type);
                     }
                     self.handle_groups.insert(asset_group, asset_group_handles);
                 }
