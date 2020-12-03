@@ -43,14 +43,16 @@ pub fn control_builder(
                     builder_timer.finished = true;
                 }
 
+                let mut x_speed = 0.;
+                let mut y_speed = 0.;
                 if press_up {
-                    builder_body.set_linvel(Vector::new(0., WIZARD_SPEED, 0.), true);
+                    y_speed = WIZARD_SPEED;
                 }
                 if press_down {
-                    builder_body.set_linvel(Vector::new(0., -WIZARD_SPEED, 0.), true);
+                    y_speed = -WIZARD_SPEED;
                 }
                 if press_left {
-                    builder_body.set_linvel(Vector::new(-WIZARD_SPEED, 0., 0.), true);
+                    x_speed = -WIZARD_SPEED;
                     if animated.facing == CardinalDirection::East {
                         animated.facing = CardinalDirection::West;
 
@@ -61,7 +63,7 @@ pub fn control_builder(
                     }
                 }
                 if press_right {
-                    builder_body.set_linvel(Vector::new(WIZARD_SPEED, 0., 0.), true);
+                    x_speed = WIZARD_SPEED;
                     if animated.facing == CardinalDirection::West {
                         animated.facing = CardinalDirection::East;
                         let mut previous_position = builder_body.position().clone();
@@ -69,6 +71,7 @@ pub fn control_builder(
                         builder_body.set_position(previous_position, true);
                     }
                 }
+                builder_body.set_linvel(Vector::new(x_speed, y_speed, 0.), true);
             } else {
                 builder_body.set_linvel(Vector::zeros(), true);
             }
