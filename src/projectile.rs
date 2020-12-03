@@ -1,4 +1,4 @@
-use crate::builder::CardinalDirection;
+use crate::animation::CardinalDirection;
 use bevy::prelude::*;
 
 pub const ARROW_SPEED: f32 = 700.;

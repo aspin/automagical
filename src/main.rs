@@ -23,7 +23,7 @@ fn main() {
         .add_plugin(RapierPhysicsPlugin)
         .add_plugin(asset_loader::AssetLoaderPlugin)
         .add_plugin(world_renderer::MapGeneratorPlugin)
-        .add_system(builder::animate.system())
+        .add_system(animation::animate.system())
         .add_system(builder::produce_projectiles.system())
         .add_system(projectile::expire_projectiles.system())
         .add_system(controls::control_builder.system())

@@ -1,8 +1,8 @@
 use bevy::prelude::*;
 
 use crate::asset_loader::AtlasHandles;
-use crate::builder::{AnimationBundle, Builder};
-use crate::animation::UnitType;
+use crate::builder::Builder;
+use crate::animation::{UnitType, AnimationBundle};
 use crate::enemy::Enemy;
 use crate::world_map::{tile_to_position, WorldMap};
 use bevy::render::camera::Camera;
