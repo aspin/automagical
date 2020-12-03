@@ -4,7 +4,7 @@ use crate::data;
 use bevy::ecs::Query;
 use bevy::sprite::TextureAtlasSprite;
 use bevy_rapier3d::rapier::dynamics::RigidBodySet;
-use bevy_rapier3d::rapier::math::{AngVector, Rotation, Vector};
+use bevy_rapier3d::rapier::math::{AngVector, Rotation};
 use bevy_rapier3d::physics::RigidBodyHandleComponent;
 
 const ANIMATION_SPEED: f32 = 0.5;

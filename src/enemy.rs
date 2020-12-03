@@ -3,9 +3,11 @@ use crate::animation::{AnimationState, Animated, CardinalDirection};
 use bevy::prelude::*;
 use bevy_rapier3d::physics::RigidBodyHandleComponent;
 use bevy_rapier3d::rapier::dynamics::{RigidBody, RigidBodySet};
-use bevy_rapier3d::rapier::math::{AngVector, Rotation, Vector};
+use bevy_rapier3d::rapier::math::Vector;
 
-pub const ENEMY_SPEED: f32 = 30.;
+const ENEMY_SPEED: f32 = 30.;
+const ENEMY_SEARCH_DISTANCE: f32 = 150.;
+const ENEMY_ATTACK_DISTANCE: f32 = 25.;
 
 pub struct Enemy {
     pub hp: i32,
@@ -43,7 +45,7 @@ pub fn move_enemies(
             for builder_position in &builder_positions {
                 let distance = builder_enemy_distance(builder_position, &*rigid_body);
                 // println!("Enemy distance {}", distance);
-                if distance < 150. {
+                if distance < ENEMY_SEARCH_DISTANCE {
                     animated.state = AnimationState::Move;
                     animated.animation_index = 0;
 
@@ -64,12 +66,12 @@ pub fn move_enemies(
                         false,
                     );
 
-                    if distance < 25. {
+                    if distance < ENEMY_ATTACK_DISTANCE {
                         animated.state = AnimationState::Attack;
                         animated.animation_index = 0;
                     }
                 } else {
-                    rigid_body.set_linvel(Vector::new(0., 0., 0.), false);
+                    rigid_body.set_linvel(Vector::zeros(), false);
                 }
             }
         }
@@ -77,15 +79,14 @@ pub fn move_enemies(
 }
 
 fn builder_enemy_distance(builder_transform: &Transform, enemy_rigid_body: &RigidBody) -> f32 {
-    let (builder_x, builder_y, builder_z) = (
-        builder_transform.translation.x(),
-        builder_transform.translation.y(),
-        builder_transform.translation.z(),
-    );
+    let builder_x = builder_transform.translation.x();
+    let builder_y = builder_transform.translation.y();
+    let builder_z = builder_transform.translation.z();
     let enemy_x: f32 = enemy_rigid_body.position().translation.x;
     let enemy_y: f32 = enemy_rigid_body.position().translation.y;
     let enemy_z: f32 = enemy_rigid_body.position().translation.z;
 
+    // TODO: remove sqrt to reduce an operation
     ((builder_x - enemy_x).powi(2) + (builder_y - enemy_y).powi(2) + (builder_z - enemy_z).powi(2))
         .sqrt()
 }

@@ -5,7 +5,7 @@ use crate::animation::{AnimationState, Animated, CardinalDirection};
 use bevy::render::camera::Camera;
 use bevy_rapier3d::physics::RigidBodyHandleComponent;
 use bevy_rapier3d::rapier::dynamics::RigidBodySet;
-use bevy_rapier3d::rapier::math::{AngVector, Rotation, Vector};
+use bevy_rapier3d::rapier::math::Vector;
 
 const WIZARD_SPEED: f32 = 100.;
 
