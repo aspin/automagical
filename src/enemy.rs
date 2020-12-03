@@ -50,16 +50,11 @@ pub fn move_enemies(
                     let movement_direction =
                         get_builder_direction(builder_position, &*rigid_body) * ENEMY_SPEED;
 
-                    let mut previous_position = rigid_body.position().clone();
                     if movement_direction.x() < 0. {
                         animated.facing = CardinalDirection::West;
-                        previous_position.rotation =
-                            Rotation::new(AngVector::new(0.0, std::f32::consts::PI, 0.0));
                     } else {
                         animated.facing = CardinalDirection::East;
-                        previous_position.rotation = Rotation::new(AngVector::new(0.0, 0.0, 0.0));
                     }
-                    rigid_body.set_position(previous_position, true);
                     rigid_body.set_linvel(
                         Vector::new(
                             movement_direction.x(),

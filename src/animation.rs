@@ -3,6 +3,9 @@ use bevy::core::Timer;
 use crate::data;
 use bevy::ecs::Query;
 use bevy::sprite::TextureAtlasSprite;
+use bevy_rapier3d::rapier::dynamics::RigidBodySet;
+use bevy_rapier3d::rapier::math::{AngVector, Rotation, Vector};
+use bevy_rapier3d::physics::RigidBodyHandleComponent;
 
 const ANIMATION_SPEED: f32 = 0.5;
 
@@ -61,8 +64,11 @@ impl AnimationBundle {
     }
 }
 
-pub fn animate(mut query: Query<(&mut Timer, &mut TextureAtlasSprite, &mut Animated)>) {
-    for (mut timer, mut sprite, mut animated) in query.iter_mut() {
+pub fn animate(
+    mut rigid_body_set: ResMut<RigidBodySet>,
+    mut query: Query<(&mut Timer, &mut TextureAtlasSprite, &mut Animated, &RigidBodyHandleComponent)>
+) {
+    for (mut timer, mut sprite, mut animated, rigid_body_handle) in query.iter_mut() {
         if timer.finished {
             let mut animation_info =
                 data::get_animation_info(&animated.unit_type, &animated.state);
@@ -87,6 +93,16 @@ pub fn animate(mut query: Query<(&mut Timer, &mut TextureAtlasSprite, &mut Anima
             timer.duration =
                 animation_info.durations[animated.animation_index as usize] * ANIMATION_SPEED;
         }
+
+        let rigid_body = rigid_body_set.get_mut(rigid_body_handle.handle()).unwrap();
+        let mut previous_position = rigid_body.position().clone();
+        if animated.facing == CardinalDirection::West {
+            previous_position.rotation =
+                Rotation::new(AngVector::new(0.0, std::f32::consts::PI, 0.0));
+        } else if animated.facing == CardinalDirection::East {
+            previous_position.rotation = Rotation::new(AngVector::new(0.0, 0.0, 0.0));
+        }
+        rigid_body.set_position(previous_position, true);
     }
 }
 

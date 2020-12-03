@@ -53,23 +53,11 @@ pub fn control_builder(
                 }
                 if press_left {
                     x_speed = -WIZARD_SPEED;
-                    if animated.facing == CardinalDirection::East {
-                        animated.facing = CardinalDirection::West;
-
-                        let mut previous_position = builder_body.position().clone();
-                        previous_position.rotation =
-                            Rotation::new(AngVector::new(0.0, std::f32::consts::PI, 0.0));
-                        builder_body.set_position(previous_position, true);
-                    }
+                    animated.facing = CardinalDirection::West;
                 }
                 if press_right {
                     x_speed = WIZARD_SPEED;
-                    if animated.facing == CardinalDirection::West {
-                        animated.facing = CardinalDirection::East;
-                        let mut previous_position = builder_body.position().clone();
-                        previous_position.rotation = Rotation::new(AngVector::new(0.0, 0.0, 0.0));
-                        builder_body.set_position(previous_position, true);
-                    }
+                    animated.facing = CardinalDirection::East;
                 }
                 builder_body.set_linvel(Vector::new(x_speed, y_speed, 0.), true);
             } else {
