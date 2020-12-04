@@ -2,7 +2,6 @@ mod asset_loader;
 mod builder;
 mod construction;
 mod controls;
-mod coordinate;
 mod damage;
 mod data;
 mod enemy;
