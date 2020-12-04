@@ -1,5 +1,6 @@
 use crate::global_constants::TILE_LENGTH;
 use bevy::math::Vec2;
+use crate::biome::Biome;
 
 pub struct AssetInfo {
     pub sprite_file: String,
@@ -42,6 +43,16 @@ pub enum AssetType {
     Grassland,
     Desert,
     Rockland,
+}
+
+impl From<Biome> for AssetType {
+    fn from(biome_type: Biome) -> Self {
+        match biome_type {
+            Biome::Grassland => Self::Grassland,
+            Biome::Desert => Self::Desert,
+            Biome::Rockland => Self::Rockland,
+        }
+    }
 }
 
 #[derive(PartialEq, Eq, Copy, Clone, Hash)]

@@ -122,12 +122,7 @@ impl AtlasHandles {
     }
 
     pub fn get_biome_asset(&self, biome_type: Biome) -> Option<HandleId> {
-        // TODO: use from/into for enums?
-        match biome_type {
-            Biome::Grassland => self.get_asset(AssetType::Grassland),
-            Biome::Desert => self.get_asset(AssetType::Desert),
-            Biome::Rockland => self.get_asset(AssetType::Rockland),
-        }
+        self.get_asset(AssetType::from(biome_type))
     }
 
     fn asset_loaded(&self, asset_type: AssetType) -> bool {
