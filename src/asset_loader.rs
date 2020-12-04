@@ -195,36 +195,23 @@ fn post_load(
 
     println!("Loading assets...");
 
-    atlas_handles.try_load_handle_group(
-        AssetGroup::Biome,
-        &sprite_handles,
-        &asset_server,
-        &mut texture_atlases,
-    );
-    atlas_handles.try_load_handle_group(
-        AssetGroup::Projectile,
-        &sprite_handles,
-        &asset_server,
-        &mut texture_atlases,
-    );
-    atlas_handles.try_load_handle(
-        AssetType::Builder,
-        &sprite_handles,
-        &asset_server,
-        &mut texture_atlases,
-    );
-    atlas_handles.try_load_handle(
-        AssetType::Enemy,
-        &sprite_handles,
-        &asset_server,
-        &mut texture_atlases,
-    );
-    atlas_handles.try_load_handle(
-        AssetType::Conveyor,
-        &sprite_handles,
-        &asset_server,
-        &mut texture_atlases,
-    );
+    for asset_group in data::all_asset_groups() {
+        atlas_handles.try_load_handle_group(
+            asset_group,
+            &sprite_handles,
+            &asset_server,
+            &mut texture_atlases,
+        );
+    }
+
+    for asset_type in data::all_base_assets() {
+        atlas_handles.try_load_handle(
+            asset_type,
+            &sprite_handles,
+            &asset_server,
+            &mut texture_atlases,
+        );
+    }
 
     if atlas_handles.loaded() {
         sprite_handles.loaded = true;

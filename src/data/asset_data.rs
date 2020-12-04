@@ -1,6 +1,6 @@
+use crate::biome::Biome;
 use crate::global_constants::TILE_LENGTH;
 use bevy::math::Vec2;
-use crate::biome::Biome;
 
 pub struct AssetInfo {
     pub sprite_file: String,
@@ -63,6 +63,14 @@ pub enum AssetGroup {
 
 pub fn default_tile_size() -> Vec2 {
     Vec2::new(TILE_LENGTH as f32, TILE_LENGTH as f32)
+}
+
+pub fn all_asset_groups() -> Vec<AssetGroup> {
+    vec![AssetGroup::Biome, AssetGroup::Projectile]
+}
+
+pub fn all_base_assets() -> Vec<AssetType> {
+    vec![AssetType::Builder, AssetType::Enemy, AssetType::Conveyor]
 }
 
 fn grassland_asset_info() -> AssetInfo {

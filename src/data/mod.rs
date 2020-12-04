@@ -6,6 +6,8 @@ mod animation_data;
 mod asset_data;
 
 pub use animation_data::get_animation_info;
+pub use asset_data::all_asset_groups;
+pub use asset_data::all_base_assets;
 pub use asset_data::default_tile_size;
 pub use asset_data::get_asset_group_info;
 pub use asset_data::get_asset_info;
