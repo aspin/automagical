@@ -1,5 +1,5 @@
-use bevy::math::Vec2;
 use crate::global_constants::TILE_LENGTH;
+use bevy::math::Vec2;
 
 pub struct AssetInfo {
     pub sprite_file: String,
@@ -10,7 +10,12 @@ pub struct AssetInfo {
 
 impl AssetInfo {
     pub fn new(sprite_file: String, tile_size: Vec2, columns: usize, rows: usize) -> Self {
-        AssetInfo { sprite_file, tile_size, columns, rows }
+        AssetInfo {
+            sprite_file,
+            tile_size,
+            columns,
+            rows,
+        }
     }
 }
 
@@ -21,7 +26,10 @@ pub struct AssetGroupInfo {
 
 impl AssetGroupInfo {
     pub fn new(folder_path: String, assets_info: Vec<(AssetType, AssetInfo)>) -> Self {
-        AssetGroupInfo { folder_path, assets_info }
+        AssetGroupInfo {
+            folder_path,
+            assets_info,
+        }
     }
 }
 
@@ -42,50 +50,65 @@ pub enum AssetGroup {
     Projectile,
 }
 
-
 pub fn default_tile_size() -> Vec2 {
     Vec2::new(TILE_LENGTH as f32, TILE_LENGTH as f32)
 }
 
 fn grassland_asset_info() -> AssetInfo {
     AssetInfo::new(
-        String::from("texture/biome/grass.png"), default_tile_size(), 4, 1
+        String::from("texture/biome/grass.png"),
+        default_tile_size(),
+        4,
+        1,
     )
 }
 
 fn desert_asset_info() -> AssetInfo {
     AssetInfo::new(
-        String::from("texture/biome/desert.png"), default_tile_size(), 4, 1
+        String::from("texture/biome/desert.png"),
+        default_tile_size(),
+        4,
+        1,
     )
 }
 
 fn rocklands_asset_info() -> AssetInfo {
     AssetInfo::new(
-        String::from("texture/biome/rocklands.png"), default_tile_size(), 4, 1
+        String::from("texture/biome/rocklands.png"),
+        default_tile_size(),
+        4,
+        1,
     )
 }
 
 fn arrow_asset_info() -> AssetInfo {
     AssetInfo::new(
-        String::from("texture/projectile/arrow.png"), Vec2::new(8., 4.), 1, 1
+        String::from("texture/projectile/arrow.png"),
+        Vec2::new(8., 4.),
+        1,
+        1,
     )
 }
 
 fn builder_asset_info() -> AssetInfo {
     AssetInfo::new(
-        String::from("texture/wizard.png"), default_tile_size(), 7, 3
+        String::from("texture/wizard.png"),
+        default_tile_size(),
+        7,
+        3,
     )
 }
 
 fn enemy_asset_info() -> AssetInfo {
-    AssetInfo::new(
-        String::from("texture/enemy.png"), default_tile_size(), 7, 3
-    )
+    AssetInfo::new(String::from("texture/enemy.png"), default_tile_size(), 7, 3)
 }
 
 fn conveyor_asset_info() -> AssetInfo {
     AssetInfo::new(
-        String::from("texture/conveyor.png"), default_tile_size(), 1, 1
+        String::from("texture/conveyor.png"),
+        default_tile_size(),
+        1,
+        1,
     )
 }
 
@@ -109,14 +132,12 @@ pub fn get_asset_group_info(asset_group_type: AssetGroup) -> AssetGroupInfo {
                 (AssetType::Grassland, grassland_asset_info()),
                 (AssetType::Desert, desert_asset_info()),
                 (AssetType::Rockland, rocklands_asset_info()),
-            ]
+            ],
         ),
         AssetGroup::Projectile => AssetGroupInfo::new(
             String::from("texture/projectile"),
-            vec![
-                (AssetType::Arrow, arrow_asset_info())
-            ]
-        )
+            vec![(AssetType::Arrow, arrow_asset_info())],
+        ),
     }
 }
 

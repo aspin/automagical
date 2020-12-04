@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
+use crate::animation::{Animated, AnimationState, CardinalDirection};
 use crate::builder::Builder;
-use crate::animation::{AnimationState, Animated, CardinalDirection};
 use bevy::render::camera::Camera;
 use bevy_rapier3d::physics::RigidBodyHandleComponent;
 use bevy_rapier3d::rapier::dynamics::RigidBodySet;

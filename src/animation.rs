@@ -1,11 +1,11 @@
-use bevy::prelude::*;
-use bevy::core::Timer;
 use crate::data;
+use bevy::core::Timer;
 use bevy::ecs::Query;
+use bevy::prelude::*;
 use bevy::sprite::TextureAtlasSprite;
+use bevy_rapier3d::physics::RigidBodyHandleComponent;
 use bevy_rapier3d::rapier::dynamics::RigidBodySet;
 use bevy_rapier3d::rapier::math::{AngVector, Rotation};
-use bevy_rapier3d::physics::RigidBodyHandleComponent;
 
 const ANIMATION_SPEED: f32 = 0.5;
 
@@ -66,12 +66,16 @@ impl AnimationBundle {
 
 pub fn animate(
     mut rigid_body_set: ResMut<RigidBodySet>,
-    mut query: Query<(&mut Timer, &mut TextureAtlasSprite, &mut Animated, &RigidBodyHandleComponent)>
+    mut query: Query<(
+        &mut Timer,
+        &mut TextureAtlasSprite,
+        &mut Animated,
+        &RigidBodyHandleComponent,
+    )>,
 ) {
     for (mut timer, mut sprite, mut animated, rigid_body_handle) in query.iter_mut() {
         if timer.finished {
-            let mut animation_info =
-                data::get_animation_info(&animated.unit_type, &animated.state);
+            let mut animation_info = data::get_animation_info(&animated.unit_type, &animated.state);
 
             let next_index = animated.animation_index + 1;
             if next_index >= animation_info.length {
@@ -105,4 +109,3 @@ pub fn animate(
         rigid_body.set_position(previous_position, true);
     }
 }
-

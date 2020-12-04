@@ -1,7 +1,7 @@
 use crate::asset_loader::AtlasHandles;
+use crate::data::AssetType;
 use crate::world_map::WorldMap;
 use bevy::prelude::*;
-use crate::data::AssetType;
 
 pub struct CursorState {
     pub cursor: EventReader<CursorMoved>,

@@ -1,11 +1,11 @@
+use crate::animation::{Animated, AnimationState, CardinalDirection};
 use crate::asset_loader::AtlasHandles;
+use crate::data::AssetType;
 use crate::projectile::{Projectile, ARROW_SPEED};
 use bevy::prelude::*;
 use bevy_rapier3d::rapier::dynamics::RigidBodyBuilder;
 use bevy_rapier3d::rapier::geometry::ColliderBuilder;
 use bevy_rapier3d::rapier::math::AngVector;
-use crate::animation::{AnimationState, Animated, CardinalDirection};
-use crate::data::AssetType;
 
 pub struct Builder {
     pub name: String,

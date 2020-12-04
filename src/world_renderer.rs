@@ -1,8 +1,10 @@
 use bevy::prelude::*;
 
+use crate::animation::{AnimationBundle, UnitType};
 use crate::asset_loader::AtlasHandles;
+use crate::biome::Biome;
 use crate::builder::Builder;
-use crate::animation::{UnitType, AnimationBundle};
+use crate::data::AssetType;
 use crate::enemy::Enemy;
 use crate::world_map::{tile_to_position, WorldMap};
 use bevy::render::camera::Camera;
@@ -10,8 +12,6 @@ use bevy_rapier3d::physics::RapierConfiguration;
 use bevy_rapier3d::rapier::dynamics::RigidBodyBuilder;
 use bevy_rapier3d::rapier::geometry::ColliderBuilder;
 use bevy_rapier3d::rapier::na::Vector;
-use crate::biome::Biome;
-use crate::data::AssetType;
 
 pub const WORLD_MAP_RENDER_WIDTH: usize = 13;
 pub const WORLD_MAP_RENDER_HEIGHT: usize = 10;
@@ -56,7 +56,8 @@ fn render_world(
 ) {
     if atlas_handles.loaded() {
         if !world.generated {
-            let builder_atlas_handle = Handle::weak(atlas_handles.get_asset(AssetType::Builder).unwrap());
+            let builder_atlas_handle =
+                Handle::weak(atlas_handles.get_asset(AssetType::Builder).unwrap());
             let builder_x = 0.;
             let builder_y = 0.;
             let builder_z = 1.;
@@ -107,7 +108,8 @@ fn render_world(
                     );
                 }
                 if tile.contains_enemy {
-                    let enemy_atlas_handle = Handle::weak(atlas_handles.get_asset(AssetType::Enemy).unwrap());
+                    let enemy_atlas_handle =
+                        Handle::weak(atlas_handles.get_asset(AssetType::Enemy).unwrap());
                     let enemy_transform = tile_to_position(&center_tile, tile.x, tile.y);
                     let enemy_entity = commands
                         .spawn(SpriteSheetComponents {

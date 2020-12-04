@@ -1,16 +1,16 @@
+mod animation;
 mod asset_loader;
+mod biome;
 mod builder;
 mod construction;
 mod controls;
 mod damage;
 mod data;
 mod enemy;
+mod global_constants;
 mod projectile;
 mod world_map;
 mod world_renderer;
-mod animation;
-mod biome;
-mod global_constants;
 
 use bevy::prelude::*;
 use bevy_rapier3d::physics::RapierPhysicsPlugin;

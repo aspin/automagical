@@ -3,10 +3,10 @@ use std::collections::HashMap;
 use bevy::asset::{HandleId, LoadState};
 use bevy::prelude::*;
 
+use crate::biome::Biome;
 use crate::construction::CursorState;
 use crate::data;
-use crate::biome::Biome;
-use crate::data::{AssetType, AssetInfo, AssetGroup};
+use crate::data::{AssetGroup, AssetInfo, AssetType};
 
 pub struct AssetLoaderPlugin;
 
@@ -29,12 +29,15 @@ pub struct SpriteHandles {
 impl SpriteHandles {
     fn add_asset(&mut self, asset_type: AssetType, asset_server: &AssetServer) {
         let sprite_path = data::get_asset_sprite_path(asset_type);
-        self.asset_handles.insert(asset_type, asset_server.load(sprite_path.as_str()));
+        self.asset_handles
+            .insert(asset_type, asset_server.load(sprite_path.as_str()));
     }
 
     fn add_asset_group(&mut self, asset_group: AssetGroup, asset_server: &AssetServer) {
         let asset_group_info = data::get_asset_group_info(asset_group);
-        let asset_handles = asset_server.load_folder(asset_group_info.folder_path.as_str()).unwrap();
+        let asset_handles = asset_server
+            .load_folder(asset_group_info.folder_path.as_str())
+            .unwrap();
         self.asset_group_handles.insert(asset_group, asset_handles);
     }
 
@@ -59,15 +62,14 @@ impl AtlasHandles {
         asset_group: AssetGroup,
         sprite_handles: &ResMut<SpriteHandles>,
         asset_server: &Res<AssetServer>,
-        texture_atlases: &mut ResMut<Assets<TextureAtlas>>
+        texture_atlases: &mut ResMut<Assets<TextureAtlas>>,
     ) {
         if !self.handle_groups.contains_key(&asset_group) {
             if let Some(asset_group_sprites) = sprite_handles.get_asset_group(asset_group) {
                 if are_assets_loaded(asset_group_sprites, &asset_server) {
                     let asset_group_info = data::get_asset_group_info(asset_group);
-                    let mut asset_group_handles = Vec::with_capacity(
-                        asset_group_info.assets_info.len()
-                    );
+                    let mut asset_group_handles =
+                        Vec::with_capacity(asset_group_info.assets_info.len());
                     for (asset_type, _asset_info) in asset_group_info.assets_info {
                         self.load_handle_of_group(asset_type, asset_server, texture_atlases);
                         asset_group_handles.push(asset_type);
@@ -82,12 +84,12 @@ impl AtlasHandles {
         &mut self,
         asset_type: AssetType,
         asset_server: &Res<AssetServer>,
-        texture_atlases: &mut ResMut<Assets<TextureAtlas>>
+        texture_atlases: &mut ResMut<Assets<TextureAtlas>>,
     ) -> &HandleId {
         let asset_info = data::get_asset_info(asset_type);
         self.handles.insert(
             asset_type.clone(),
-            load_asset_atlas_of_group(asset_info, asset_server, texture_atlases)
+            load_asset_atlas_of_group(asset_info, asset_server, texture_atlases),
         );
         self.handles.get(&asset_type).unwrap()
     }
@@ -97,15 +99,15 @@ impl AtlasHandles {
         asset_type: AssetType,
         sprite_handles: &ResMut<SpriteHandles>,
         asset_server: &Res<AssetServer>,
-        texture_atlases: &mut ResMut<Assets<TextureAtlas>>
+        texture_atlases: &mut ResMut<Assets<TextureAtlas>>,
     ) {
         if !self.handles.contains_key(&asset_type) {
             let sprite_handle = sprite_handles.get_asset(asset_type).unwrap();
             let asset_info = data::get_asset_info(asset_type);
 
-            if let Some(handle_id) = load_asset_atlas(
-                sprite_handle, asset_server, texture_atlases, asset_info
-            ) {
+            if let Some(handle_id) =
+                load_asset_atlas(sprite_handle, asset_server, texture_atlases, asset_info)
+            {
                 self.handles.insert(asset_type, handle_id);
             }
         }
@@ -137,9 +139,7 @@ impl AtlasHandles {
     }
 
     pub fn loaded(&self) -> bool {
-        self.biomes_loaded()
-            && self.projectiles_loaded()
-            && self.assets_loaded()
+        self.biomes_loaded() && self.projectiles_loaded() && self.assets_loaded()
     }
 
     fn biomes_loaded(&self) -> bool {
@@ -151,9 +151,10 @@ impl AtlasHandles {
     }
 
     fn assets_loaded(&self) -> bool {
-        self.asset_loaded(AssetType::Builder) && self.asset_loaded(AssetType::Conveyor) && self.asset_loaded(AssetType::Builder)
+        self.asset_loaded(AssetType::Builder)
+            && self.asset_loaded(AssetType::Conveyor)
+            && self.asset_loaded(AssetType::Builder)
     }
-
 }
 
 fn loader(
@@ -200,19 +201,34 @@ fn post_load(
     println!("Loading assets...");
 
     atlas_handles.try_load_handle_group(
-        AssetGroup::Biome, &sprite_handles, &asset_server, &mut texture_atlases
+        AssetGroup::Biome,
+        &sprite_handles,
+        &asset_server,
+        &mut texture_atlases,
     );
     atlas_handles.try_load_handle_group(
-        AssetGroup::Projectile, &sprite_handles, &asset_server, &mut texture_atlases
+        AssetGroup::Projectile,
+        &sprite_handles,
+        &asset_server,
+        &mut texture_atlases,
     );
     atlas_handles.try_load_handle(
-        AssetType::Builder, &sprite_handles, &asset_server, &mut texture_atlases
+        AssetType::Builder,
+        &sprite_handles,
+        &asset_server,
+        &mut texture_atlases,
     );
     atlas_handles.try_load_handle(
-        AssetType::Enemy, &sprite_handles, &asset_server, &mut texture_atlases
+        AssetType::Enemy,
+        &sprite_handles,
+        &asset_server,
+        &mut texture_atlases,
     );
     atlas_handles.try_load_handle(
-        AssetType::Conveyor, &sprite_handles, &asset_server, &mut texture_atlases
+        AssetType::Conveyor,
+        &sprite_handles,
+        &asset_server,
+        &mut texture_atlases,
     );
 
     if atlas_handles.loaded() {
@@ -220,11 +236,9 @@ fn post_load(
     }
 }
 
-fn are_assets_loaded(
-    sprite_handles: &Vec<HandleUntyped>,
-    asset_server: &Res<AssetServer>,
-) -> bool {
-    asset_server.get_group_load_state(sprite_handles.iter().map(|handle| handle.id)) == LoadState::Loaded
+fn are_assets_loaded(sprite_handles: &Vec<HandleUntyped>, asset_server: &Res<AssetServer>) -> bool {
+    asset_server.get_group_load_state(sprite_handles.iter().map(|handle| handle.id))
+        == LoadState::Loaded
 }
 
 fn load_asset_atlas_of_group(
@@ -234,7 +248,10 @@ fn load_asset_atlas_of_group(
 ) -> HandleId {
     let asset_handle = asset_server.get_handle(asset_info.sprite_file.as_str());
     let biome_atlas = TextureAtlas::from_grid(
-        asset_handle, asset_info.tile_size, asset_info.columns, asset_info.rows
+        asset_handle,
+        asset_info.tile_size,
+        asset_info.columns,
+        asset_info.rows,
     );
     texture_atlases.add(biome_atlas).id
 }
@@ -248,7 +265,10 @@ fn load_asset_atlas(
     let sprite_asset_handle = asset_server.get_handle(sprite_handle);
     if let LoadState::Loaded = asset_server.get_load_state(&sprite_asset_handle) {
         let atlas = TextureAtlas::from_grid(
-            sprite_asset_handle, asset_info.tile_size, asset_info.columns, asset_info.rows
+            sprite_asset_handle,
+            asset_info.tile_size,
+            asset_info.columns,
+            asset_info.rows,
         );
         let atlas_handle = texture_atlases.add(atlas);
         Option::Some(atlas_handle.id)
@@ -256,4 +276,3 @@ fn load_asset_atlas(
         Option::None
     }
 }
-

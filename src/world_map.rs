@@ -1,8 +1,8 @@
 use crate::asset_loader::AtlasHandles;
+use crate::biome::Biome;
+use crate::global_constants::TILE_LENGTH;
 use crate::world_renderer::{WORLD_MAP_RENDER_HEIGHT, WORLD_MAP_RENDER_WIDTH};
 use bevy::prelude::*;
-use crate::global_constants::TILE_LENGTH;
-use crate::biome::Biome;
 
 pub const WORLD_MAP_WIDTH: usize = 300;
 pub const WORLD_MAP_HEIGHT: usize = 300;
