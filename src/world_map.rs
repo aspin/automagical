@@ -135,9 +135,6 @@ pub fn tile_to_position(center_tile: &TileCoordinate, x: usize, y: usize) -> Tra
     ))
 }
 
-
-
-
 #[cfg(test)]
 mod tests {
     use super::*;
