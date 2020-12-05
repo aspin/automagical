@@ -23,6 +23,7 @@ pub enum UnitType {
 }
 
 #[derive(PartialEq, Eq, Copy, Clone, Hash)]
+#[allow(dead_code)]
 pub enum CardinalDirection {
     North,
     South,

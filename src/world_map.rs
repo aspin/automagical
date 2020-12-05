@@ -134,3 +134,17 @@ pub fn tile_to_position(center_tile: &TileCoordinate, x: usize, y: usize) -> Tra
         0.,
     ))
 }
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_get_tile() {
+        let wm = WorldMap::new(50, 50);
+        let tile = wm.get_tile(12, 15).unwrap();
+        assert_eq!(12, tile.x);
+        assert_eq!(15, tile.y);
+    }
+}
