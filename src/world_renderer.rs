@@ -4,13 +4,13 @@ use crate::animation::{AnimationBundle, UnitType};
 use crate::asset_loader::AtlasHandles;
 use crate::biome::Biome;
 use crate::builder::Builder;
+use crate::data;
 use crate::data::AssetType;
 use crate::enemy::Enemy;
 use crate::world_map::{tile_to_position, WorldMap};
 use bevy::render::camera::Camera;
 use bevy_rapier3d::physics::RapierConfiguration;
 use bevy_rapier3d::rapier::dynamics::RigidBodyBuilder;
-use bevy_rapier3d::rapier::geometry::ColliderBuilder;
 use bevy_rapier3d::rapier::na::Vector;
 
 pub const WORLD_MAP_RENDER_WIDTH: usize = 13;
@@ -66,7 +66,7 @@ fn render_world(
                 .translation(builder_x, builder_y, builder_z)
                 .lock_rotations()
                 .lock_translations();
-            let builder_collider = ColliderBuilder::cuboid(16., 16., 16.);
+            let builder_collider = data::get_collision_data(UnitType::Wizard);
             commands
                 .spawn(SpriteSheetComponents {
                     texture_atlas: builder_atlas_handle,
@@ -130,8 +130,9 @@ fn render_world(
                             enemy_transform.translation.z(),
                         )
                         .lock_rotations()
+                        .lock_translations()
                         .mass(1000., false);
-                    let enemy_collider = ColliderBuilder::cuboid(16., 16., 16.)
+                    let enemy_collider = data::get_collision_data(UnitType::Enemy)
                         .user_data(enemy_entity.to_bits() as u128);
                     commands.insert(enemy_entity, (enemy_body, enemy_collider));
                 }
