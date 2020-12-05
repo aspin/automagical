@@ -3,6 +3,7 @@ use crate::data::AssetType;
 use crate::world_map::WorldMap;
 use bevy::prelude::*;
 use crate::cursor::CursorState;
+use crate::builder::{Builder, BuilderMode};
 
 pub fn place_object(
     mut commands: Commands,
@@ -10,7 +11,11 @@ pub fn place_object(
     cursor_state: Res<CursorState>,
     world_map: Res<WorldMap>,
     atlas_handles: Res<AtlasHandles>,
+    builder: &Builder,
 ) {
+    if builder.mode != BuilderMode::Construct {
+        return
+    }
     if mouse_button_input.pressed(MouseButton::Left) {
         if let Some(cursor_coordinates) = cursor_state.cursor_position {
             if let Some(conveyor_id) = atlas_handles.get_asset(AssetType::Conveyor) {

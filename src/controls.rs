@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 use crate::animation::{Animated, AnimationState, CardinalDirection};
-use crate::builder::Builder;
+use crate::builder::{Builder, BuilderMode};
 use bevy::render::camera::Camera;
 use bevy_rapier3d::physics::RigidBodyHandleComponent;
 use bevy_rapier3d::rapier::dynamics::RigidBodySet;
@@ -11,10 +11,11 @@ const WIZARD_SPEED: f32 = 100.;
 
 pub fn control_builder(
     keyboard_input: Res<Input<KeyCode>>,
+    mouse_button_input: Res<Input<MouseButton>>,
     mut rigid_body_set: ResMut<RigidBodySet>,
     mut query_builder: Query<(
         &mut Timer,
-        &Builder,
+        &mut Builder,
         &mut Animated,
         &RigidBodyHandleComponent,
     )>,
@@ -23,7 +24,7 @@ pub fn control_builder(
     let query_builder_iterator = &mut query_builder.iter_mut();
     let query_camera_iterator = &mut query_camera.iter_mut();
 
-    if let Some((mut builder_timer, _builder, mut animated, builder_body_handle)) =
+    if let Some((mut builder_timer, mut builder, mut animated, builder_body_handle)) =
         query_builder_iterator.next()
     {
         let builder_body = rigid_body_set
@@ -75,6 +76,16 @@ pub fn control_builder(
                     builder_timer.finished = true;
                 }
             }
+        }
+
+        if mouse_button_input.just_released(MouseButton::Right) {
+            if builder.mode == BuilderMode::Construct {
+                builder.mode = BuilderMode::Combat
+            } else {
+                builder.mode = BuilderMode::Construct
+            }
+
+            println!("Setting builder mode: {:?}", builder.mode)
         }
     }
 }

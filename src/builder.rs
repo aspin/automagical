@@ -7,14 +7,22 @@ use bevy_rapier3d::rapier::dynamics::RigidBodyBuilder;
 use bevy_rapier3d::rapier::geometry::ColliderBuilder;
 use bevy_rapier3d::rapier::math::AngVector;
 
+#[derive(PartialEq, Eq, Copy, Clone, Hash, Debug)]
+pub enum BuilderMode {
+    Construct,
+    Combat
+}
+
 pub struct Builder {
     pub name: String,
+    pub mode: BuilderMode,
 }
 
 impl Builder {
     pub fn new(name: &str) -> Self {
         Builder {
             name: String::from(name),
+            mode: BuilderMode::Combat,
         }
     }
 }
