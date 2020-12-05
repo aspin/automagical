@@ -4,7 +4,7 @@ use bevy::prelude::*;
 use bevy_rapier3d::physics::RigidBodyHandleComponent;
 use bevy_rapier3d::rapier::dynamics::{RigidBody, RigidBodySet};
 use bevy_rapier3d::rapier::na;
-use bevy_rapier3d::rapier::na::{Point3, Isometry3, Vector3};
+use bevy_rapier3d::rapier::na::{Isometry3, Point3, Vector3};
 
 const ENEMY_SPEED: f32 = 30.;
 
@@ -39,7 +39,11 @@ pub fn move_enemies(
     let mut builder_positions: Vec<Isometry3<f32>> = Vec::new();
     for (_builder, rigid_body_handle) in builder_query.iter() {
         builder_positions.push(
-            rigid_body_set.get(rigid_body_handle.handle()).unwrap().position().clone()
+            rigid_body_set
+                .get(rigid_body_handle.handle())
+                .unwrap()
+                .position()
+                .clone(),
         );
     }
 
@@ -91,6 +95,5 @@ fn distance_to_position(rigid_body: &RigidBody, position: &Isometry3<f32>) -> f3
 }
 
 fn direction_to_position(rigid_body: &RigidBody, position: &Isometry3<f32>) -> Vector3<f32> {
-
     (position.translation.vector - rigid_body.position().translation.vector).normalize()
 }
