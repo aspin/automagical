@@ -11,6 +11,7 @@ mod global_constants;
 mod projectile;
 mod world_map;
 mod world_renderer;
+mod cursor;
 
 use bevy::prelude::*;
 use bevy_rapier3d::physics::RapierPhysicsPlugin;
@@ -26,7 +27,7 @@ fn main() {
         .add_system(builder::produce_projectiles.system())
         .add_system(projectile::expire_projectiles.system())
         .add_system(controls::control_builder.system())
-        .add_system(construction::update_cursor_position.system())
+        .add_system(cursor::update_cursor_position.system())
         .add_system(construction::place_object.system())
         .add_system(damage::examine_collisions.system())
         .add_system(enemy::move_enemies.system())

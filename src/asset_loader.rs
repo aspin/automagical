@@ -4,7 +4,7 @@ use bevy::asset::{HandleId, LoadState};
 use bevy::prelude::*;
 
 use crate::biome::Biome;
-use crate::construction::CursorState;
+use crate::cursor::CursorState;
 use crate::data;
 use crate::data::{AssetGroup, AssetInfo, AssetType};
 
