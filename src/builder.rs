@@ -1,13 +1,11 @@
+use crate::animation::{Animated, AnimationState, CardinalDirection};
 use crate::asset_loader::AtlasHandles;
-use crate::data::animation;
-use crate::data::animation::{AnimationState, UnitType};
+use crate::data::AssetType;
 use crate::projectile::{Projectile, ARROW_SPEED};
 use bevy::prelude::*;
 use bevy_rapier3d::rapier::dynamics::RigidBodyBuilder;
 use bevy_rapier3d::rapier::geometry::ColliderBuilder;
 use bevy_rapier3d::rapier::math::AngVector;
-
-const ANIMATION_SPEED: f32 = 0.5;
 
 pub struct Builder {
     pub name: String,
@@ -21,77 +19,6 @@ impl Builder {
     }
 }
 
-pub struct Animated {
-    pub unit_type: UnitType,
-    pub state: AnimationState,
-    pub animation_index: u32,
-    pub facing: CardinalDirection,
-}
-
-impl Animated {
-    fn new(unit_type: UnitType) -> Self {
-        Animated {
-            unit_type,
-            state: AnimationState::Idle,
-            animation_index: 0,
-            facing: CardinalDirection::East,
-        }
-    }
-}
-
-#[derive(Bundle)]
-pub struct AnimationBundle {
-    pub animated: Animated,
-    pub timer: Timer,
-}
-
-impl AnimationBundle {
-    pub fn new(unit_type: UnitType) -> Self {
-        let animation_info = animation::get_animation_info(&unit_type, &AnimationState::Idle);
-        AnimationBundle {
-            animated: Animated::new(unit_type),
-            timer: Timer::from_seconds(animation_info.durations[0], false),
-        }
-    }
-}
-
-#[derive(PartialEq, Copy, Clone)]
-pub enum CardinalDirection {
-    North,
-    South,
-    West,
-    East,
-}
-
-pub fn animate(mut query: Query<(&mut Timer, &mut TextureAtlasSprite, &mut Animated)>) {
-    for (mut timer, mut sprite, mut animated) in query.iter_mut() {
-        if timer.finished {
-            let mut animation_info =
-                animation::get_animation_info(&animated.unit_type, &animated.state);
-
-            let next_index = animated.animation_index + 1;
-            if next_index >= animation_info.length {
-                if animation_info.loop_around {
-                    animated.animation_index = next_index % animation_info.length
-                } else {
-                    animated.animation_index = 0;
-                    animated.state = AnimationState::Idle;
-                    animation_info =
-                        animation::get_animation_info(&animated.unit_type, &AnimationState::Idle);
-                }
-            } else {
-                animated.animation_index = next_index;
-            }
-
-            sprite.index = animation_info.sprite_offset + animated.animation_index;
-
-            timer.reset();
-            timer.duration =
-                animation_info.durations[animated.animation_index as usize] * ANIMATION_SPEED;
-        }
-    }
-}
-
 pub fn produce_projectiles(
     mut commands: Commands,
     atlas_handles: Res<AtlasHandles>,
@@ -99,7 +26,7 @@ pub fn produce_projectiles(
     builder_transform: &Transform,
     _builder: &Builder,
 ) {
-    if let Some(arrow_id) = atlas_handles.arrow_id {
+    if let Some(arrow_id) = atlas_handles.get_asset(AssetType::Arrow) {
         if animated.state == AnimationState::Attack && animated.animation_index == 3 {
             for i in 0..3 {
                 let arrow_atlas_handle = Handle::weak(arrow_id);

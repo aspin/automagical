@@ -1,4 +1,5 @@
 use crate::asset_loader::AtlasHandles;
+use crate::data::AssetType;
 use crate::world_map::WorldMap;
 use bevy::prelude::*;
 
@@ -39,7 +40,7 @@ pub fn place_object(
 ) {
     if mouse_button_input.pressed(MouseButton::Left) {
         if let Some(cursor_coordinates) = cursor_state.cursor_position {
-            if let Some(conveyor_id) = atlas_handles.conveyor_id {
+            if let Some(conveyor_id) = atlas_handles.get_asset(AssetType::Conveyor) {
                 let map_tile =
                     world_map.position_to_tile(cursor_coordinates.x(), cursor_coordinates.y());
                 let tile_position = world_map.tile_to_position(map_tile.0, map_tile.1);

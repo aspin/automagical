@@ -1,11 +1,11 @@
 use bevy::prelude::*;
 
-use crate::builder::{Animated, Builder, CardinalDirection};
-use crate::data::animation::AnimationState;
+use crate::animation::{Animated, AnimationState, CardinalDirection};
+use crate::builder::Builder;
 use bevy::render::camera::Camera;
 use bevy_rapier3d::physics::RigidBodyHandleComponent;
 use bevy_rapier3d::rapier::dynamics::RigidBodySet;
-use bevy_rapier3d::rapier::math::{AngVector, Rotation, Vector};
+use bevy_rapier3d::rapier::math::Vector;
 
 const WIZARD_SPEED: f32 = 100.;
 
@@ -23,15 +23,13 @@ pub fn control_builder(
     let query_builder_iterator = &mut query_builder.iter_mut();
     let query_camera_iterator = &mut query_camera.iter_mut();
 
-    // TODO: should be able to rework this?
-
     if let Some((mut builder_timer, _builder, mut animated, builder_body_handle)) =
-        query_builder_iterator.into_iter().next()
+        query_builder_iterator.next()
     {
         let builder_body = rigid_body_set
             .get_mut(builder_body_handle.handle())
             .unwrap();
-        if let Some((_camera, mut camera_transform)) = query_camera_iterator.into_iter().next() {
+        if let Some((_camera, mut camera_transform)) = query_camera_iterator.next() {
             let press_up = keyboard_input.pressed(KeyCode::W);
             let press_down = keyboard_input.pressed(KeyCode::S);
             let press_left = keyboard_input.pressed(KeyCode::A);
@@ -45,32 +43,23 @@ pub fn control_builder(
                     builder_timer.finished = true;
                 }
 
+                let mut x_speed = 0.;
+                let mut y_speed = 0.;
                 if press_up {
-                    builder_body.set_linvel(Vector::new(0., WIZARD_SPEED, 0.), true);
+                    y_speed = WIZARD_SPEED;
                 }
                 if press_down {
-                    builder_body.set_linvel(Vector::new(0., -WIZARD_SPEED, 0.), true);
+                    y_speed = -WIZARD_SPEED;
                 }
                 if press_left {
-                    builder_body.set_linvel(Vector::new(-WIZARD_SPEED, 0., 0.), true);
-                    if animated.facing == CardinalDirection::East {
-                        animated.facing = CardinalDirection::West;
-
-                        let mut previous_position = builder_body.position().clone();
-                        previous_position.rotation =
-                            Rotation::new(AngVector::new(0.0, std::f32::consts::PI, 0.0));
-                        builder_body.set_position(previous_position, true);
-                    }
+                    x_speed = -WIZARD_SPEED;
+                    animated.facing = CardinalDirection::West;
                 }
                 if press_right {
-                    builder_body.set_linvel(Vector::new(WIZARD_SPEED, 0., 0.), true);
-                    if animated.facing == CardinalDirection::West {
-                        animated.facing = CardinalDirection::East;
-                        let mut previous_position = builder_body.position().clone();
-                        previous_position.rotation = Rotation::new(AngVector::new(0.0, 0.0, 0.0));
-                        builder_body.set_position(previous_position, true);
-                    }
+                    x_speed = WIZARD_SPEED;
+                    animated.facing = CardinalDirection::East;
                 }
+                builder_body.set_linvel(Vector::new(x_speed, y_speed, 0.), true);
             } else {
                 builder_body.set_linvel(Vector::zeros(), true);
             }

@@ -1,4 +1,6 @@
-use crate::asset_loader::{AtlasHandles, TILE_LENGTH};
+use crate::asset_loader::AtlasHandles;
+use crate::biome::Biome;
+use crate::global_constants::TILE_LENGTH;
 use crate::world_renderer::{WORLD_MAP_RENDER_HEIGHT, WORLD_MAP_RENDER_WIDTH};
 use bevy::prelude::*;
 
@@ -13,12 +15,6 @@ pub struct WorldMap {
     // in number of tiles
     width: usize,
     height: usize,
-}
-
-#[derive(Debug)]
-pub enum Biome {
-    Grassland,
-    Desert,
 }
 
 #[derive(Debug)]
@@ -127,11 +123,7 @@ impl Tile {
     }
 
     pub fn get_biome_handle(&self, atlas_handles: &AtlasHandles) -> Handle<TextureAtlas> {
-        let handle_id = match self.biome {
-            Biome::Grassland => atlas_handles.grassland_biome_id.unwrap(),
-            Biome::Desert => atlas_handles.desert_biome_id.unwrap(),
-        };
-        Handle::weak(handle_id)
+        Handle::weak(atlas_handles.get_biome_asset(self.biome).unwrap())
     }
 }
 
@@ -141,4 +133,17 @@ pub fn tile_to_position(center_tile: &TileCoordinate, x: usize, y: usize) -> Tra
         ((y as i32 - center_tile.1 as i32) * TILE_LENGTH as i32) as f32,
         0.,
     ))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_get_tile() {
+        let wm = WorldMap::new(50, 50);
+        let tile = wm.get_tile(12, 15).unwrap();
+        assert_eq!(12, tile.x);
+        assert_eq!(15, tile.y);
+    }
 }
