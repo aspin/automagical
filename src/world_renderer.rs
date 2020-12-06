@@ -13,6 +13,7 @@ use bevy_rapier3d::physics::RapierConfiguration;
 use bevy_rapier3d::rapier::dynamics::RigidBodyBuilder;
 use bevy_rapier3d::rapier::na::Vector;
 use crate::global_constants::UNIT_Z;
+use crate::weapon::Weapon;
 
 pub const WORLD_MAP_RENDER_WIDTH: usize = 13;
 pub const WORLD_MAP_RENDER_HEIGHT: usize = 10;
@@ -80,6 +81,7 @@ fn render_world(
                 .with_bundle(AnimationBundle::new(UnitType::Wizard))
                 .with(builder_body)
                 .with(builder_collider)
+                .with(Weapon::magic_bow())
                 .with(Builder::new("Bob the builder"));
 
             world.generated = true;

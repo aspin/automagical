@@ -1,13 +1,14 @@
 use crate::animation::{Animated, AnimationState, UnitType};
 use crate::asset_loader::AtlasHandles;
 use crate::data::AssetType;
-use crate::projectile::{Projectile, ARROW_SPEED, ARROW_OFFSET, ARROW_SPREAD};
+use crate::projectile::Projectile;
 use bevy::prelude::*;
 use bevy_rapier3d::rapier::dynamics::{RigidBodyBuilder, RigidBody, RigidBodySet};
 use bevy_rapier3d::rapier::math::{AngVector, Rotation};
 use bevy_rapier3d::rapier::na::Vector3;
 use bevy_rapier3d::physics::RigidBodyHandleComponent;
 use crate::data;
+use crate::weapon::Weapon;
 
 #[derive(PartialEq, Eq, Copy, Clone, Hash, Debug)]
 pub enum BuilderMode {
@@ -57,11 +58,12 @@ pub fn produce_projectiles(
     animated: &Animated,
     builder_body_handle: &RigidBodyHandleComponent,
     builder: &Builder,
+    weapon: &Weapon,
 ) {
     if let Some(arrow_id) = atlas_handles.get_asset(AssetType::Arrow) {
         if animated.state == AnimationState::Attack && animated.animation_index == 3 {
             let builder_body = rigid_body_set.get(builder_body_handle.handle()).unwrap();
-            for i in -1..2 {
+            for i in weapon.spread_range() {
 
                 let arrow_atlas_handle = Handle::weak(arrow_id);
                 let projectile = Projectile::arrow();
@@ -70,7 +72,7 @@ pub fn produce_projectiles(
                 // TODO: some of this can be computed only once
                 let aim_vector = builder.position_to_aimed_location(builder_body).unwrap();
                 let normal_vector = Vector3::new(-aim_vector.y, aim_vector.x, aim_vector.z);
-                let velocity_vector = aim_vector.clone() * ARROW_SPEED;
+                let velocity_vector = aim_vector.clone() * (projectile.speed + weapon.projectile_launch_speed);
                 let z_plane_zeroes = Vector3::new(1., 0., aim_vector.z);
 
                 let mut y_rot = velocity_vector.angle(&z_plane_zeroes);
@@ -86,8 +88,8 @@ pub fn produce_projectiles(
                 // );
 
                 let mut arrow_position = builder_body.position().clone();
-                arrow_position.translation.vector += aim_vector * ARROW_OFFSET;
-                arrow_position.translation.vector += normal_vector * (i as f32) * ARROW_SPREAD;
+                arrow_position.translation.vector += aim_vector * weapon.size;
+                arrow_position.translation.vector += normal_vector * (i as f32) * weapon.projectile_spread;
                 arrow_position.rotation = Rotation::new(
                     AngVector::new(0., 0., y_rot)
                 );
