@@ -6,6 +6,7 @@ pub enum ProjectileType {
     Arrow,
 }
 
+#[derive(Clone)]
 pub struct Projectile {
     pub damage: i32,
     pub ttl: f32,
