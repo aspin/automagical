@@ -1,35 +1,9 @@
 use crate::asset_loader::AtlasHandles;
+use crate::builder::{Builder, BuilderMode};
+use crate::cursor::CursorState;
 use crate::data::AssetType;
 use crate::world_map::WorldMap;
 use bevy::prelude::*;
-
-pub struct CursorState {
-    pub cursor: EventReader<CursorMoved>,
-    pub camera_entity: Entity,
-    pub cursor_position: Option<Vec4>,
-}
-
-pub fn update_cursor_position(
-    mut cursor_state: ResMut<CursorState>,
-    events_cursor: Res<Events<CursorMoved>>,
-    windows: Res<Windows>,
-    camera_query: Query<&Transform>,
-) {
-    let camera_transform = camera_query
-        .get_component::<Transform>(cursor_state.camera_entity)
-        .unwrap();
-
-    // from cookbook: https://github.com/jamadazi/bevy-cookbook/blob/master/bevy-cookbook.md#2d-games
-    for event in cursor_state.cursor.iter(&events_cursor) {
-        let window = windows.get(event.id).unwrap();
-        let size = Vec2::new(window.width() as f32, window.height() as f32);
-
-        let position = event.position - size / 2.0;
-        let position_world = camera_transform.compute_matrix() * position.extend(0.0).extend(1.0);
-
-        cursor_state.cursor_position.replace(position_world);
-    }
-}
 
 pub fn place_object(
     mut commands: Commands,
@@ -37,7 +11,11 @@ pub fn place_object(
     cursor_state: Res<CursorState>,
     world_map: Res<WorldMap>,
     atlas_handles: Res<AtlasHandles>,
+    builder: &Builder,
 ) {
+    if builder.mode != BuilderMode::Construct {
+        return;
+    }
     if mouse_button_input.pressed(MouseButton::Left) {
         if let Some(cursor_coordinates) = cursor_state.cursor_position {
             if let Some(conveyor_id) = atlas_handles.get_asset(AssetType::Conveyor) {

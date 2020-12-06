@@ -18,10 +18,15 @@ fn enemy_animation(state: &AnimationState) -> AnimationInfo {
     }
 }
 
+fn arrow_animation(_state: &AnimationState) -> AnimationInfo {
+    AnimationInfo::new(0, vec![1.], true)
+}
+
 pub fn get_animation_info(unit_type: &UnitType, state: &AnimationState) -> AnimationInfo {
     match unit_type {
         UnitType::Wizard => wizard_animation(state),
         UnitType::Enemy => enemy_animation(state),
+        UnitType::Arrow => arrow_animation(state),
     }
 }
 

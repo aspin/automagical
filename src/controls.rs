@@ -1,7 +1,8 @@
 use bevy::prelude::*;
 
 use crate::animation::{Animated, AnimationState, CardinalDirection};
-use crate::builder::Builder;
+use crate::builder::{Builder, BuilderMode};
+use crate::cursor::CursorState;
 use bevy::render::camera::Camera;
 use bevy_rapier3d::physics::RigidBodyHandleComponent;
 use bevy_rapier3d::rapier::dynamics::RigidBodySet;
@@ -11,10 +12,12 @@ const WIZARD_SPEED: f32 = 100.;
 
 pub fn control_builder(
     keyboard_input: Res<Input<KeyCode>>,
+    mouse_button_input: Res<Input<MouseButton>>,
     mut rigid_body_set: ResMut<RigidBodySet>,
+    cursor_state: Res<CursorState>,
     mut query_builder: Query<(
         &mut Timer,
-        &Builder,
+        &mut Builder,
         &mut Animated,
         &RigidBodyHandleComponent,
     )>,
@@ -23,7 +26,7 @@ pub fn control_builder(
     let query_builder_iterator = &mut query_builder.iter_mut();
     let query_camera_iterator = &mut query_camera.iter_mut();
 
-    if let Some((mut builder_timer, _builder, mut animated, builder_body_handle)) =
+    if let Some((mut builder_timer, mut builder, mut animated, builder_body_handle)) =
         query_builder_iterator.next()
     {
         let builder_body = rigid_body_set
@@ -66,14 +69,25 @@ pub fn control_builder(
 
             (*camera_transform.translation.x_mut()) = builder_body.position().translation.x;
             (*camera_transform.translation.y_mut()) = builder_body.position().translation.y;
+        }
 
-            if keyboard_input.pressed(KeyCode::Space) {
-                if animated.state != AnimationState::Attack {
-                    animated.state = AnimationState::Attack;
-                    animated.animation_index = 0;
-                    builder_timer.reset();
-                    builder_timer.finished = true;
-                }
+        // toggle build mode
+        if mouse_button_input.just_released(MouseButton::Right) {
+            builder.toggle_mode();
+            println!("Setting builder mode: {:?}", builder.mode)
+        }
+
+        // fire projectiles
+        if mouse_button_input.pressed(MouseButton::Left)
+            && builder.mode == BuilderMode::Combat
+            && animated.state != AnimationState::Attack
+        {
+            if let Some(cursor_coordinates) = cursor_state.world_position {
+                animated.state = AnimationState::Attack;
+                animated.animation_index = 0;
+                builder_timer.reset();
+                builder_timer.finished = true;
+                builder.aim_location.replace(cursor_coordinates);
             }
         }
     }

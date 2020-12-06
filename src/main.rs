@@ -4,11 +4,13 @@ mod biome;
 mod builder;
 mod construction;
 mod controls;
+mod cursor;
 mod damage;
 mod data;
 mod enemy;
 mod global_constants;
 mod projectile;
+mod weapon;
 mod world_map;
 mod world_renderer;
 
@@ -26,7 +28,7 @@ fn main() {
         .add_system(builder::produce_projectiles.system())
         .add_system(projectile::expire_projectiles.system())
         .add_system(controls::control_builder.system())
-        .add_system(construction::update_cursor_position.system())
+        .add_system(cursor::update_cursor_position.system())
         .add_system(construction::place_object.system())
         .add_system(damage::examine_collisions.system())
         .add_system(enemy::move_enemies.system())

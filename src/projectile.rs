@@ -1,23 +1,31 @@
-use crate::animation::CardinalDirection;
+use crate::data;
 use bevy::prelude::*;
 
-pub const ARROW_SPEED: f32 = 700.;
+#[derive(PartialEq, Eq, Copy, Clone, Hash)]
+pub enum ProjectileType {
+    Arrow,
+}
 
+#[derive(Clone)]
 pub struct Projectile {
     pub damage: i32,
     pub ttl: f32,
-    pub facing: CardinalDirection,
     pub piercing: bool,
+    pub speed: f32,
 }
 
 impl Projectile {
-    pub fn arrow(facing: CardinalDirection) -> Projectile {
+    pub fn new(damage: i32, ttl: f32, piercing: bool, speed: f32) -> Self {
         Projectile {
-            damage: 12,
-            ttl: 2.,
-            facing,
-            piercing: true,
+            damage,
+            ttl,
+            piercing,
+            speed,
         }
+    }
+
+    pub fn arrow() -> Projectile {
+        data::get_projectile_info(ProjectileType::Arrow)
     }
 }
 
