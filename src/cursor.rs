@@ -8,6 +8,7 @@ pub struct CursorState {
     pub cursor: EventReader<CursorMoved>,
     pub camera_entity: Entity,
     pub cursor_position: Option<Vec4>,
+    pub world_position: Option<Vec4>,
 }
 
 pub fn update_cursor_position(
@@ -25,9 +26,11 @@ pub fn update_cursor_position(
         let window = windows.get(event.id).unwrap();
         let size = Vec2::new(window.width() as f32, window.height() as f32);
 
-        let position = event.position - size / 2.0;
-        let position_world = camera_transform.compute_matrix() * position.extend(0.0).extend(1.0);
+        let position = (event.position - size / 2.0).extend(0.0).extend(1.0);
+        cursor_state.cursor_position.replace(position);
+    }
 
-        cursor_state.cursor_position.replace(position_world);
+    if let Some(cursor_position) = cursor_state.cursor_position {
+        cursor_state.world_position.replace(camera_transform.compute_matrix() * cursor_position);
     }
 }

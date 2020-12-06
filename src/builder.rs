@@ -61,7 +61,7 @@ pub fn produce_projectiles(
     weapon: &Weapon,
 ) {
     if let Some(arrow_id) = atlas_handles.get_asset(AssetType::Arrow) {
-        if animated.state == AnimationState::Attack && animated.animation_index == 3 {
+        if animated.state == AnimationState::Attack && animated.animation_index == 1 {
             let builder_body = rigid_body_set.get(builder_body_handle.handle()).unwrap();
             for i in weapon.spread_range() {
 

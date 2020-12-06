@@ -82,7 +82,7 @@ pub fn control_builder(
             && builder.mode == BuilderMode::Combat
             && animated.state != AnimationState::Attack {
 
-            if let Some(cursor_coordinates) = cursor_state.cursor_position {
+            if let Some(cursor_coordinates) = cursor_state.world_position {
                 animated.state = AnimationState::Attack;
                 animated.animation_index = 0;
                 builder_timer.reset();

@@ -180,6 +180,7 @@ fn loader(
         camera_entity,
         cursor: Default::default(),
         cursor_position: Option::None,
+        world_position: Option::None,
     });
 }
 
