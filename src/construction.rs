@@ -1,9 +1,9 @@
 use crate::asset_loader::AtlasHandles;
+use crate::builder::{Builder, BuilderMode};
+use crate::cursor::CursorState;
 use crate::data::AssetType;
 use crate::world_map::WorldMap;
 use bevy::prelude::*;
-use crate::cursor::CursorState;
-use crate::builder::{Builder, BuilderMode};
 
 pub fn place_object(
     mut commands: Commands,
@@ -14,7 +14,7 @@ pub fn place_object(
     builder: &Builder,
 ) {
     if builder.mode != BuilderMode::Construct {
-        return
+        return;
     }
     if mouse_button_input.pressed(MouseButton::Left) {
         if let Some(cursor_coordinates) = cursor_state.cursor_position {

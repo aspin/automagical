@@ -1,9 +1,9 @@
-use bevy::prelude::*;
 use crate::data;
+use bevy::prelude::*;
 
 #[derive(PartialEq, Eq, Copy, Clone, Hash)]
 pub enum ProjectileType {
-    Arrow
+    Arrow,
 }
 
 pub struct Projectile {
@@ -15,7 +15,12 @@ pub struct Projectile {
 
 impl Projectile {
     pub fn new(damage: i32, ttl: f32, piercing: bool, speed: f32) -> Self {
-        Projectile { damage, ttl, piercing, speed }
+        Projectile {
+            damage,
+            ttl,
+            piercing,
+            speed,
+        }
     }
 
     pub fn arrow() -> Projectile {

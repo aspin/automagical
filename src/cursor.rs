@@ -1,8 +1,8 @@
 use bevy::app::{EventReader, Events};
-use bevy::window::{CursorMoved, Windows};
-use bevy::prelude::{Entity, Transform, Vec2};
+use bevy::ecs::{Query, Res, ResMut};
 use bevy::math::f32::Vec4;
-use bevy::ecs::{ResMut, Res, Query};
+use bevy::prelude::{Entity, Transform, Vec2};
+use bevy::window::{CursorMoved, Windows};
 
 pub struct CursorState {
     pub cursor: EventReader<CursorMoved>,
@@ -31,6 +31,8 @@ pub fn update_cursor_position(
     }
 
     if let Some(cursor_position) = cursor_state.cursor_position {
-        cursor_state.world_position.replace(camera_transform.compute_matrix() * cursor_position);
+        cursor_state
+            .world_position
+            .replace(camera_transform.compute_matrix() * cursor_position);
     }
 }

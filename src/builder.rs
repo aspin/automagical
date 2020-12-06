@@ -1,19 +1,19 @@
 use crate::animation::{Animated, AnimationState, UnitType};
 use crate::asset_loader::AtlasHandles;
+use crate::data;
 use crate::data::AssetType;
 use crate::projectile::Projectile;
+use crate::weapon::Weapon;
 use bevy::prelude::*;
-use bevy_rapier3d::rapier::dynamics::{RigidBodyBuilder, RigidBody, RigidBodySet};
+use bevy_rapier3d::physics::RigidBodyHandleComponent;
+use bevy_rapier3d::rapier::dynamics::{RigidBody, RigidBodyBuilder, RigidBodySet};
 use bevy_rapier3d::rapier::math::{AngVector, Rotation};
 use bevy_rapier3d::rapier::na::Vector3;
-use bevy_rapier3d::physics::RigidBodyHandleComponent;
-use crate::data;
-use crate::weapon::Weapon;
 
 #[derive(PartialEq, Eq, Copy, Clone, Hash, Debug)]
 pub enum BuilderMode {
     Construct,
-    Combat
+    Combat,
 }
 
 pub struct Builder {
@@ -42,7 +42,9 @@ impl Builder {
     pub fn position_to_aimed_location(&self, rigid_body: &RigidBody) -> Option<Vector3<f32>> {
         if let Some(aim_location) = self.aim_location {
             let aimed_vector = Vector3::new(
-                aim_location.x(), aim_location.y(), rigid_body.position().translation.z
+                aim_location.x(),
+                aim_location.y(),
+                rigid_body.position().translation.z,
             );
             Some((aimed_vector - rigid_body.position().translation.vector).normalize())
         } else {
@@ -64,7 +66,6 @@ pub fn produce_projectiles(
         if animated.state == AnimationState::Attack && animated.animation_index == 1 {
             let builder_body = rigid_body_set.get(builder_body_handle.handle()).unwrap();
             for i in weapon.spread_range() {
-
                 let arrow_atlas_handle = Handle::weak(arrow_id);
                 let projectile = Projectile::arrow();
                 let projectile_timer = Timer::from_seconds(projectile.ttl, false);
@@ -72,7 +73,8 @@ pub fn produce_projectiles(
                 // TODO: some of this can be computed only once
                 let aim_vector = builder.position_to_aimed_location(builder_body).unwrap();
                 let normal_vector = Vector3::new(-aim_vector.y, aim_vector.x, aim_vector.z);
-                let velocity_vector = aim_vector.clone() * (projectile.speed + weapon.projectile_launch_speed);
+                let velocity_vector =
+                    aim_vector.clone() * (projectile.speed + weapon.projectile_launch_speed);
                 let z_plane_zeroes = Vector3::new(1., 0., aim_vector.z);
 
                 let mut y_rot = velocity_vector.angle(&z_plane_zeroes);
@@ -89,21 +91,18 @@ pub fn produce_projectiles(
 
                 let mut arrow_position = builder_body.position().clone();
                 arrow_position.translation.vector += aim_vector * weapon.size;
-                arrow_position.translation.vector += normal_vector * (i as f32) * weapon.projectile_spread;
-                arrow_position.rotation = Rotation::new(
-                    AngVector::new(0., 0., y_rot)
-                );
+                arrow_position.translation.vector +=
+                    normal_vector * (i as f32) * weapon.projectile_spread;
+                arrow_position.rotation = Rotation::new(AngVector::new(0., 0., y_rot));
 
                 // some temporary logic since bevy_rapier is slow to update from bevy
                 // https://github.com/dimforge/bevy_rapier/issues/6
                 let transform_rotation = Quat::from_rotation_z(y_rot);
-                let mut arrow_initial_transform = Transform::from_translation(
-                    Vec3::new(
-                        arrow_position.translation.x,
-                        arrow_position.translation.y,
-                        arrow_position.translation.z
-                    )
-                );
+                let mut arrow_initial_transform = Transform::from_translation(Vec3::new(
+                    arrow_position.translation.x,
+                    arrow_position.translation.y,
+                    arrow_position.translation.z,
+                ));
                 arrow_initial_transform.rotate(transform_rotation);
 
                 let arrow_entity = commands

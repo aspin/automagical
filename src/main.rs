@@ -4,15 +4,15 @@ mod biome;
 mod builder;
 mod construction;
 mod controls;
+mod cursor;
 mod damage;
 mod data;
 mod enemy;
 mod global_constants;
 mod projectile;
+mod weapon;
 mod world_map;
 mod world_renderer;
-mod cursor;
-mod weapon;
 
 use bevy::prelude::*;
 use bevy_rapier3d::physics::RapierPhysicsPlugin;

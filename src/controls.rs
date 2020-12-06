@@ -2,11 +2,11 @@ use bevy::prelude::*;
 
 use crate::animation::{Animated, AnimationState, CardinalDirection};
 use crate::builder::{Builder, BuilderMode};
+use crate::cursor::CursorState;
 use bevy::render::camera::Camera;
 use bevy_rapier3d::physics::RigidBodyHandleComponent;
 use bevy_rapier3d::rapier::dynamics::RigidBodySet;
 use bevy_rapier3d::rapier::math::Vector;
-use crate::cursor::CursorState;
 
 const WIZARD_SPEED: f32 = 100.;
 
@@ -80,8 +80,8 @@ pub fn control_builder(
         // fire projectiles
         if mouse_button_input.pressed(MouseButton::Left)
             && builder.mode == BuilderMode::Combat
-            && animated.state != AnimationState::Attack {
-
+            && animated.state != AnimationState::Attack
+        {
             if let Some(cursor_coordinates) = cursor_state.world_position {
                 animated.state = AnimationState::Attack;
                 animated.animation_index = 0;

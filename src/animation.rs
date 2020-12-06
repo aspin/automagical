@@ -20,7 +20,7 @@ pub enum AnimationState {
 pub enum UnitType {
     Wizard,
     Enemy,
-    Arrow
+    Arrow,
 }
 
 #[derive(PartialEq, Eq, Copy, Clone, Hash)]

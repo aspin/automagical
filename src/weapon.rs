@@ -1,9 +1,9 @@
-use crate::projectile::ProjectileType;
 use crate::data;
+use crate::projectile::ProjectileType;
 
 #[derive(PartialEq, Eq, Copy, Clone, Hash)]
 pub enum WeaponType {
-    MagicBow
+    MagicBow,
 }
 
 pub struct Weapon {
@@ -15,8 +15,20 @@ pub struct Weapon {
 }
 
 impl Weapon {
-    pub fn new(size: f32, projectile_type: Option<ProjectileType>, projectile_count: u32, projectile_launch_speed: f32, projectile_spread: f32) -> Self {
-        Weapon { size, projectile_type, projectile_count, projectile_launch_speed, projectile_spread }
+    pub fn new(
+        size: f32,
+        projectile_type: Option<ProjectileType>,
+        projectile_count: u32,
+        projectile_launch_speed: f32,
+        projectile_spread: f32,
+    ) -> Self {
+        Weapon {
+            size,
+            projectile_type,
+            projectile_count,
+            projectile_launch_speed,
+            projectile_spread,
+        }
     }
 
     pub fn magic_bow() -> Weapon {
