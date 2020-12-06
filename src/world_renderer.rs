@@ -12,6 +12,7 @@ use bevy::render::camera::Camera;
 use bevy_rapier3d::physics::RapierConfiguration;
 use bevy_rapier3d::rapier::dynamics::RigidBodyBuilder;
 use bevy_rapier3d::rapier::na::Vector;
+use crate::global_constants::UNIT_Z;
 
 pub const WORLD_MAP_RENDER_WIDTH: usize = 13;
 pub const WORLD_MAP_RENDER_HEIGHT: usize = 10;
@@ -60,7 +61,7 @@ fn render_world(
                 Handle::weak(atlas_handles.get_asset(AssetType::Builder).unwrap());
             let builder_x = 0.;
             let builder_y = 0.;
-            let builder_z = 1.;
+            let builder_z = UNIT_Z;
 
             let builder_body = RigidBodyBuilder::new_dynamic()
                 .translation(builder_x, builder_y, builder_z)
@@ -110,6 +111,7 @@ fn render_world(
                 if tile.contains_enemy {
                     let enemy_atlas_handle =
                         Handle::weak(atlas_handles.get_asset(AssetType::Enemy).unwrap());
+                    // TODO: this should use UNIT_Z instead of 0.
                     let enemy_transform = tile_to_position(&center_tile, tile.x, tile.y);
                     let enemy_entity = commands
                         .spawn(SpriteSheetComponents {

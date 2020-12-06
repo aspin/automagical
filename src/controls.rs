@@ -6,6 +6,7 @@ use bevy::render::camera::Camera;
 use bevy_rapier3d::physics::RigidBodyHandleComponent;
 use bevy_rapier3d::rapier::dynamics::RigidBodySet;
 use bevy_rapier3d::rapier::math::Vector;
+use crate::cursor::CursorState;
 
 const WIZARD_SPEED: f32 = 100.;
 
@@ -13,6 +14,7 @@ pub fn control_builder(
     keyboard_input: Res<Input<KeyCode>>,
     mouse_button_input: Res<Input<MouseButton>>,
     mut rigid_body_set: ResMut<RigidBodySet>,
+    cursor_state: Res<CursorState>,
     mut query_builder: Query<(
         &mut Timer,
         &mut Builder,
@@ -67,25 +69,26 @@ pub fn control_builder(
 
             (*camera_transform.translation.x_mut()) = builder_body.position().translation.x;
             (*camera_transform.translation.y_mut()) = builder_body.position().translation.y;
-
-            if keyboard_input.pressed(KeyCode::Space) {
-                if animated.state != AnimationState::Attack {
-                    animated.state = AnimationState::Attack;
-                    animated.animation_index = 0;
-                    builder_timer.reset();
-                    builder_timer.finished = true;
-                }
-            }
         }
 
+        // toggle build mode
         if mouse_button_input.just_released(MouseButton::Right) {
-            if builder.mode == BuilderMode::Construct {
-                builder.mode = BuilderMode::Combat
-            } else {
-                builder.mode = BuilderMode::Construct
-            }
-
+            builder.toggle_mode();
             println!("Setting builder mode: {:?}", builder.mode)
+        }
+
+        // fire projectiles
+        if mouse_button_input.pressed(MouseButton::Left)
+            && builder.mode == BuilderMode::Combat
+            && animated.state != AnimationState::Attack {
+
+            if let Some(cursor_coordinates) = cursor_state.cursor_position {
+                animated.state = AnimationState::Attack;
+                animated.animation_index = 0;
+                builder_timer.reset();
+                builder_timer.finished = true;
+                builder.aim_location.replace(cursor_coordinates);
+            }
         }
     }
 }

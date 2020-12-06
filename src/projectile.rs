@@ -1,21 +1,19 @@
-use crate::animation::CardinalDirection;
 use bevy::prelude::*;
 
-pub const ARROW_SPEED: f32 = 700.;
+pub const ARROW_SPEED: f32 = 400.;
+pub const ARROW_OFFSET: f32 = 3.;
 
 pub struct Projectile {
     pub damage: i32,
     pub ttl: f32,
-    pub facing: CardinalDirection,
     pub piercing: bool,
 }
 
 impl Projectile {
-    pub fn arrow(facing: CardinalDirection) -> Projectile {
+    pub fn arrow() -> Projectile {
         Projectile {
             damage: 12,
             ttl: 2.,
-            facing,
             piercing: true,
         }
     }

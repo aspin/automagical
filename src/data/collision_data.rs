@@ -9,9 +9,14 @@ fn enemy_collision_data() -> ColliderBuilder {
     ColliderBuilder::cuboid(5., 7., 8.)
 }
 
+fn arrow_collision_data() -> ColliderBuilder {
+    ColliderBuilder::cuboid(4., 2., 8.)
+}
+
 pub fn get_collision_data(unit_type: UnitType) -> ColliderBuilder {
     match unit_type {
         UnitType::Wizard => wizard_collision_data(),
         UnitType::Enemy => enemy_collision_data(),
+        UnitType::Arrow => arrow_collision_data(),
     }
 }
