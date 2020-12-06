@@ -12,6 +12,7 @@ mod projectile;
 mod world_map;
 mod world_renderer;
 mod cursor;
+mod weapon;
 
 use bevy::prelude::*;
 use bevy_rapier3d::physics::RapierPhysicsPlugin;
