@@ -2,6 +2,7 @@ use bevy::prelude::*;
 
 pub const ARROW_SPEED: f32 = 400.;
 pub const ARROW_OFFSET: f32 = 3.;
+pub const ARROW_SPREAD: f32 = 5.;
 
 pub struct Projectile {
     pub damage: i32,
