@@ -13,6 +13,7 @@ mod projectile;
 mod weapon;
 mod world_map;
 mod world_renderer;
+mod config;
 
 use bevy::prelude::*;
 use bevy_rapier3d::physics::RapierPhysicsPlugin;
@@ -20,6 +21,7 @@ use bevy_rapier3d::physics::RapierPhysicsPlugin;
 fn main() {
     App::build()
         .init_resource::<world_map::WorldMap>()
+        .add_resource(config::window_descriptor())
         .add_plugins(DefaultPlugins)
         .add_plugin(RapierPhysicsPlugin)
         .add_plugin(asset_loader::AssetLoaderPlugin)

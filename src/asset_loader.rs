@@ -7,6 +7,7 @@ use crate::biome::Biome;
 use crate::cursor::CursorState;
 use crate::data;
 use crate::data::{AssetGroup, AssetInfo, AssetType};
+use crate::global_constants::CAMERA_ZOOM;
 
 pub struct AssetLoaderPlugin;
 
@@ -167,7 +168,7 @@ fn loader(
     let camera_entity = commands
         .spawn(Camera2dComponents {
             transform: Transform {
-                scale: Vec3::new(0.3, 0.3, 0.3),
+                scale: Vec3::new(CAMERA_ZOOM, CAMERA_ZOOM, CAMERA_ZOOM),
                 translation: Vec3::new(0., 0., 10.),
                 ..Default::default()
             },
