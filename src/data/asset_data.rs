@@ -1,6 +1,7 @@
 use crate::biome::Biome;
 use crate::global_constants::TILE_LENGTH;
 use bevy::math::Vec2;
+use crate::inventory::ItemType;
 
 pub struct AssetInfo {
     pub sprite_file: String,
@@ -51,6 +52,14 @@ impl From<Biome> for AssetType {
             Biome::Grassland => Self::Grassland,
             Biome::Desert => Self::Desert,
             Biome::Rockland => Self::Rockland,
+        }
+    }
+}
+
+impl From<ItemType> for AssetType {
+    fn from(item_type: ItemType) -> Self {
+        match item_type {
+            ItemType::Conveyor => Self::Conveyor
         }
     }
 }

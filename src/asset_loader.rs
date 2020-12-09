@@ -24,7 +24,7 @@ impl Plugin for AssetLoaderPlugin {
 pub struct SpriteHandles {
     asset_handles: HashMap<AssetType, Handle<Texture>>,
     asset_group_handles: HashMap<AssetGroup, Vec<HandleUntyped>>,
-    loaded: bool,
+    pub loaded: bool,
 }
 
 impl SpriteHandles {
@@ -42,11 +42,11 @@ impl SpriteHandles {
         self.asset_group_handles.insert(asset_group, asset_handles);
     }
 
-    fn get_asset(&self, asset_type: AssetType) -> Option<&Handle<Texture>> {
+    pub fn get_asset(&self, asset_type: AssetType) -> Option<&Handle<Texture>> {
         self.asset_handles.get(&asset_type)
     }
 
-    fn get_asset_group(&self, asset_group: AssetGroup) -> Option<&Vec<HandleUntyped>> {
+    pub fn get_asset_group(&self, asset_group: AssetGroup) -> Option<&Vec<HandleUntyped>> {
         self.asset_group_handles.get(&asset_group)
     }
 }
