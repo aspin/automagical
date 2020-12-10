@@ -2,8 +2,8 @@ use crate::asset_loader::SpriteHandles;
 use crate::data::AssetType;
 use crate::global_constants::HOTBAR_LENGTH;
 use crate::inventory::item_slot::ItemSlot;
-use bevy::prelude::*;
 use crate::inventory::MaterialHandles;
+use bevy::prelude::*;
 
 #[derive(Debug)]
 pub struct Hotbar {
@@ -34,10 +34,7 @@ impl HotbarIndex {
     }
 }
 
-pub fn setup_hotbar(
-    mut commands: Commands,
-    mut materials: ResMut<Assets<ColorMaterial>>,
-) {
+pub fn setup_hotbar(mut commands: Commands, mut materials: ResMut<Assets<ColorMaterial>>) {
     commands
         .spawn(NodeComponents {
             style: Style {
@@ -167,9 +164,7 @@ pub fn draw_hotbar(
             if let Ok(mut text) = text_query.get_mut(*child_entity) {
                 let item_slot = hotbar.items[hotbar_index.index];
                 if let Some(item_count) = item_slot.count {
-                    let font_handle = sprite_handles
-                        .get_asset(AssetType::Font)
-                        .unwrap();
+                    let font_handle = sprite_handles.get_asset(AssetType::Font).unwrap();
 
                     let font_asset_handle = asset_server.get_handle(font_handle);
                     text.font = font_asset_handle;

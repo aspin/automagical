@@ -3,16 +3,15 @@ mod item_slot;
 
 use bevy::prelude::*;
 
+use crate::data::AssetType;
 pub use item_slot::ItemType;
 use std::collections::HashMap;
-use crate::data::AssetType;
 
 pub struct InventoryPlugin;
 
 impl Plugin for InventoryPlugin {
     fn build(&self, app: &mut AppBuilder) {
-        app
-            .init_resource::<MaterialHandles>()
+        app.init_resource::<MaterialHandles>()
             .add_startup_system(setup_camera.system())
             .add_startup_system(hotbar::setup_hotbar.system())
             .add_system(hotbar::draw_hotbar.system());
@@ -21,7 +20,7 @@ impl Plugin for InventoryPlugin {
 
 #[derive(Default)]
 pub struct MaterialHandles {
-    material_handles: HashMap<AssetType, Handle<ColorMaterial>>
+    material_handles: HashMap<AssetType, Handle<ColorMaterial>>,
 }
 
 impl MaterialHandles {
@@ -30,7 +29,9 @@ impl MaterialHandles {
     }
 
     pub fn insert(
-        &mut self, asset_type: AssetType, material_handle: Handle<ColorMaterial>
+        &mut self,
+        asset_type: AssetType,
+        material_handle: Handle<ColorMaterial>,
     ) -> Option<Handle<ColorMaterial>> {
         self.material_handles.insert(asset_type, material_handle)
     }
