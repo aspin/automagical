@@ -1,7 +1,7 @@
 use crate::asset_loader::SpriteHandles;
 use crate::data::AssetType;
 use crate::global_constants::HOTBAR_LENGTH;
-use crate::inventory::item_slot::ItemSlot;
+use crate::inventory::item_slot::{ItemSlot, draw_item_slot};
 use crate::inventory::MaterialHandles;
 use bevy::prelude::*;
 
@@ -70,58 +70,9 @@ pub fn setup_hotbar(mut commands: Commands, mut materials: ResMut<Assets<ColorMa
                 })
                 .with(Hotbar::default())
                 .with_children(|parent| {
-                    let mut parent_reference = parent;
                     for i in 0..HOTBAR_LENGTH {
-                        parent_reference = parent_reference
-                            .spawn(NodeComponents {
-                                style: Style {
-                                    size: Size::new(Val::Px(100.0), Val::Px(100.0)),
-                                    margin: Rect::all(Val::Px(10.0)),
-                                    ..Default::default()
-                                },
-                                material: materials.add(Color::RED.into()),
-                                ..Default::default()
-                            })
-                            .with(HotbarIndex::new(i))
-                            .with_children(|parent| {
-                                parent
-                                    .spawn(ImageComponents {
-                                        style: Style {
-                                            size: Size::new(
-                                                Val::Percent(100.0),
-                                                Val::Percent(100.0),
-                                            ),
-                                            ..Default::default()
-                                        },
-                                        draw: Draw {
-                                            is_transparent: true,
-                                            ..Default::default()
-                                        },
-                                        material: materials.add(Color::NONE.into()),
-                                        ..Default::default()
-                                    })
-                                    .spawn(TextComponents {
-                                        style: Style {
-                                            position_type: PositionType::Absolute,
-                                            position: Rect {
-                                                bottom: Val::Px(0.),
-                                                right: Val::Px(0.),
-                                                ..Default::default()
-                                            },
-                                            ..Default::default()
-                                        },
-                                        text: Text {
-                                            value: "".to_string(),
-                                            style: TextStyle {
-                                                color: Color::WHITE,
-                                                font_size: 30.0,
-                                                ..Default::default()
-                                            },
-                                            ..Default::default()
-                                        },
-                                        ..Default::default()
-                                    });
-                            });
+                        draw_item_slot(parent, &mut materials)
+                            .with(HotbarIndex::new(i));
                     }
                 });
         });

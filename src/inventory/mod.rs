@@ -1,5 +1,6 @@
 mod hotbar;
 mod item_slot;
+mod player_inventory;
 
 use bevy::prelude::*;
 
