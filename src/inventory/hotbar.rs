@@ -3,6 +3,7 @@ use crate::data::AssetType;
 use crate::global_constants::HOTBAR_LENGTH;
 use crate::inventory::item_slot::ItemSlot;
 use bevy::prelude::*;
+use crate::inventory::MaterialHandles;
 
 #[derive(Debug)]
 pub struct Hotbar {
@@ -135,6 +136,7 @@ pub fn draw_hotbar(
     sprite_handles: Res<SpriteHandles>,
     asset_server: Res<AssetServer>,
     mut materials: ResMut<Assets<ColorMaterial>>,
+    mut material_handles: ResMut<MaterialHandles>,
     hotbar_query: Query<&Hotbar>,
     hotbar_index_query: Query<(&HotbarIndex, &Children)>,
     mut material_query: Query<&mut Handle<ColorMaterial>>,
@@ -150,18 +152,16 @@ pub fn draw_hotbar(
             if let Ok(mut color_handle) = material_query.get_mut(*child_entity) {
                 let item_slot = hotbar.items[hotbar_index.index];
                 if let Some(item_type) = item_slot.item_type {
-                    let item_handle = sprite_handles
-                        .get_asset(AssetType::from(item_type))
-                        .unwrap();
-                    let sprite_asset_handle = asset_server.get_handle(item_handle);
-
-                    let material_handle = materials.add(sprite_asset_handle.into());
-                    color_handle.id = material_handle.id;
-                    // TODO: inserting too much?
-                    // if !materials.contains(sprite_asset_handle.into()) {
-                    // } else {
-                    //     materials.get(sprite_asset_handle.into()).unwrap()
-                    // };
+                    let asset_type = AssetType::from(item_type);
+                    if let Some(material_handle) = material_handles.get(asset_type) {
+                        color_handle.id = material_handle.id
+                    } else {
+                        let item_handle = sprite_handles.get_asset(asset_type).unwrap();
+                        let sprite_asset_handle = asset_server.get_handle(item_handle);
+                        let material_handle = materials.add(sprite_asset_handle.into());
+                        color_handle.id = material_handle.id;
+                        material_handles.insert(asset_type, material_handle);
+                    }
                 }
             }
             if let Ok(mut text) = text_query.get_mut(*child_entity) {
