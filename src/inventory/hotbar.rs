@@ -146,31 +146,61 @@ pub fn draw_hotbar(
     let hotbar = hotbar_query.iter().next().unwrap();
     for (hotbar_index, children) in hotbar_index_query.iter() {
         for child_entity in children.0.iter() {
-            if let Ok(mut color_handle) = material_query.get_mut(*child_entity) {
-                let item_slot = hotbar.items[hotbar_index.index];
-                if let Some(item_type) = item_slot.item_type {
-                    let asset_type = AssetType::from(item_type);
-                    if let Some(material_handle) = material_handles.get(asset_type) {
-                        color_handle.id = material_handle.id
-                    } else {
-                        let item_handle = sprite_handles.get_asset(asset_type).unwrap();
-                        let sprite_asset_handle = asset_server.get_handle(item_handle);
-                        let material_handle = materials.add(sprite_asset_handle.into());
-                        color_handle.id = material_handle.id;
-                        material_handles.insert(asset_type, material_handle);
-                    }
-                }
+            if let Ok(color_handle) = material_query.get_mut(*child_entity) {
+                set_hotbar_item_icon(
+                    color_handle,
+                    hotbar.items[hotbar_index.index],
+                    &sprite_handles,
+                    &asset_server,
+                    &mut materials,
+                    &mut material_handles
+                );
             }
-            if let Ok(mut text) = text_query.get_mut(*child_entity) {
-                let item_slot = hotbar.items[hotbar_index.index];
-                if let Some(item_count) = item_slot.count {
-                    let font_handle = sprite_handles.get_asset(AssetType::Font).unwrap();
-
-                    let font_asset_handle = asset_server.get_handle(font_handle);
-                    text.font = font_asset_handle;
-                    text.value = item_count.to_string();
-                }
+            if let Ok(text) = text_query.get_mut(*child_entity) {
+                set_hotbar_text(
+                    text,
+                    hotbar.items[hotbar_index.index],
+                    &sprite_handles,
+                    &asset_server
+                );
             }
         }
+    }
+}
+
+fn set_hotbar_item_icon(
+    mut color_handle: Mut<Handle<ColorMaterial>>,
+    item_slot: ItemSlot,
+    sprite_handles: &Res<SpriteHandles>,
+    asset_server: &Res<AssetServer>,
+    materials: &mut ResMut<Assets<ColorMaterial>>,
+    material_handles: &mut ResMut<MaterialHandles>,
+) {
+    if let Some(item_type) = item_slot.item_type {
+        let asset_type = AssetType::from(item_type);
+        if let Some(material_handle) = material_handles.get(asset_type) {
+            color_handle.id = material_handle.id
+        } else {
+            let item_handle = sprite_handles.get_asset(asset_type).unwrap();
+            let sprite_asset_handle = asset_server.get_handle(item_handle);
+            let material_handle = materials.add(sprite_asset_handle.into());
+            color_handle.id = material_handle.id;
+            material_handles.insert(asset_type, material_handle);
+        }
+    }
+}
+
+fn set_hotbar_text(
+    mut text: Mut<Text>,
+    item_slot: ItemSlot,
+    sprite_handles: &Res<SpriteHandles>,
+    asset_server: &Res<AssetServer>,
+) {
+    if let Some(item_count) = item_slot.count {
+        let font_handle = sprite_handles.get_asset(AssetType::Font).unwrap();
+
+        let font_asset_handle = asset_server.get_handle(font_handle);
+        text.font = font_asset_handle;
+        text.value = item_count.to_string();
     }
 }
