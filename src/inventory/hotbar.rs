@@ -33,7 +33,10 @@ impl HotbarIndex {
     }
 }
 
-pub fn setup_hotbar(mut commands: Commands, mut materials: ResMut<Assets<ColorMaterial>>) {
+pub fn setup_hotbar(
+    mut commands: Commands,
+    mut materials: ResMut<Assets<ColorMaterial>>,
+) {
     commands
         .spawn(NodeComponents {
             style: Style {
@@ -81,6 +84,7 @@ pub fn setup_hotbar(mut commands: Commands, mut materials: ResMut<Assets<ColorMa
                                 material: materials.add(Color::RED.into()),
                                 ..Default::default()
                             })
+                            .with(HotbarIndex::new(i))
                             .with_children(|parent| {
                                 parent
                                     .spawn(ImageComponents {
@@ -98,8 +102,28 @@ pub fn setup_hotbar(mut commands: Commands, mut materials: ResMut<Assets<ColorMa
                                         material: materials.add(Color::NONE.into()),
                                         ..Default::default()
                                     })
-                                    .with(HotbarIndex::new(i));
-                            })
+                                    .spawn(TextComponents {
+                                        style: Style {
+                                            position_type: PositionType::Absolute,
+                                            position: Rect {
+                                                bottom: Val::Px(0.),
+                                                right: Val::Px(0.),
+                                                ..Default::default()
+                                            },
+                                            ..Default::default()
+                                        },
+                                        text: Text {
+                                            value: "".to_string(),
+                                            style: TextStyle {
+                                                color: Color::WHITE,
+                                                font_size: 30.0,
+                                                ..Default::default()
+                                            },
+                                            ..Default::default()
+                                        },
+                                        ..Default::default()
+                                    });
+                            });
                     }
                 });
         });
@@ -111,30 +135,45 @@ pub fn draw_hotbar(
     sprite_handles: Res<SpriteHandles>,
     asset_server: Res<AssetServer>,
     mut materials: ResMut<Assets<ColorMaterial>>,
-    hotbar_query: Query<(&Hotbar, &Children)>,
-    children_query: Query<&Children>,
-    mut item_slot_query: Query<(&mut Handle<ColorMaterial>, &HotbarIndex)>,
+    hotbar_query: Query<&Hotbar>,
+    hotbar_index_query: Query<(&HotbarIndex, &Children)>,
+    mut material_query: Query<&mut Handle<ColorMaterial>>,
+    mut text_query: Query<&mut Text>,
 ) {
     if !sprite_handles.loaded {
         return;
     }
 
-    let (hotbar, children) = hotbar_query.iter().next().unwrap();
-
-    for child_entity in children.0.iter() {
-        if let Ok(grand_children) = children_query.get(*child_entity) {
-            let grand_child_entity = grand_children.0.iter().next().unwrap();
-            if let Ok((mut color_handle, hotbar_index)) =
-                item_slot_query.get_mut(*grand_child_entity)
-            {
+    let hotbar = hotbar_query.iter().next().unwrap();
+    for (hotbar_index, children) in hotbar_index_query.iter() {
+        for child_entity in children.0.iter() {
+            if let Ok(mut color_handle) = material_query.get_mut(*child_entity) {
                 let item_slot = hotbar.items[hotbar_index.index];
                 if let Some(item_type) = item_slot.item_type {
                     let item_handle = sprite_handles
                         .get_asset(AssetType::from(item_type))
                         .unwrap();
                     let sprite_asset_handle = asset_server.get_handle(item_handle);
+
                     let material_handle = materials.add(sprite_asset_handle.into());
                     color_handle.id = material_handle.id;
+                    // TODO: inserting too much?
+                    // if !materials.contains(sprite_asset_handle.into()) {
+                    // } else {
+                    //     materials.get(sprite_asset_handle.into()).unwrap()
+                    // };
+                }
+            }
+            if let Ok(mut text) = text_query.get_mut(*child_entity) {
+                let item_slot = hotbar.items[hotbar_index.index];
+                if let Some(item_count) = item_slot.count {
+                    let font_handle = sprite_handles
+                        .get_asset(AssetType::Font)
+                        .unwrap();
+
+                    let font_asset_handle = asset_server.get_handle(font_handle);
+                    text.font = font_asset_handle;
+                    text.value = item_count.to_string();
                 }
             }
         }
