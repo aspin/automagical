@@ -4,8 +4,8 @@ mod player_inventory;
 
 use bevy::prelude::*;
 
-use std::collections::HashMap;
 use crate::data::AssetType;
+use std::collections::HashMap;
 
 pub use item_slot::ItemType;
 pub use player_inventory::PlayerInventory;

@@ -1,25 +1,26 @@
 use crate::asset_loader::SpriteHandles;
-use crate::data::AssetType;
 use crate::global_constants::HOTBAR_LENGTH;
-use crate::inventory::item_slot::{ItemSlot, draw_item_slot};
-use crate::inventory::MaterialHandles;
+use crate::inventory::item_slot::{
+    draw_item_slot, set_item_slot_icon, set_item_slot_text, ItemSlot,
+};
+use crate::inventory::{MaterialHandles, PlayerInventory};
 use bevy::prelude::*;
 
 #[derive(Debug)]
 pub struct Hotbar {
-    pub items: [ItemSlot; HOTBAR_LENGTH],
+    pub items: [HotbarItemSlot; HOTBAR_LENGTH],
 }
 
 impl Hotbar {
-    pub fn new(items: [ItemSlot; HOTBAR_LENGTH]) -> Self {
+    pub fn new(items: [HotbarItemSlot; HOTBAR_LENGTH]) -> Self {
         Hotbar { items }
     }
 }
 
 impl Default for Hotbar {
     fn default() -> Self {
-        let mut items = [ItemSlot::empty(); HOTBAR_LENGTH];
-        items[0] = ItemSlot::conveyors(10);
+        let mut items = [HotbarItemSlot::empty(); HOTBAR_LENGTH];
+        items[0] = HotbarItemSlot::new(Some(0));
         Hotbar::new(items)
     }
 }
@@ -31,6 +32,21 @@ pub struct HotbarIndex {
 impl HotbarIndex {
     pub fn new(index: usize) -> Self {
         HotbarIndex { index }
+    }
+}
+
+#[derive(Debug, Copy, Clone)]
+pub struct HotbarItemSlot {
+    inventory_index: Option<usize>,
+}
+
+impl HotbarItemSlot {
+    pub fn new(inventory_index: Option<usize>) -> Self {
+        HotbarItemSlot { inventory_index }
+    }
+
+    pub fn empty() -> Self {
+        HotbarItemSlot::new(Option::None)
     }
 }
 
@@ -50,10 +66,6 @@ pub fn setup_hotbar(mut commands: Commands, mut materials: ResMut<Assets<ColorMa
                 ..Default::default()
             },
             material: materials.add(Color::NONE.into()),
-            draw: Draw {
-                is_transparent: true,
-                ..Default::default()
-            },
             ..Default::default()
         })
         .with_children(|parent| {
@@ -71,8 +83,7 @@ pub fn setup_hotbar(mut commands: Commands, mut materials: ResMut<Assets<ColorMa
                 .with(Hotbar::default())
                 .with_children(|parent| {
                     for i in 0..HOTBAR_LENGTH {
-                        draw_item_slot(parent, &mut materials)
-                            .with(HotbarIndex::new(i));
+                        draw_item_slot(parent, &mut materials).with(HotbarIndex::new(i));
                     }
                 });
         });
@@ -89,69 +100,50 @@ pub fn draw_hotbar(
     hotbar_index_query: Query<(&HotbarIndex, &Children)>,
     mut material_query: Query<&mut Handle<ColorMaterial>>,
     mut text_query: Query<&mut Text>,
+    inventory_query: Query<&PlayerInventory>,
 ) {
     if !sprite_handles.loaded {
         return;
     }
 
-    let hotbar = hotbar_query.iter().next().unwrap();
-    for (hotbar_index, children) in hotbar_index_query.iter() {
-        for child_entity in children.0.iter() {
-            if let Ok(color_handle) = material_query.get_mut(*child_entity) {
-                set_hotbar_item_icon(
-                    color_handle,
-                    hotbar.items[hotbar_index.index],
-                    &sprite_handles,
-                    &asset_server,
-                    &mut materials,
-                    &mut material_handles
-                );
-            }
-            if let Ok(text) = text_query.get_mut(*child_entity) {
-                set_hotbar_text(
-                    text,
-                    hotbar.items[hotbar_index.index],
-                    &sprite_handles,
-                    &asset_server
-                );
+    if let Some(player_inventory) = inventory_query.iter().next() {
+        let hotbar = hotbar_query.iter().next().unwrap();
+        for (hotbar_index, children) in hotbar_index_query.iter() {
+            for child_entity in children.0.iter() {
+                if let Ok(color_handle) = material_query.get_mut(*child_entity) {
+                    if let Some(item_slot) =
+                        get_inventory_item(player_inventory, hotbar, hotbar_index.index)
+                    {
+                        set_item_slot_icon(
+                            color_handle,
+                            item_slot,
+                            &sprite_handles,
+                            &asset_server,
+                            &mut materials,
+                            &mut material_handles,
+                        );
+                    }
+                }
+                if let Ok(text) = text_query.get_mut(*child_entity) {
+                    if let Some(item_slot) =
+                        get_inventory_item(player_inventory, hotbar, hotbar_index.index)
+                    {
+                        set_item_slot_text(text, item_slot, &sprite_handles, &asset_server);
+                    }
+                }
             }
         }
     }
 }
 
-fn set_hotbar_item_icon(
-    mut color_handle: Mut<Handle<ColorMaterial>>,
-    item_slot: ItemSlot,
-    sprite_handles: &Res<SpriteHandles>,
-    asset_server: &Res<AssetServer>,
-    materials: &mut ResMut<Assets<ColorMaterial>>,
-    material_handles: &mut ResMut<MaterialHandles>,
-) {
-    if let Some(item_type) = item_slot.item_type {
-        let asset_type = AssetType::from(item_type);
-        if let Some(material_handle) = material_handles.get(asset_type) {
-            color_handle.id = material_handle.id
-        } else {
-            let item_handle = sprite_handles.get_asset(asset_type).unwrap();
-            let sprite_asset_handle = asset_server.get_handle(item_handle);
-            let material_handle = materials.add(sprite_asset_handle.into());
-            color_handle.id = material_handle.id;
-            material_handles.insert(asset_type, material_handle);
-        }
-    }
-}
-
-fn set_hotbar_text(
-    mut text: Mut<Text>,
-    item_slot: ItemSlot,
-    sprite_handles: &Res<SpriteHandles>,
-    asset_server: &Res<AssetServer>,
-) {
-    if let Some(item_count) = item_slot.count {
-        let font_handle = sprite_handles.get_asset(AssetType::Font).unwrap();
-
-        let font_asset_handle = asset_server.get_handle(font_handle);
-        text.font = font_asset_handle;
-        text.value = item_count.to_string();
+fn get_inventory_item(
+    player_inventory: &PlayerInventory,
+    hotbar: &Hotbar,
+    hotbar_index: usize,
+) -> Option<ItemSlot> {
+    if let Some(inventory_index) = hotbar.items[hotbar_index].inventory_index {
+        Some(player_inventory.items[inventory_index])
+    } else {
+        Option::None
     }
 }

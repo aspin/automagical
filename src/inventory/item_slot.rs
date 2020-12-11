@@ -1,3 +1,6 @@
+use crate::asset_loader::SpriteHandles;
+use crate::data::AssetType;
+use crate::inventory::MaterialHandles;
 use bevy::prelude::*;
 
 #[derive(Debug, Copy, Clone)]
@@ -32,7 +35,8 @@ pub enum ItemType {
 }
 
 pub(super) fn draw_item_slot<'a, 'data>(
-    commands: &'a mut ChildBuilder<'data>, materials: &mut ResMut<Assets<ColorMaterial>>
+    commands: &'a mut ChildBuilder<'data>,
+    materials: &mut ResMut<Assets<ColorMaterial>>,
 ) -> &'a mut ChildBuilder<'data> {
     commands
         .spawn(NodeComponents {
@@ -48,10 +52,7 @@ pub(super) fn draw_item_slot<'a, 'data>(
             parent
                 .spawn(ImageComponents {
                     style: Style {
-                        size: Size::new(
-                            Val::Percent(100.0),
-                            Val::Percent(100.0),
-                        ),
+                        size: Size::new(Val::Percent(100.0), Val::Percent(100.0)),
                         ..Default::default()
                     },
                     draw: Draw {
@@ -83,4 +84,41 @@ pub(super) fn draw_item_slot<'a, 'data>(
                     ..Default::default()
                 });
         })
+}
+
+pub(super) fn set_item_slot_icon(
+    mut color_handle: Mut<Handle<ColorMaterial>>,
+    item_slot: ItemSlot,
+    sprite_handles: &Res<SpriteHandles>,
+    asset_server: &Res<AssetServer>,
+    materials: &mut ResMut<Assets<ColorMaterial>>,
+    material_handles: &mut ResMut<MaterialHandles>,
+) {
+    if let Some(item_type) = item_slot.item_type {
+        let asset_type = AssetType::from(item_type);
+        if let Some(material_handle) = material_handles.get(asset_type) {
+            color_handle.id = material_handle.id
+        } else {
+            let item_handle = sprite_handles.get_asset(asset_type).unwrap();
+            let sprite_asset_handle = asset_server.get_handle(item_handle);
+            let material_handle = materials.add(sprite_asset_handle.into());
+            color_handle.id = material_handle.id;
+            material_handles.insert(asset_type, material_handle);
+        }
+    }
+}
+
+pub(super) fn set_item_slot_text(
+    mut text: Mut<Text>,
+    item_slot: ItemSlot,
+    sprite_handles: &Res<SpriteHandles>,
+    asset_server: &Res<AssetServer>,
+) {
+    if let Some(item_count) = item_slot.count {
+        let font_handle = sprite_handles.get_asset(AssetType::Font).unwrap();
+
+        let font_asset_handle = asset_server.get_handle(font_handle);
+        text.font = font_asset_handle;
+        text.value = item_count.to_string();
+    }
 }
