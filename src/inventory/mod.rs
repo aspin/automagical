@@ -4,9 +4,11 @@ mod player_inventory;
 
 use bevy::prelude::*;
 
-use crate::data::AssetType;
-pub use item_slot::ItemType;
 use std::collections::HashMap;
+use crate::data::AssetType;
+
+pub use item_slot::ItemType;
+pub use player_inventory::PlayerInventory;
 
 pub struct InventoryPlugin;
 
@@ -15,7 +17,9 @@ impl Plugin for InventoryPlugin {
         app.init_resource::<MaterialHandles>()
             .add_startup_system(setup_camera.system())
             .add_startup_system(hotbar::setup_hotbar.system())
-            .add_system(hotbar::draw_hotbar.system());
+            .add_startup_system(player_inventory::setup_inventory.system())
+            .add_system(hotbar::draw_hotbar.system())
+            .add_system(player_inventory::draw_inventory.system());
     }
 }
 

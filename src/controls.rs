@@ -7,6 +7,7 @@ use bevy::render::camera::Camera;
 use bevy_rapier3d::physics::RigidBodyHandleComponent;
 use bevy_rapier3d::rapier::dynamics::RigidBodySet;
 use bevy_rapier3d::rapier::math::Vector;
+use crate::inventory::PlayerInventory;
 
 const WIZARD_SPEED: f32 = 100.;
 
@@ -22,6 +23,7 @@ pub fn control_builder(
         &RigidBodyHandleComponent,
     )>,
     mut query_camera: Query<(&Camera, &mut Transform)>,
+    mut query_inventory: Query<&mut PlayerInventory>
 ) {
     let query_builder_iterator = &mut query_builder.iter_mut();
     let query_camera_iterator = &mut query_camera.iter_mut();
@@ -69,6 +71,14 @@ pub fn control_builder(
 
             (*camera_transform.translation.x_mut()) = builder_body.position().translation.x;
             (*camera_transform.translation.y_mut()) = builder_body.position().translation.y;
+        }
+
+        // toggle inventory
+        if keyboard_input.just_released(KeyCode::Tab) {
+            if let Some(mut inventory) = query_inventory.iter_mut().next() {
+                inventory.show = !inventory.show;
+                println!("Toggling inventory: {}", inventory.show)
+            }
         }
 
         // toggle build mode
