@@ -12,6 +12,7 @@ mod enemy;
 mod global_constants;
 mod inventory;
 mod projectile;
+mod ui;
 mod weapon;
 mod world_map;
 mod world_renderer;
@@ -28,6 +29,7 @@ fn main() {
         .add_plugin(asset_loader::AssetLoaderPlugin)
         .add_plugin(world_renderer::MapGeneratorPlugin)
         .add_plugin(inventory::InventoryPlugin)
+        .add_plugin(ui::UiPlugin)
         .add_system(animation::animate.system())
         .add_system(builder::produce_projectiles.system())
         .add_system(projectile::expire_projectiles.system())

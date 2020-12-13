@@ -15,6 +15,7 @@ pub fn control_builder(
     keyboard_input: Res<Input<KeyCode>>,
     mouse_button_input: Res<Input<MouseButton>>,
     mut rigid_body_set: ResMut<RigidBodySet>,
+    mut player_inventory: ResMut<PlayerInventory>,
     cursor_state: Res<CursorState>,
     mut query_builder: Query<(
         &mut Timer,
@@ -23,7 +24,6 @@ pub fn control_builder(
         &RigidBodyHandleComponent,
     )>,
     mut query_camera: Query<(&Camera, &mut Transform)>,
-    mut query_inventory: Query<&mut PlayerInventory>,
 ) {
     let query_builder_iterator = &mut query_builder.iter_mut();
     let query_camera_iterator = &mut query_camera.iter_mut();
@@ -75,10 +75,8 @@ pub fn control_builder(
 
         // toggle inventory
         if keyboard_input.just_released(KeyCode::Tab) {
-            if let Some(mut inventory) = query_inventory.iter_mut().next() {
-                inventory.show = !inventory.show;
-                println!("Toggling inventory: {}", inventory.show)
-            }
+            player_inventory.show = !player_inventory.show;
+            println!("Toggling inventory: {}", inventory.show)
         }
 
         // toggle build mode
