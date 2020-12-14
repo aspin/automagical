@@ -45,6 +45,8 @@ pub enum AssetType {
     Desert,
     Rockland,
     Font,
+    Fight,
+    Build,
 }
 
 impl From<Biome> for AssetType {
@@ -146,6 +148,14 @@ fn font_asset_info() -> AssetInfo {
     AssetInfo::new(String::from("font/square.ttf"), default_tile_size(), 0, 0)
 }
 
+fn fight_asset_info() -> AssetInfo {
+    AssetInfo::new(String::from("texture/fight.png"), default_tile_size(), 0, 0)
+}
+
+fn build_asset_info() -> AssetInfo {
+    AssetInfo::new(String::from("texture/build.png"), default_tile_size(), 0, 0)
+}
+
 pub fn get_asset_info(asset_type: AssetType) -> AssetInfo {
     match asset_type {
         AssetType::Builder => builder_asset_info(),
@@ -156,6 +166,8 @@ pub fn get_asset_info(asset_type: AssetType) -> AssetInfo {
         AssetType::Desert => desert_asset_info(),
         AssetType::Rockland => rocklands_asset_info(),
         AssetType::Font => font_asset_info(),
+        AssetType::Fight => fight_asset_info(),
+        AssetType::Build => build_asset_info(),
     }
 }
 

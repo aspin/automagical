@@ -1,6 +1,6 @@
 use crate::global_constants::INVENTORY_SIZE;
-use bevy::prelude::*;
 use crate::inventory::ItemSlot;
+use bevy::ecs::Entity;
 
 pub struct PlayerInventory {
     pub items: [ItemSlot; INVENTORY_SIZE],

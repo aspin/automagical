@@ -76,7 +76,6 @@ pub fn control_builder(
         // toggle inventory
         if keyboard_input.just_released(KeyCode::Tab) {
             player_inventory.show = !player_inventory.show;
-            println!("Toggling inventory: {}", inventory.show)
         }
 
         // toggle build mode

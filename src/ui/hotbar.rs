@@ -5,12 +5,8 @@ use crate::ui::MaterialHandles;
 use bevy::prelude::*;
 
 /// Draw hotbar UI element.
-pub(super) fn setup_hotbar(
-    mut commands: Commands,
-    mut materials: ResMut<Assets<ColorMaterial>>,
-    hotbar: Res<Hotbar>,
-) {
-    commands
+pub(super) fn setup_hotbar(mut commands: Commands, mut materials: ResMut<Assets<ColorMaterial>>) {
+    let entity = commands
         .spawn(NodeComponents {
             style: Style {
                 size: Size::new(Val::Percent(100.0), Val::Px(200.0)),
@@ -27,24 +23,29 @@ pub(super) fn setup_hotbar(
             material: materials.add(Color::NONE.into()),
             ..Default::default()
         })
-        .with_children(|parent| {
-            parent
-                .spawn(NodeComponents {
-                    style: Style {
-                        size: Size::new(Val::Percent(80.0), Val::Px(200.0)),
-                        align_items: AlignItems::Center,
-                        justify_content: JustifyContent::Center,
-                        ..Default::default()
-                    },
-                    material: materials.add(Color::rgba(0.5, 0.5, 0.5, 0.8).into()),
+        .current_entity()
+        .unwrap();
+
+    let hotbar = Hotbar::empty(entity);
+    commands.with_children(|parent| {
+        parent
+            .spawn(NodeComponents {
+                style: Style {
+                    size: Size::new(Val::Percent(80.0), Val::Px(200.0)),
+                    align_items: AlignItems::Center,
+                    justify_content: JustifyContent::Center,
                     ..Default::default()
-                })
-                .with_children(|parent| {
-                    for i in 0..hotbar.len() {
-                        draw_item_slot(parent, &mut materials).with(HotbarIndex::new(i));
-                    }
-                });
-        });
+                },
+                material: materials.add(Color::rgba(0.5, 0.5, 0.5, 0.8).into()),
+                ..Default::default()
+            })
+            .with_children(|parent| {
+                for i in 0..hotbar.len() {
+                    draw_item_slot(parent, &mut materials).with(HotbarIndex::new(i));
+                }
+            });
+    });
+    commands.insert_resource(hotbar);
 }
 
 /// Update hotbar UI element. Draws the stored item icon and stack count.

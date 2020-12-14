@@ -1,25 +1,25 @@
 use crate::global_constants::HOTBAR_LENGTH;
+use bevy::ecs::Entity;
 
 #[derive(Debug)]
 pub struct Hotbar {
     pub items: [HotbarItemSlot; HOTBAR_LENGTH],
+    ui_entity: Entity,
 }
 
 impl Hotbar {
-    pub fn new(items: [HotbarItemSlot; HOTBAR_LENGTH]) -> Self {
-        Hotbar { items }
+    pub fn new(items: [HotbarItemSlot; HOTBAR_LENGTH], ui_entity: Entity) -> Self {
+        Hotbar { items, ui_entity }
+    }
+
+    pub fn empty(ui_entity: Entity) -> Self {
+        let mut items = [HotbarItemSlot::empty(); HOTBAR_LENGTH];
+        items[0] = HotbarItemSlot::new(Some(0));
+        Hotbar::new(items, ui_entity)
     }
 
     pub fn len(&self) -> usize {
         self.items.len()
-    }
-}
-
-impl Default for Hotbar {
-    fn default() -> Self {
-        let mut items = [HotbarItemSlot::empty(); HOTBAR_LENGTH];
-        items[0] = HotbarItemSlot::new(Some(0));
-        Hotbar::new(items)
     }
 }
 
