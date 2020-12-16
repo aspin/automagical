@@ -1,4 +1,4 @@
-use crate::animation::{Animated, AnimationState, UnitType};
+use crate::animation::{Animated, AnimationState, UnitType, AnimationBundle};
 use crate::asset_loader::AtlasHandles;
 use crate::data;
 use crate::data::AssetType;
@@ -9,6 +9,26 @@ use bevy_rapier3d::physics::RigidBodyHandleComponent;
 use bevy_rapier3d::rapier::dynamics::{RigidBodyBuilder, RigidBodySet};
 use bevy_rapier3d::rapier::math::{AngVector, Rotation};
 use bevy_rapier3d::rapier::na::{Isometry3, Vector3};
+
+pub struct BuilderPlugin;
+
+impl Plugin for BuilderPlugin {
+    fn build(&self, app: &mut AppBuilder) {
+        app
+            .add_startup_system(initialize_player.system())
+            .add_system(produce_projectiles.system());
+    }
+}
+
+pub struct Player {
+    pub builder_entity: Entity,
+}
+
+impl Player {
+    pub fn new(builder_entity: Entity) -> Self {
+        Player { builder_entity }
+    }
+}
 
 #[derive(PartialEq, Eq, Copy, Clone, Hash, Debug)]
 pub enum BuilderMode {
@@ -52,6 +72,17 @@ impl Builder {
             Option::None
         }
     }
+}
+
+pub fn initialize_player(
+    mut commands: Commands
+) {
+    let builder_entity = commands
+        .spawn((Builder::new("Bob the builder"), Weapon::magic_bow()))
+        .with_bundle(AnimationBundle::new(UnitType::Wizard))
+        .current_entity()
+        .unwrap();
+    commands.insert_resource(Player::new(builder_entity));
 }
 
 pub fn produce_projectiles(

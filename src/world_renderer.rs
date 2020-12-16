@@ -3,12 +3,11 @@ use bevy::prelude::*;
 use crate::animation::{AnimationBundle, UnitType};
 use crate::asset_loader::AtlasHandles;
 use crate::biome::Biome;
-use crate::builder::Builder;
+use crate::builder::Player;
 use crate::data;
 use crate::data::AssetType;
 use crate::enemy::Enemy;
 use crate::global_constants::UNIT_Z;
-use crate::weapon::Weapon;
 use crate::world_map::{tile_to_position, WorldMap};
 use bevy::render::camera::Camera;
 use bevy_rapier3d::physics::RapierConfiguration;
@@ -52,6 +51,7 @@ fn generate_world(mut world_map: ResMut<WorldMap>, mut rapier_config: ResMut<Rap
 fn render_world(
     mut commands: Commands,
     atlas_handles: Res<AtlasHandles>,
+    player: Res<Player>,
     mut world: ResMut<World>,
     mut world_map: ResMut<WorldMap>,
     query_camera: Query<(&Camera, &Transform)>,
@@ -69,20 +69,17 @@ fn render_world(
                 .lock_rotations()
                 .lock_translations();
             let builder_collider = data::get_collision_data(UnitType::Wizard);
-            commands
-                .spawn(SpriteSheetComponents {
-                    texture_atlas: builder_atlas_handle,
-                    sprite: TextureAtlasSprite::new(7),
-                    transform: Transform::from_translation(Vec3::new(
-                        builder_x, builder_y, builder_z,
-                    )),
-                    ..Default::default()
-                })
-                .with_bundle(AnimationBundle::new(UnitType::Wizard))
-                .with(builder_body)
-                .with(builder_collider)
-                .with(Weapon::magic_bow())
-                .with(Builder::new("Bob the builder"));
+            let sprite_components = SpriteSheetComponents {
+                texture_atlas: builder_atlas_handle,
+                sprite: TextureAtlasSprite::new(7),
+                transform: Transform::from_translation(Vec3::new(
+                    builder_x, builder_y, builder_z,
+                )),
+                ..Default::default()
+            };
+            commands.insert(player.builder_entity, sprite_components);
+            commands.insert_one(player.builder_entity, builder_body);
+            commands.insert_one(player.builder_entity, builder_collider);
 
             world.generated = true;
         }
