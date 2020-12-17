@@ -1,5 +1,5 @@
 use crate::asset_loader::AtlasHandles;
-use crate::builder::{Builder, BuilderMode};
+use crate::builder::{BuilderMode, Player};
 use crate::cursor::CursorState;
 use crate::data::AssetType;
 use crate::world_map::WorldMap;
@@ -11,9 +11,9 @@ pub fn place_object(
     cursor_state: Res<CursorState>,
     world_map: Res<WorldMap>,
     atlas_handles: Res<AtlasHandles>,
-    builder: &Builder,
+    player: Res<Player>,
 ) {
-    if builder.mode != BuilderMode::Construct {
+    if player.mode != BuilderMode::Construct {
         return;
     }
     if mouse_button_input.pressed(MouseButton::Left) {

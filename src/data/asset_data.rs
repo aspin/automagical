@@ -2,6 +2,7 @@ use crate::biome::Biome;
 use crate::global_constants::TILE_LENGTH;
 use crate::inventory::ItemType;
 use bevy::math::Vec2;
+use crate::builder::BuilderMode;
 
 pub struct AssetInfo {
     pub sprite_file: String,
@@ -63,6 +64,15 @@ impl From<ItemType> for AssetType {
     fn from(item_type: ItemType) -> Self {
         match item_type {
             ItemType::Conveyor => Self::Conveyor,
+        }
+    }
+}
+
+impl From<BuilderMode> for AssetType {
+    fn from(builder_mode: BuilderMode) -> Self {
+        match builder_mode {
+            BuilderMode::Combat => Self::Fight,
+            BuilderMode::Construct => Self::Build,
         }
     }
 }

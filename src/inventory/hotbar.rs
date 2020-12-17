@@ -23,6 +23,14 @@ impl Hotbar {
     }
 }
 
+pub struct HotbarMode;
+
+impl HotbarMode {
+    pub fn new() -> Self {
+        HotbarMode {}
+    }
+}
+
 pub struct HotbarIndex {
     index: usize,
 }

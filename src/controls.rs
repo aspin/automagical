@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 use crate::animation::{Animated, AnimationState, CardinalDirection};
-use crate::builder::{Builder, BuilderMode};
+use crate::builder::{Builder, BuilderMode, Player};
 use crate::cursor::CursorState;
 use crate::inventory::PlayerInventory;
 use bevy::render::camera::Camera;
@@ -16,6 +16,7 @@ pub fn control_builder(
     mouse_button_input: Res<Input<MouseButton>>,
     mut rigid_body_set: ResMut<RigidBodySet>,
     mut player_inventory: ResMut<PlayerInventory>,
+    mut player: ResMut<Player>,
     cursor_state: Res<CursorState>,
     mut query_builder: Query<(
         &mut Timer,
@@ -80,12 +81,12 @@ pub fn control_builder(
 
         // toggle build mode
         if mouse_button_input.just_released(MouseButton::Right) {
-            builder.toggle_mode();
+            player.toggle_mode();
         }
 
         // fire projectiles
         if mouse_button_input.pressed(MouseButton::Left)
-            && builder.mode == BuilderMode::Combat
+            && player.mode == BuilderMode::Combat
             && animated.state != AnimationState::Attack
         {
             if let Some(cursor_coordinates) = cursor_state.world_position {

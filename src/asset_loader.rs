@@ -166,6 +166,8 @@ fn loader(
     map_sprite_handles.add_asset(AssetType::Conveyor, &asset_server);
 
     map_sprite_handles.add_asset(AssetType::Font, &asset_server);
+    map_sprite_handles.add_asset(AssetType::Fight, &asset_server);
+    map_sprite_handles.add_asset(AssetType::Build, &asset_server);
 
     let camera_entity = commands
         .spawn(Camera2dComponents {

@@ -4,6 +4,7 @@ mod player_inventory;
 
 pub use hotbar::Hotbar;
 pub use hotbar::HotbarIndex;
+pub use hotbar::HotbarMode;
 pub use item_slot::ItemSlot;
 pub use item_slot::ItemType;
 pub use player_inventory::InventoryIndex;

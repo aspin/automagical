@@ -22,12 +22,22 @@ impl Plugin for BuilderPlugin {
 
 pub struct Player {
     pub builder_entity: Entity,
+    pub mode: BuilderMode,
 }
 
 impl Player {
     pub fn new(builder_entity: Entity) -> Self {
-        Player { builder_entity }
+        Player { builder_entity, mode: BuilderMode::Combat }
     }
+
+    pub fn toggle_mode(&mut self) {
+        if self.mode == BuilderMode::Construct {
+            self.mode = BuilderMode::Combat
+        } else {
+            self.mode = BuilderMode::Construct
+        }
+    }
+
 }
 
 #[derive(PartialEq, Eq, Copy, Clone, Hash, Debug)]
@@ -38,7 +48,6 @@ pub enum BuilderMode {
 
 pub struct Builder {
     pub name: String,
-    pub mode: BuilderMode,
 
     // last aimed cursor location
     pub aim_location: Option<Vec4>,
@@ -48,16 +57,7 @@ impl Builder {
     pub fn new(name: &str) -> Self {
         Builder {
             name: String::from(name),
-            mode: BuilderMode::Combat,
             aim_location: Option::None,
-        }
-    }
-
-    pub fn toggle_mode(&mut self) {
-        if self.mode == BuilderMode::Construct {
-            self.mode = BuilderMode::Combat
-        } else {
-            self.mode = BuilderMode::Construct
         }
     }
 
