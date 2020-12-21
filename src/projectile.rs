@@ -32,14 +32,14 @@ impl Projectile {
 pub fn expire_projectiles(
     commands: &mut Commands,
     time: Res<Time>,
-    mut projectiles: Query<(&Entity, &Projectile, &Transform, &mut Timer)>,
+    mut projectiles: Query<(Entity, &Projectile, &Transform, &mut Timer)>,
 ) {
-    for (entity, _projectile, _transform, mut timer) in projectiles.iter_mut() {
+    for (entity, _projectile, transform, mut timer) in projectiles.iter_mut() {
         timer.tick(time.delta_seconds());
         if timer.just_finished() {
-            println!("Projectile has expired at position: {:?}", _transform);
-            commands.despawn(*entity);
+            debug!("Projectile has expired at position: {:?}", transform);
+            commands.despawn(entity);
         }
-        trace!("Projectile position: {:?}", _transform);
+        trace!("Projectile position: {:?}", transform);
     }
 }
