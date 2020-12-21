@@ -68,6 +68,7 @@ impl AnimationBundle {
 
 pub fn animate(
     mut rigid_body_set: ResMut<RigidBodySet>,
+    time: Res<Time>,
     mut query: Query<(
         &mut Timer,
         &mut TextureAtlasSprite,
@@ -76,7 +77,7 @@ pub fn animate(
     )>,
 ) {
     for (mut timer, mut sprite, mut animated, rigid_body_handle) in query.iter_mut() {
-        if timer.finished() {
+        if timer.tick(time.delta_seconds()).finished() {
             let mut animation_info = data::get_animation_info(&animated.unit_type, &animated.state);
 
             let next_index = animated.animation_index + 1;
