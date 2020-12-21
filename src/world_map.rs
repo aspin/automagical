@@ -7,6 +7,7 @@ use bevy::prelude::*;
 pub const WORLD_MAP_WIDTH: usize = 300;
 pub const WORLD_MAP_HEIGHT: usize = 300;
 
+#[derive(Debug)]
 pub struct TileCoordinate(pub usize, pub usize);
 
 pub struct WorldMap {

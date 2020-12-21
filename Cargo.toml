@@ -5,8 +5,8 @@ authors = ["aspin"]
 edition = "2018"
 
 [dependencies]
-bevy = "0.3.0"
-bevy_rapier3d = "0.6.0"
+bevy = "0.4.0"
+bevy_rapier3d = { git = "https://github.com/Fedcomp/bevy_rapier/", branch = "bevy-0.4" }
 rand = "0.7.3"
 
 [features]

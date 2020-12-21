@@ -24,6 +24,8 @@ pub fn place_object(
                 let tile_position = world_map.tile_to_position(map_tile.0, map_tile.1);
                 let conveyor_atlas_handle = Handle::weak(conveyor_id);
 
+                println!("Spawning conveyor at {:?} {:?}", map_tile, tile_position);
+
                 commands.spawn(SpriteSheetComponents {
                     texture_atlas: conveyor_atlas_handle,
                     sprite: TextureAtlasSprite::new(0),
