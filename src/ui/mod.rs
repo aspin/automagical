@@ -20,6 +20,6 @@ impl Plugin for UiPlugin {
     }
 }
 
-fn setup_camera(mut commands: Commands) {
-    commands.spawn(UiCameraComponents::default());
+fn setup_camera(commands: &mut Commands) {
+    commands.spawn(CameraUiBundle::default());
 }

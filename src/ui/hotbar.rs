@@ -7,9 +7,9 @@ use crate::builder::{Player, BuilderMode};
 use crate::data::AssetType;
 
 /// Draw hotbar UI element.
-pub(super) fn setup_hotbar(mut commands: Commands, mut materials: ResMut<Assets<ColorMaterial>>) {
+pub(super) fn setup_hotbar(commands: &mut Commands, mut materials: ResMut<Assets<ColorMaterial>>) {
     let entity = commands
-        .spawn(NodeComponents {
+        .spawn(NodeBundle {
             style: Style {
                 size: Size::new(Val::Percent(100.0), Val::Px(200.0)),
                 position_type: PositionType::Absolute,
@@ -31,7 +31,7 @@ pub(super) fn setup_hotbar(mut commands: Commands, mut materials: ResMut<Assets<
     let hotbar = Hotbar::empty(entity);
     commands.with_children(|parent| {
         parent
-            .spawn(NodeComponents {
+            .spawn(NodeBundle {
                 style: Style {
                     size: Size::new(Val::Percent(80.0), Val::Px(200.0)),
                     align_items: AlignItems::Center,
@@ -46,7 +46,7 @@ pub(super) fn setup_hotbar(mut commands: Commands, mut materials: ResMut<Assets<
                     draw_item_slot(parent, &mut materials).with(HotbarIndex::new(i));
                 }
                 parent
-                    .spawn(NodeComponents {
+                    .spawn(NodeBundle {
                         style: Style {
                             position_type: PositionType::Absolute,
                             position: Rect {
@@ -67,19 +67,15 @@ pub(super) fn setup_hotbar(mut commands: Commands, mut materials: ResMut<Assets<
                     .with(HotbarMode::new())
                     .with_children(|parent| {
                         parent
-                            .spawn(ImageComponents {
+                            .spawn(ImageBundle {
                                 style: Style {
                                     size: Size::new(Val::Percent(100.0), Val::Percent(100.0)),
-                                    ..Default::default()
-                                },
-                                draw: Draw {
-                                    is_transparent: true,
                                     ..Default::default()
                                 },
                                 material: materials.add(Color::NONE.into()),
                                 ..Default::default()
                             })
-                            .spawn(TextComponents {
+                            .spawn(TextBundle {
                                 style: Style {
                                     position_type: PositionType::Absolute,
                                     position: Rect {
@@ -126,7 +122,7 @@ pub(super) fn draw_hotbar(
     }
 
     for (hotbar_index, children) in hotbar_index_query.iter() {
-        for child_entity in children.0.iter() {
+        for child_entity in children.iter() {
             if let Ok(color_handle) = material_query.get_mut(*child_entity) {
                 if let Some(item_slot) =
                     get_inventory_item(&inventory, &hotbar, hotbar_index.index())
@@ -152,7 +148,7 @@ pub(super) fn draw_hotbar(
     }
 
     for (_, children) in hotbar_mode_query.iter() {
-        for child_entity in children.0.iter() {
+        for child_entity in children.iter() {
             if let Ok(mut color_handle) = material_query.get_mut(*child_entity) {
                 let asset_type = AssetType::from(player.mode);
 

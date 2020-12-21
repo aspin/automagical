@@ -154,7 +154,7 @@ impl AtlasHandles {
 }
 
 fn loader(
-    mut commands: Commands,
+    commands: &mut Commands,
     asset_server: Res<AssetServer>,
     mut map_sprite_handles: ResMut<SpriteHandles>,
 ) {
@@ -170,7 +170,7 @@ fn loader(
     map_sprite_handles.add_asset(AssetType::Build, &asset_server);
 
     let camera_entity = commands
-        .spawn(Camera2dComponents {
+        .spawn(Camera2dBundle {
             transform: Transform {
                 scale: Vec3::new(CAMERA_ZOOM, CAMERA_ZOOM, CAMERA_ZOOM),
                 translation: Vec3::new(0., 0., 10.),

@@ -7,11 +7,11 @@ use bevy::prelude::*;
 /// Draw inventory UI element and initialize inventory resource.
 /// By default, inventory is not shown.
 pub(super) fn setup_inventory(
-    mut commands: Commands,
+    commands: &mut Commands,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
     let entity = commands
-        .spawn(NodeComponents {
+        .spawn(NodeBundle {
             style: Style {
                 size: Size::new(Val::Px(1220.0), Val::Px(620.0)),
                 margin: Rect::all(Val::Auto),
@@ -59,7 +59,7 @@ pub(super) fn draw_inventory(
         player_inventory_style.display = Display::None
     }
     for (inventory_index, children) in inventory_index_query.iter() {
-        for child_entity in children.0.iter() {
+        for child_entity in children.iter() {
             if let Ok(color_handle) = material_query.get_mut(*child_entity) {
                 set_item_slot_icon(
                     color_handle,

@@ -11,7 +11,7 @@ pub(super) fn draw_item_slot<'a, 'data>(
     materials: &mut ResMut<Assets<ColorMaterial>>,
 ) -> &'a mut ChildBuilder<'data> {
     commands
-        .spawn(NodeComponents {
+        .spawn(NodeBundle {
             style: Style {
                 size: Size::new(Val::Px(100.0), Val::Px(100.0)),
                 margin: Rect::all(Val::Px(10.0)),
@@ -22,19 +22,15 @@ pub(super) fn draw_item_slot<'a, 'data>(
         })
         .with_children(|parent| {
             parent
-                .spawn(ImageComponents {
+                .spawn(ImageBundle {
                     style: Style {
                         size: Size::new(Val::Percent(100.0), Val::Percent(100.0)),
-                        ..Default::default()
-                    },
-                    draw: Draw {
-                        is_transparent: true,
                         ..Default::default()
                     },
                     material: materials.add(Color::NONE.into()),
                     ..Default::default()
                 })
-                .spawn(TextComponents {
+                .spawn(TextBundle {
                     style: Style {
                         position_type: PositionType::Absolute,
                         position: Rect {
@@ -60,7 +56,7 @@ pub(super) fn draw_item_slot<'a, 'data>(
 
 /// Sets the item icon for a slot
 /// # Arguments
-/// * `color_handle` - Material handle of item slot icon ImageComponents
+/// * `color_handle` - Material handle of item slot icon ImageBundle
 /// * `item_slot` - Item slot information from inventory
 /// * `sprite_handles` - Loaded sprite handle resources
 /// * `asset_server` - Asset server resource TODO: see if can remove?
@@ -90,7 +86,7 @@ pub(super) fn set_item_slot_icon(
 
 /// Sets the item icon for a slot
 /// # Arguments
-/// * `text` - Text handle of item slot text TextComponents
+/// * `text` - Text handle of item slot text TextBundle
 /// * `item_slot` - Item slot information from inventory
 /// * `sprite_handles` - Loaded sprite handle resources
 /// * `asset_server` - Asset server resource TODO: see if can remove?

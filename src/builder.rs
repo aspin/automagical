@@ -66,7 +66,7 @@ impl Builder {
     pub fn to_aimed_location(&self, position: &Isometry3<f32>) -> Option<Vector3<f32>> {
         if let Some(aim_location) = self.aim_location {
             let aimed_vector =
-                Vector3::new(aim_location.x(), aim_location.y(), position.translation.z);
+                Vector3::new(aim_location.x, aim_location.y, position.translation.z);
             Some((aimed_vector - &position.translation.vector).normalize())
         } else {
             Option::None
@@ -75,7 +75,7 @@ impl Builder {
 }
 
 pub fn initialize_player(
-    mut commands: Commands
+    commands: &mut Commands
 ) {
     let builder_entity = commands
         .spawn((Builder::new("Bob the builder"), Weapon::magic_bow()))
@@ -86,42 +86,41 @@ pub fn initialize_player(
 }
 
 pub fn produce_projectiles(
-    mut commands: Commands,
+    commands: &mut Commands,
     atlas_handles: Res<AtlasHandles>,
     rigid_body_set: Res<RigidBodySet>,
-    animated: &Animated,
-    builder_body_handle: &RigidBodyHandleComponent,
-    builder: &Builder,
-    weapon: &Weapon,
+    builders: Query<(&Animated, &RigidBodyHandleComponent, &Builder, &Weapon)>,
 ) {
-    if let Some(arrow_id) = atlas_handles.get_asset(AssetType::Arrow) {
-        if animated.state == AnimationState::Attack && animated.animation_index == 1 {
-            let builder_body = rigid_body_set.get(builder_body_handle.handle()).unwrap();
+    for (animated, builder_body_handle, builder, weapon) in builders.iter() {
+        if let Some(arrow_id) = atlas_handles.get_asset(AssetType::Arrow) {
+            if animated.state == AnimationState::Attack && animated.animation_index == 1 {
+                let builder_body = rigid_body_set.get(builder_body_handle.handle()).unwrap();
 
-            let projectile = Projectile::arrow();
-            let projectile_positions =
-                compute_projectile_positions(builder_body.position(), builder, weapon, &projectile);
+                let projectile = Projectile::arrow();
+                let projectile_positions =
+                    compute_projectile_positions(builder_body.position(), builder, weapon, &projectile);
 
-            for (transform, body) in projectile_positions {
-                let arrow_atlas_handle = Handle::weak(arrow_id);
-                let projectile_timer = Timer::from_seconds((&projectile).ttl, false);
+                for (transform, body) in projectile_positions {
+                    let arrow_atlas_handle = Handle::weak(arrow_id);
+                    let projectile_timer = Timer::from_seconds((&projectile).ttl, false);
 
-                let arrow_entity = commands
-                    .spawn(SpriteSheetComponents {
-                        texture_atlas: arrow_atlas_handle,
-                        sprite: TextureAtlasSprite::new(0),
-                        transform,
-                        ..Default::default()
-                    })
-                    .with(projectile.clone())
-                    .with(projectile_timer)
-                    .current_entity()
-                    .unwrap();
+                    let arrow_entity = commands
+                        .spawn(SpriteSheetBundle {
+                            texture_atlas: arrow_atlas_handle,
+                            sprite: TextureAtlasSprite::new(0),
+                            transform,
+                            ..Default::default()
+                        })
+                        .with(projectile.clone())
+                        .with(projectile_timer)
+                        .current_entity()
+                        .unwrap();
 
-                let arrow_collider = data::get_collision_data(UnitType::Arrow)
-                    .user_data(arrow_entity.to_bits() as u128);
+                    let arrow_collider = data::get_collision_data(UnitType::Arrow)
+                        .user_data(arrow_entity.to_bits() as u128);
 
-                commands.insert(arrow_entity, (body, arrow_collider));
+                    commands.insert(arrow_entity, (body, arrow_collider));
+                }
             }
         }
     }

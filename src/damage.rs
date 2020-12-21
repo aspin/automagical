@@ -5,7 +5,7 @@ use bevy_rapier3d::physics::EventQueue;
 use bevy_rapier3d::rapier::geometry::{ColliderSet, ContactEvent};
 
 pub fn examine_collisions(
-    mut commands: Commands,
+    commands: &mut Commands,
     events: ResMut<EventQueue>,
     collider_set: Res<ColliderSet>,
     mut enemy_query: Query<&mut Enemy>,

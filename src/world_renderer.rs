@@ -49,7 +49,7 @@ fn generate_world(mut world_map: ResMut<WorldMap>, mut rapier_config: ResMut<Rap
 }
 
 fn render_world(
-    mut commands: Commands,
+    commands: &mut Commands,
     atlas_handles: Res<AtlasHandles>,
     player: Res<Player>,
     mut world: ResMut<World>,
@@ -69,7 +69,7 @@ fn render_world(
                 .lock_rotations()
                 .lock_translations();
             let builder_collider = data::get_collision_data(UnitType::Wizard);
-            let sprite_components = SpriteSheetComponents {
+            let sprite_components = SpriteSheetBundle {
                 texture_atlas: builder_atlas_handle,
                 sprite: TextureAtlasSprite::new(7),
                 transform: Transform::from_translation(Vec3::new(
@@ -89,15 +89,15 @@ fn render_world(
         if let Some((_camera, camera_transform)) = query_camera_iterator.into_iter().next() {
             let center_tile = world_map.center_tile();
             let (tiles_to_render, tiles_to_despawn) = world_map.get_tiles_for_update(
-                camera_transform.translation.x(),
-                camera_transform.translation.y(),
+                camera_transform.translation.x,
+                camera_transform.translation.y,
             );
             for tile in tiles_to_render {
                 // println!("render {} {} as {:?}", tile.x, tile.y, tile.biome);
                 if tile.rendered_entity.is_none() {
                     tile.rendered_entity.replace(
                         commands
-                            .spawn(SpriteSheetComponents {
+                            .spawn(SpriteSheetBundle {
                                 texture_atlas: tile.get_biome_handle(&atlas_handles),
                                 sprite: TextureAtlasSprite::new(rand::random::<u32>() % 4),
                                 transform: tile_to_position(&center_tile, tile.x, tile.y),
@@ -113,7 +113,7 @@ fn render_world(
                     // TODO: this should use UNIT_Z instead of 0.
                     let enemy_transform = tile_to_position(&center_tile, tile.x, tile.y);
                     let enemy_entity = commands
-                        .spawn(SpriteSheetComponents {
+                        .spawn(SpriteSheetBundle {
                             texture_atlas: enemy_atlas_handle,
                             sprite: TextureAtlasSprite::new(7),
                             transform: enemy_transform,
@@ -126,9 +126,9 @@ fn render_world(
 
                     let enemy_body = RigidBodyBuilder::new_dynamic()
                         .translation(
-                            enemy_transform.translation.x(),
-                            enemy_transform.translation.y(),
-                            enemy_transform.translation.z(),
+                            enemy_transform.translation.x,
+                            enemy_transform.translation.y,
+                            enemy_transform.translation.z,
                         )
                         .lock_rotations()
                         .lock_translations()

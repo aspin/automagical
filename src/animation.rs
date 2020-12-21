@@ -76,7 +76,7 @@ pub fn animate(
     )>,
 ) {
     for (mut timer, mut sprite, mut animated, rigid_body_handle) in query.iter_mut() {
-        if timer.finished {
+        if timer.finished() {
             let mut animation_info = data::get_animation_info(&animated.unit_type, &animated.state);
 
             let next_index = animated.animation_index + 1;
@@ -96,8 +96,9 @@ pub fn animate(
             sprite.index = animation_info.sprite_offset + animated.animation_index;
 
             timer.reset();
-            timer.duration =
-                animation_info.durations[animated.animation_index as usize] * ANIMATION_SPEED;
+            timer.set_duration(
+                animation_info.durations[animated.animation_index as usize] * ANIMATION_SPEED
+            );
         }
 
         let rigid_body = rigid_body_set.get_mut(rigid_body_handle.handle()).unwrap();

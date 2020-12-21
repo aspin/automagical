@@ -45,8 +45,9 @@ pub fn control_builder(
                 if animated.state == AnimationState::Idle {
                     animated.state = AnimationState::Move;
                     animated.animation_index = 0;
-                    builder_timer.reset();
-                    builder_timer.finished = true;
+                    // finish timer
+                    let timer_duration = builder_timer.duration();
+                    builder_timer.tick(timer_duration);
                 }
 
                 let mut x_speed = 0.;
@@ -70,8 +71,8 @@ pub fn control_builder(
                 builder_body.set_linvel(Vector::zeros(), true);
             }
 
-            (*camera_transform.translation.x_mut()) = builder_body.position().translation.x;
-            (*camera_transform.translation.y_mut()) = builder_body.position().translation.y;
+            camera_transform.translation.x = builder_body.position().translation.x;
+            camera_transform.translation.y = builder_body.position().translation.y;
         }
 
         // toggle inventory
@@ -92,8 +93,9 @@ pub fn control_builder(
             if let Some(cursor_coordinates) = cursor_state.world_position {
                 animated.state = AnimationState::Attack;
                 animated.animation_index = 0;
-                builder_timer.reset();
-                builder_timer.finished = true;
+                // finish timer
+                let timer_duration = builder_timer.duration();
+                builder_timer.tick(timer_duration);
                 builder.aim_location.replace(cursor_coordinates);
             }
         }
