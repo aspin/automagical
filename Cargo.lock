@@ -533,8 +533,9 @@ dependencies = [
 
 [[package]]
 name = "bevy_rapier3d"
-version = "0.6.2"
-source = "git+https://github.com/Fedcomp/bevy_rapier/?branch=bevy-0.4#d76e9eb9979e2f98ff5d04bba2382010e1dc544e"
+version = "0.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c11b4b13050eb907f824c92b598e418e75f710c50a3c35a2cd3f97f6f5afc0e1"
 dependencies = [
  "bevy",
  "concurrent-queue",
