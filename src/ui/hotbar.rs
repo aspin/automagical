@@ -1,10 +1,10 @@
 use crate::asset_loader::SpriteHandles;
+use crate::builder::{BuilderMode, Player};
+use crate::data::AssetType;
 use crate::inventory::{Hotbar, HotbarIndex, HotbarMode, ItemSlot, PlayerInventory};
 use crate::ui::item_slot::{draw_item_slot, set_item_slot_icon, set_item_slot_text};
 use crate::ui::MaterialHandles;
 use bevy::prelude::*;
-use crate::builder::{Player, BuilderMode};
-use crate::data::AssetType;
 
 /// Draw hotbar UI element.
 pub(super) fn setup_hotbar(commands: &mut Commands, mut materials: ResMut<Assets<ColorMaterial>>) {

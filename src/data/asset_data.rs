@@ -1,8 +1,8 @@
 use crate::biome::Biome;
+use crate::builder::BuilderMode;
 use crate::global_constants::TILE_LENGTH;
 use crate::inventory::ItemType;
 use bevy::math::Vec2;
-use crate::builder::BuilderMode;
 
 pub struct AssetInfo {
     pub sprite_file: String,

@@ -72,9 +72,7 @@ fn render_world(
             let sprite_components = SpriteSheetBundle {
                 texture_atlas: builder_atlas_handle,
                 sprite: TextureAtlasSprite::new(7),
-                transform: Transform::from_translation(Vec3::new(
-                    builder_x, builder_y, builder_z,
-                )),
+                transform: Transform::from_translation(Vec3::new(builder_x, builder_y, builder_z)),
                 ..Default::default()
             };
             commands.insert(player.builder_entity, sprite_components);

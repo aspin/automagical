@@ -1,4 +1,4 @@
-use crate::animation::{Animated, AnimationState, UnitType, AnimationBundle};
+use crate::animation::{Animated, AnimationBundle, AnimationState, UnitType};
 use crate::asset_loader::AtlasHandles;
 use crate::data;
 use crate::data::AssetType;
@@ -14,8 +14,7 @@ pub struct BuilderPlugin;
 
 impl Plugin for BuilderPlugin {
     fn build(&self, app: &mut AppBuilder) {
-        app
-            .add_startup_system(initialize_player.system())
+        app.add_startup_system(initialize_player.system())
             .add_system(produce_projectiles.system());
     }
 }
@@ -27,7 +26,10 @@ pub struct Player {
 
 impl Player {
     pub fn new(builder_entity: Entity) -> Self {
-        Player { builder_entity, mode: BuilderMode::Combat }
+        Player {
+            builder_entity,
+            mode: BuilderMode::Combat,
+        }
     }
 
     pub fn toggle_mode(&mut self) {
@@ -37,7 +39,6 @@ impl Player {
             self.mode = BuilderMode::Construct
         }
     }
-
 }
 
 #[derive(PartialEq, Eq, Copy, Clone, Hash, Debug)]
@@ -65,8 +66,7 @@ impl Builder {
     /// Expected usage is for aiming from the builder's body component.
     pub fn to_aimed_location(&self, position: &Isometry3<f32>) -> Option<Vector3<f32>> {
         if let Some(aim_location) = self.aim_location {
-            let aimed_vector =
-                Vector3::new(aim_location.x, aim_location.y, position.translation.z);
+            let aimed_vector = Vector3::new(aim_location.x, aim_location.y, position.translation.z);
             Some((aimed_vector - &position.translation.vector).normalize())
         } else {
             Option::None
@@ -74,9 +74,7 @@ impl Builder {
     }
 }
 
-pub fn initialize_player(
-    commands: &mut Commands
-) {
+pub fn initialize_player(commands: &mut Commands) {
     let builder_entity = commands
         .spawn((Builder::new("Bob the builder"), Weapon::magic_bow()))
         .with_bundle(AnimationBundle::new(UnitType::Wizard))
@@ -97,8 +95,12 @@ pub fn produce_projectiles(
                 let builder_body = rigid_body_set.get(builder_body_handle.handle()).unwrap();
 
                 let projectile = Projectile::arrow();
-                let projectile_positions =
-                    compute_projectile_positions(builder_body.position(), builder, weapon, &projectile);
+                let projectile_positions = compute_projectile_positions(
+                    builder_body.position(),
+                    builder,
+                    weapon,
+                    &projectile,
+                );
 
                 for (transform, body) in projectile_positions {
                     let arrow_atlas_handle = Handle::weak(arrow_id);

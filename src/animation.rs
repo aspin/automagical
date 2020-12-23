@@ -98,7 +98,7 @@ pub fn animate(
 
             timer.reset();
             timer.set_duration(
-                animation_info.durations[animated.animation_index as usize] * ANIMATION_SPEED
+                animation_info.durations[animated.animation_index as usize] * ANIMATION_SPEED,
             );
         }
 
